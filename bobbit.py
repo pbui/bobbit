@@ -164,7 +164,7 @@ class Bobbit(object):
             try:
                 if module.TYPE == 'command':
                     self.commands.extend(module.register(self))
-            except AttributeError as e:
+            except Exception as e:
                 self.logger.info('Failed to enable module %s: %s', module_name, e)
 
     def process_command(self, nick, message, channel=None):
