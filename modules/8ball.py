@@ -48,7 +48,7 @@ RESPONSES = (
     )
 )
 
-# Callback ----------------------------------------------------------------------
+# Command -----------------------------------------------------------------------
 
 def command(bot, nick, message, channel, question=None):
     response = random.choice(random.choice(RESPONSES))
