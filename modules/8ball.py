@@ -10,6 +10,8 @@ PATTERN = re.compile('^!8ball (?P<question>.*)')
 USAGE   = ''' 8ball Module
 Usage:  !8ball <question>
 
+Given a question, this module responds with a magic 8-ball prediction.
+
 Example:
 
         > !8ball Will pbui ever get tenure at Notre Dame?
