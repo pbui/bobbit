@@ -117,7 +117,7 @@ class Bobbit(object):
     # Handlers -----------------------------------------------------------------
 
     def handle_ping(self, payload):
-        self.logger.info('Handling PING: %s'.format(payload))
+        self.logger.info('Handling PING: %s', payload)
         self.send('PONG {}'.format(payload))
 
     def handle_channel_message(self, nick, channel, message):
