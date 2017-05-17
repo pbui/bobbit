@@ -26,6 +26,8 @@ class Bobbit(object):
     def __init__(self, config_path=None, **kwargs):
         self.logger      = logging.getLogger()
         self.tcp_client  = tornado.tcpclient.TCPClient()
+        self.modules     = {}
+        self.commands    = []
         self.handlers    = [
              (PING_RE   , self.handle_ping),
              (CHANMSG_RE, self.handle_channel_message),
@@ -136,9 +138,9 @@ class Bobbit(object):
     def load_modules(self):
         self.logger.info('Importing modules from %s', self.modules_dir)
 
-        # Clear current list of modules and commands
-        self.modules  = {}
-        self.commands = []
+        # Keep track of modules and commands
+        modules  = {}
+        commands = []
 
         # Iterate over modules in directory
         for module_path in glob.glob('{}/*.py'.format(self.modules_dir)):
@@ -155,24 +157,30 @@ class Bobbit(object):
                     reload(module)
                 else:
                     module = __import__(module_name, globals(), locals(), -1)
-                    self.modules[module_name] = module
+
+                modules[module_name] = module
             except ImportError as e:
                 self.logger.warn('Failed to import module %s: %s', module_name, e)
                 continue
 
             # Enable module
             try:
+                self.logger.info('Enabling %s', module_name)
                 if module.TYPE == 'command':
-                    self.commands.extend(module.register(self))
+                    commands.extend(module.register(self))
             except Exception as e:
                 self.logger.info('Failed to enable module %s: %s', module_name, e)
+
+        # Update instance modules and commands
+        self.modules  = modules
+        self.commands = [(re.compile(p), c) for p, c in commands]
 
     def process_command(self, nick, message, channel=None):
         for pattern, callback in self.commands:
             match = pattern.match(message)
             if match:
                 yield callback(self, nick, message, channel, **match.groupdict())
-    
+
     # Utilities ----------------------------------------------------------------
 
     def format_responses(self, responses, nick=None, channel=None):
@@ -181,7 +189,7 @@ class Bobbit(object):
             yield u'{}{}: {}'.format(prefix, nick, responses) if channel else responses
         else:
             for response in responses:
-                self.format_responses(response, nick, channel)
+                yield self.format_responses(response, nick, channel)
 
     # Configuration ------------------------------------------------------------
 
