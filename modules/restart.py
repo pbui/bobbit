@@ -1,6 +1,5 @@
 import os
 import random
-import re
 import sys
 import time
 
@@ -9,15 +8,9 @@ import time
 NAME    = 'restart'
 ENABLE  = True
 TYPE    = 'command'
-USAGE   = ''' restart Module
-Usages: !restart    # Restarts the bot process
-        !reload     # Reloads the bot modules
-
-Examples:
-
-        > !restart
-
-        > !reload
+USAGE   = '''Usage: [!restart | !reload]
+Given one of these two commands, the bot will either restart the entire process
+or reload the bot modules.
 '''
 
 # Constants ---------------------------------------------------------------------
@@ -53,8 +46,8 @@ def restart_command(bot, nick, message, channel, question=None):
 
 def register(bot):
     return (
-        (re.compile('^!restart$'), restart_command),
-        (re.compile('^!reload$') , reload_command),
+        ('^!restart$', restart_command),
+        ('^!reload$' , reload_command),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:

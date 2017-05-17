@@ -6,17 +6,10 @@ import re
 NAME    = 'greeting'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = re.compile('^(hi|hello|hey|greetings|hola)$')
-USAGE   = ''' greeting Module
-Usage: <greeting>
-
+PATTERN = '^(hi|hello|hey|greetings|hola)$'
+USAGE   = '''Usage: <greeting>
 Given a greeting such as hi or hello, this module responds with a similar
 greeting.
-
-Example:
-
-        > hi
-        nick: hola
 '''
 
 # Constants --------------------------------------------------------------------
