@@ -203,22 +203,22 @@ class Bobbit(object):
         self.modules_dir = os.path.join(os.path.dirname(__file__), 'modules')
 
         if os.path.exists(self.config_path):
-            config       = yaml.load(open(self.config_path))
+            self.config  = yaml.load(open(self.config_path))
             self.work_dir= os.path.dirname(self.config_path)
         else:
-            config       = {}
+            self.config  = {}
 
         self.logger.info('Working Directory:  %s', self.work_dir)
         self.logger.info('Configuration Path: %s', self.config_path)
         self.logger.info('Modules Path:       %s', self.modules_dir)
 
-        self.host        = config.get('host'       , 'irc.freenode.net')
-        self.port        = config.get('port'       , 6667)
-        self.owner       = config.get('owner'      , getpass.getuser())
-        self.nick        = config.get('nick'       , 'bobbit')
-        self.nick_prefix = config.get('nick_prefix', '')
-        self.password    = config.get('password'   , '')
-        self.channels    = config.get('channels'   , [])
+        self.host        = self.config.get('host'       , 'irc.freenode.net')
+        self.port        = self.config.get('port'       , 6667)
+        self.owner       = self.config.get('owner'      , getpass.getuser())
+        self.nick        = self.config.get('nick'       , 'bobbit')
+        self.nick_prefix = self.config.get('nick_prefix', '')
+        self.password    = self.config.get('password'   , '')
+        self.channels    = self.config.get('channels'   , [])
 
         self.logger.info('IRC Server:         %s:%d', self.host, self.port)
         self.logger.info('IRC Owner:          %s'   , self.owner)
