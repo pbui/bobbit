@@ -1,6 +1,8 @@
+# help.py -----------------------------------------------------------------------
+
 import random
 
-# Meta-data --------------------------------------------------------------------
+# Meta-data ---------------------------------------------------------------------
 
 NAME    = 'help'
 ENABLE  = True
@@ -31,4 +33,4 @@ def register(bot):
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python:
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python: ---------------------------------

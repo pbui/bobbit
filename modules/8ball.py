@@ -1,3 +1,5 @@
+# 8ball.py ---------------------------------------------------------------------
+
 import random
 
 # Meta-data --------------------------------------------------------------------
@@ -45,17 +47,17 @@ RESPONSES = (
     )
 )
 
-# Command -----------------------------------------------------------------------
+# Command ----------------------------------------------------------------------
 
 def command(bot, nick, message, channel, question=None):
     response = random.choice(random.choice(RESPONSES))
     return bot.format_responses(response, nick, channel)
 
-# Register ----------------------------------------------------------------------
+# Register ---------------------------------------------------------------------
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python:
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
