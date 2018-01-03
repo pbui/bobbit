@@ -1,10 +1,12 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 
 import getpass
 import glob
 import logging
 import os
 import re
+
+from importlib import reload
 
 import yaml
 
@@ -69,13 +71,14 @@ class Bobbit(object):
             self.send('JOIN {}'.format(channel))
 
         # Wait for next message
-        self.recv_message('')
+        self.recv_message(b'')
 
     # Send / receive messages --------------------------------------------------
 
     @tornado.gen.coroutine
     def send(self, message):
-        yield self.tcp_stream.write(message + '\r\n')
+        message += '\r\n'
+        yield self.tcp_stream.write(message.encode('utf-8'))
 
     def send_message(self, message, channel=None, nick=None):
         if channel:
@@ -94,7 +97,7 @@ class Bobbit(object):
         if response is None or (nick is None and channel is None):
             return
 
-        if isinstance(response, unicode) or isinstance(response, str):
+        if isinstance(response, str):
             self.send_message(response, nick, channel)
         else:
             for r in response:
@@ -102,8 +105,8 @@ class Bobbit(object):
 
     def recv_message(self, message):
         # Receive message
-        message = message.rstrip()
-        self.logger.info(message)
+        message = message.decode().rstrip()
+        self.logger.debug(message)
 
         # Process handlers
         for pattern, callback in self.handlers:
@@ -115,7 +118,7 @@ class Bobbit(object):
                     self.logger.exception('Unhandled exception: %s' % e)
 
         # Wait for next message
-        self.tcp_stream.read_until('\n', self.recv_message)
+        self.tcp_stream.read_until(b'\n', self.recv_message)
 
     # Handlers -----------------------------------------------------------------
 
@@ -185,8 +188,8 @@ class Bobbit(object):
 
     def format_responses(self, responses, nick=None, channel=None):
         prefix = self.nick_prefix
-        if isinstance(responses, unicode) or isinstance(responses, str):
-            yield u'{}{}: {}'.format(prefix, nick, responses) if channel else responses
+        if isinstance(responses, str):
+            yield '{}{}: {}'.format(prefix, nick, responses) if channel else responses
         else:
             for response in responses:
                 yield self.format_responses(response, nick, channel)
@@ -196,7 +199,7 @@ class Bobbit(object):
     def load_configuration(self, config_path=None):
         ''' Load configuration from YAML file '''
         self.work_dir    = os.environ.get('BOBBIT_DIR', os.path.expanduser('~/.config/bobbit'))
-        self.config_path = config_path if config_path else os.path.join(self.work_dir, 'config.yaml')
+        self.config_path = os.path.expanduser(config_path) if config_path else os.path.join(self.work_dir, 'config.yaml')
         self.modules_dir = os.path.join(os.path.dirname(__file__), 'modules')
 
         if os.path.exists(self.config_path):
