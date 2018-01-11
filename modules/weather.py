@@ -1,5 +1,17 @@
 # weather.py -------------------------------------------------------------------
 
+'''
+Configuration
+=============
+
+The weather module reads from the weather.yaml file stored in bobbit's working
+directory and expects the following values:
+
+    appid:      This is the Open Weather Map APPID
+    default:    This is the default zip code
+
+'''
+
 from urllib.parse import urlencode
 
 import json
