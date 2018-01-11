@@ -1,6 +1,6 @@
 # help.py -----------------------------------------------------------------------
 
-# Meta-data ---------------------------------------------------------------------
+# Metadata ----------------------------------------------------------------------
 
 NAME    = 'help'
 ENABLE  = True
@@ -16,15 +16,13 @@ module.
 
 def command(bot, nick, message, channel, module_name=None):
     if module_name is None or module_name == 'all':
-        responses = sorted([m.NAME for m in bot.modules.values()])
-        bot.send_response(responses, channel, nick, notice=True)
+        response = sorted([m.NAME for m in bot.modules.values()])
+        bot.send_response(response, nick, channel, notice=True)
 
     for module in bot.modules.values():
         if module.NAME == module_name:
-            responses = module.USAGE.splitlines()
-            bot.send_response(responses, channel, nick, notice=True)
-
-    return None
+            response = module.USAGE.splitlines()
+            bot.send_response(response, nick, channel, notice=True)
 
 # Register ----------------------------------------------------------------------
 
