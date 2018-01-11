@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 
+import functools
 import getpass
 import glob
 import logging
 import os
 import re
+import time
+import sys
 
 from importlib import reload
 
@@ -30,6 +33,7 @@ class Bobbit(object):
         self.tcp_client  = tornado.tcpclient.TCPClient()
         self.modules     = {}
         self.commands    = []
+        self.timers      = []
         self.handlers    = [
              (PING_RE   , self.handle_ping),
              (CHANMSG_RE, self.handle_channel_message),
@@ -149,13 +153,24 @@ class Bobbit(object):
     def load_modules(self):
         self.logger.info('Importing modules from %s', self.modules_dir)
 
-        # Keep track of modules and commands
+        # Keep track of modules, commands, and timers
         modules  = {}
         commands = []
+        timers   = []
+
+        # Shutdown old timers
+        for timer in self.timers:
+            timer.stop()
+            del timer
+
+        modules_root = os.path.dirname(self.modules_dir)
+        if not modules_root in sys.path:
+            sys.path.insert(modules_root, 0)
 
         # Iterate over modules in directory
         for module_path in glob.glob('{}/*.py'.format(self.modules_dir)):
-            module_name = module_path[:-3].replace('/', '.').replace('..', '')
+            module_name = module_path.replace(modules_root + '/', '')
+            module_name = module_name[:-3].replace('/', '.').replace('..', '')
 
             if '__' in module_name:
                 continue
@@ -176,15 +191,23 @@ class Bobbit(object):
 
             # Enable module
             try:
-                self.logger.info('Enabling %s', module_name)
                 if module.TYPE == 'command':
+                    self.logger.info('Enabling %s command', module_name)
                     commands.extend(module.register(self))
+                elif module.TYPE == 'timer':
+                    self.logger.info('Enabling %s timer', module_name)
+                    for timeout, timer in module.register(self):
+                        partial = functools.partial(timer, self)
+                        timer   = tornado.ioloop.PeriodicCallback(partial, timeout*1000)
+                        timer.start()
+                        timers.append(timer)
             except Exception as e:
                 self.logger.warn('Failed to enable module %s: %s', module_name, e)
 
         # Update instance modules and commands
         self.modules  = modules
         self.commands = [(re.compile(p), c) for p, c in commands]
+        self.timers   = timers
 
     def process_command(self, nick, message, channel=None):
         for pattern, callback in self.commands:
@@ -203,7 +226,7 @@ class Bobbit(object):
         ''' Load configuration from YAML file '''
         self.config_dir  = os.path.expanduser(config_dir or '~/.config/bobbit')
         self.config_path = os.path.join(self.config_dir, 'bobbit.yaml')
-        self.modules_dir = os.path.join(os.path.dirname(__file__), 'modules')
+        self.modules_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'modules'))
 
         if os.path.exists(self.config_path):
             config = yaml.load(open(self.config_path))
