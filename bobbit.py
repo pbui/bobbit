@@ -25,7 +25,7 @@ PRIVMSG_RE  = re.compile(':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+[^#][^:]+:(?P<message>
 
 class Bobbit(object):
 
-    def __init__(self, config_path=None, **kwargs):
+    def __init__(self, config_dir=None, **kwargs):
         self.logger      = logging.getLogger()
         self.tcp_client  = tornado.tcpclient.TCPClient()
         self.modules     = {}
@@ -36,7 +36,7 @@ class Bobbit(object):
              (PRIVMSG_RE, self.handle_private_message),
         ]
 
-        self.load_configuration(config_path)
+        self.load_configuration(config_dir)
         self.load_modules()
 
     # Connect ------------------------------------------------------------------
@@ -80,7 +80,7 @@ class Bobbit(object):
         message += '\r\n'
         yield self.tcp_stream.write(message.encode('utf-8'))
 
-    def send_command(self, command, message, channel=None, nick=None):
+    def send_command(self, command, message, nick=None, channel=None):
         if channel:
             receiver = channel
         elif nick:
@@ -93,11 +93,11 @@ class Bobbit(object):
         else:
             self.logger.warn('No channel or nick specified for: %s', message)
 
-    def send_message(self, message, channel=None, nick=None):
-        self.send_command('PRIVMSG', message, channel, nick)
+    def send_message(self, message, nick=None, channel=None):
+        self.send_command('PRIVMSG', message, nick, channel)
 
-    def send_notice(self, message, channel=None, nick=None):
-        self.send_command('NOTICE', message, channel, nick)
+    def send_notice(self, message, nick=None, channel=None):
+        self.send_command('NOTICE', message, nick, channel)
 
     def send_response(self, response, nick=None, channel=None, notice=False):
         if response is None or (nick is None and channel is None):
@@ -107,6 +107,7 @@ class Bobbit(object):
             if notice:
                 self.send_notice(response, nick, channel)
             else:
+                response = self.format_response(response, nick, channel)
                 self.send_message(response, nick, channel)
         else:
             for r in response:
@@ -137,13 +138,11 @@ class Bobbit(object):
 
     def handle_channel_message(self, nick, channel, message):
         self.logger.info('Handling Channel Message: %s | %s | %s', channel, nick, message)
-        for response in self.process_command(nick, message, channel):
-            self.send_response(response, channel=channel)
+        self.process_command(nick, message, channel)
 
     def handle_private_message(self, nick, message):
         self.logger.info('Handling Private Message: %s | %s', nick, message)
-        for response in self.process_command(nick, message):
-            self.send_response(response, nick=nick)
+        self.process_command(nick, message)
 
     # Modules ------------------------------------------------------------------
 
@@ -191,25 +190,19 @@ class Bobbit(object):
         for pattern, callback in self.commands:
             match = pattern.match(message)
             if match:
-                yield callback(self, nick, message, channel, **match.groupdict())
+                callback(self, nick, message, channel, **match.groupdict())
 
     # Utilities ----------------------------------------------------------------
 
-    def format_responses(self, responses, nick=None, channel=None):
-        prefix = self.nick_prefix
-        if isinstance(responses, str):
-            yield '{}{}: {}'.format(prefix, nick, responses) if channel else responses
-        else:
-            for response in responses:
-                yield self.format_responses(response, nick, channel)
+    def format_response(self, response, nick=None, channel=None):
+        return '{}{}: {}'.format(self.nick_prefix, nick, response) if channel else response
 
     # Configuration ------------------------------------------------------------
 
-    def load_configuration(self, config_path=None):
+    def load_configuration(self, config_dir=None):
         ''' Load configuration from YAML file '''
-        self.config_dir  = os.environ.get('BOBBIT_DIR', os.path.expanduser('~/.config/bobbit'))
-        self.config_path = os.path.expanduser(config_path or os.path.join(self.config_dir, 'config.yaml'))
-        self.config_dir  = os.path.dirname(self.config_path)
+        self.config_dir  = os.path.expanduser(config_dir or '~/.config/bobbit')
+        self.config_path = os.path.join(self.config_dir, 'bobbit.yaml')
         self.modules_dir = os.path.join(os.path.dirname(__file__), 'modules')
 
         if os.path.exists(self.config_path):
@@ -217,9 +210,9 @@ class Bobbit(object):
         else:
             config = {}
 
-        self.logger.info('Working Directory:  %s', self.config_dir)
-        self.logger.info('Configuration Path: %s', self.config_path)
-        self.logger.info('Modules Path:       %s', self.modules_dir)
+        self.logger.info('Configuration Directory: %s', self.config_dir)
+        self.logger.info('Configuration Path:      %s', self.config_path)
+        self.logger.info('Modules Path:            %s', self.modules_dir)
 
         self.host        = config.get('host'       , 'irc.freenode.net')
         self.port        = config.get('port'       , 6667)
@@ -245,7 +238,7 @@ class Bobbit(object):
 # Main Execution ---------------------------------------------------------------
 
 if __name__ == '__main__':
-    tornado.options.define('config_path', default=None,  help='Configuration path')
+    tornado.options.define('config_dir', default=None,  help='Configuration directory')
     tornado.options.parse_command_line()
 
     options = tornado.options.options.as_dict()
