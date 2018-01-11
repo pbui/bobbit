@@ -18,9 +18,10 @@ import json
 import os
 import yaml
 
+import tornado.gen
 import tornado.httpclient
 
-# Meta-data --------------------------------------------------------------------
+# Metadata ---------------------------------------------------------------------
 
 NAME    = 'weather'
 ENABLE  = True
@@ -47,6 +48,7 @@ DEFAULT_ZIPCODE = None
 
 # Command ----------------------------------------------------------------------
 
+@tornado.gen.coroutine
 def command(bot, nick, message, channel, zipcode=None):
     zipcode = zipcode or ZIPCODE.get(channel, DEFAULT_ZIPCODE)
     params  = {
@@ -54,8 +56,10 @@ def command(bot, nick, message, channel, zipcode=None):
         'appid': OWM_APPID,
         'units': 'imperial',
     }
-    url     = OWM_URL + '?' + urlencode(params)
-    result  = tornado.httpclient.HTTPClient().fetch(url)
+    url    = OWM_URL + '?' + urlencode(params)
+    client = tornado.httpclient.HTTPClient()
+    result = yield tornado.gen.Task(client.fetch, url)
+
     try:
         data     = json.loads(result.body.decode('utf-8'))
         temp     = data['main']['temp']
@@ -64,7 +68,7 @@ def command(bot, nick, message, channel, zipcode=None):
     except (KeyError, IndexError, ValueError):
         response = 'No results'
 
-    return bot.format_responses(response, nick, channel)
+    bot.send_response(response, nick, channel)
 
 # Register ---------------------------------------------------------------------
 
