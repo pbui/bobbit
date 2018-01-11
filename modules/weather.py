@@ -3,7 +3,9 @@
 from urllib.parse import urlencode
 
 import json
-import tornado.gen
+import os
+import yaml
+
 import tornado.httpclient
 
 # Meta-data --------------------------------------------------------------------
@@ -22,22 +24,22 @@ Example:
 
 # Constants --------------------------------------------------------------------
 
-OWM_URL = 'http://api.openweathermap.org/data/2.5/weather'
-
-ZIPCODE = { 
+OWM_URL   = 'http://api.openweathermap.org/data/2.5/weather'
+OWM_APPID = None
+ZIPCODE   = {
     '#nd-cse':  46556, # Notre Dame, IN
     '#ndlug':   46556, # Notre Dame, IN
     '#uwec-cs': 54702, # Eau Claire, WI
 }
+DEFAULT_ZIPCODE = None
 
 # Command ----------------------------------------------------------------------
 
 def command(bot, nick, message, channel, zipcode=None):
-    default = bot.config.get('weather', {}).get('zipcode', ZIPCODE['#ndlug'])
-    zipcode = ZIPCODE.get(channel, zipcode or default)
+    zipcode = zipcode or ZIPCODE.get(channel, DEFAULT_ZIPCODE)
     params  = {
         'zip':   zipcode,
-        'APPID': bot.config.get('weather', {}).get('appid', None),
+        'appid': OWM_APPID,
         'units': 'imperial',
     }
     url     = OWM_URL + '?' + urlencode(params)
@@ -55,6 +57,12 @@ def command(bot, nick, message, channel, zipcode=None):
 # Register ---------------------------------------------------------------------
 
 def register(bot):
+    global OWM_APPID, DEFAULT_ZIPCODE
+
+    config          = yaml.load(open(os.path.join(bot.work_dir, 'weather.yaml')))
+    DEFAULT_ZIPCODE = config.get('default', ZIPCODE['#ndlug'])
+    OWM_APPID       = config.get('appid', None)
+
     return (
         (PATTERN0, command),
         (PATTERN1, command),
