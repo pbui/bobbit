@@ -5,7 +5,7 @@ import random
 import sys
 import time
 
-# Meta-data --------------------------------------------------------------------
+# Metadata ---------------------------------------------------------------------
 
 NAME    = 'restart'
 ENABLE  = True
@@ -29,15 +29,15 @@ RESTART_TIMEOUT = 5
 
 def reload_command(bot, nick, message, channel, question=None):
     if nick != bot.owner:
-        return None
+        return
 
     bot.logger.debug('Reload initiated by %s', nick)
     bot.load_modules()
-    return bot.format_responses(random.choice(RELOAD_MESSAGES), nick, channel)
+    bot.send_response(random.choice(RELOAD_MESSAGES), nick, channel)
 
 def restart_command(bot, nick, message, channel, question=None):
     if nick != bot.owner:
-        return None
+        return
 
     bot.logger.debug('Restart initiated by %s', nick)
     bot.tcp_stream.close()
