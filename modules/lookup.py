@@ -12,7 +12,7 @@ import os
 import random
 import yaml
 
-# Meta-data --------------------------------------------------------------------
+# Metadata ---------------------------------------------------------------------
 
 NAME    = 'lookup'
 ENABLE  = True
@@ -73,7 +73,7 @@ def command(bot, nick, message, channel, query=None):
         bot.logger.warn(e)
         return
 
-    return bot.format_responses(response, nick, channel)
+    bot.send_response(response, nick, channel)
 
 # Register ---------------------------------------------------------------------
 
