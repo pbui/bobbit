@@ -1,6 +1,6 @@
 # give.py ----------------------------------------------------------------------
 
-# Meta-data --------------------------------------------------------------------
+# Metadata ---------------------------------------------------------------------
 
 NAME    = 'give'
 ENABLE  = True
@@ -16,10 +16,7 @@ Example:
 # Command ----------------------------------------------------------------------
 
 def command(bot, nick, message, channel, other, command=None):
-    for response in bot.process_command(other, command, channel):
-        if response:
-            bot.send_response(response, channel=channel)
-    return None
+    bot.process_command(other, command, channel)
 
 # Register ---------------------------------------------------------------------
 
