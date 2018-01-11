@@ -3,7 +3,7 @@
 import random
 import re
 
-# Meta-data --------------------------------------------------------------------
+# Metadata ---------------------------------------------------------------------
 
 NAME    = 'greeting'
 ENABLE  = True
@@ -29,7 +29,7 @@ RESPONSES = (
 
 def command(bot, nick, message, channel, question=None):
     response = random.choice(RESPONSES)
-    return bot.format_responses(response, nick, channel)
+    bot.send_response(response, nick, channel)
 
 # Register ---------------------------------------------------------------------
 
