@@ -21,7 +21,6 @@ import tornado.process
 NAME     = 'feeds'
 ENABLE   = True
 TYPE     = 'timer'
-TIMEOUT  = 30
 TEMPLATE = 'From "{feed}" feed: {title} by {author} @ {link}'
 
 # Timer ------------------------------------------------------------------------
@@ -60,8 +59,12 @@ def timer(bot):
 # Register ---------------------------------------------------------------------
 
 def register(bot):
+    config_path  = os.path.join(bot.config_dir, 'feeds.yaml')
+    feeds_config = yaml.load(open(config_path))
+    timeout      = feeds_config.get('timeout', 5*60)
+
     return (
-        (TIMEOUT, timer),
+        (timeout, timer),
     )
 
 # Script -----------------------------------------------------------------------
