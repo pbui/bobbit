@@ -5,9 +5,11 @@ from modules.__common__ import shorten_url
 from urllib.parse import unquote, urlencode
 
 import re
+
+import tornado.gen
 import tornado.httpclient
 
-# Meta-data --------------------------------------------------------------------
+# Metadata ---------------------------------------------------------------------
 
 NAME    = 'ddg'
 ENABLE  = True
@@ -26,10 +28,12 @@ DDG_RX  = '.*result__url.*uddg=([^"]*)">'
 
 # Command ----------------------------------------------------------------------
 
+@tornado.gen.coroutine
 def command(bot, nick, message, channel, query=None):
-    params  = {'q': query, 's': 0}
-    url     = DDG_URL + '?' + urlencode(params)
-    result  = tornado.httpclient.HTTPClient().fetch(url)
+    params = {'q': query, 's': 0}
+    url    = DDG_URL + '?' + urlencode(params)
+    client = tornado.httpclient.HTTPClient()
+    result = yield tornado.gen.Task(client.fetch, url)
     try:
         urls     = [unquote(url)
                         for url in re.findall(DDG_RX, result.body.decode())
@@ -38,7 +42,7 @@ def command(bot, nick, message, channel, query=None):
     except (IndexError, ValueError):
         response = 'No results'
 
-    return bot.format_responses(response, nick, channel)
+    bot.send_response(response, nick, channel)
 
 # Register ---------------------------------------------------------------------
 
