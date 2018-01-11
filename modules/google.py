@@ -6,7 +6,6 @@ from urllib.parse import unquote, urlencode
 
 import re
 
-import tornado.gen
 import tornado.httpclient
 
 # Meta-data --------------------------------------------------------------------
@@ -32,9 +31,10 @@ def command(bot, nick, message, channel, query=None):
     url     = GOOGLE_URL + '?' + urlencode(params)
     result  = tornado.httpclient.HTTPClient().fetch(url)
     try:
-        url      = unquote(re.findall('/url\?q=([^&]*)', result.body.decode())[0])
+        url      = unquote(re.findall(b'/url\?q=([^&]*)', result.body)[0].decode())
         response = shorten_url(url)
-    except (IndexError, ValueError):
+    except (IndexError, ValueError) as e:
+        bot.logger.warn(e)
         response = 'No results'
 
     return bot.format_responses(response, nick, channel)
