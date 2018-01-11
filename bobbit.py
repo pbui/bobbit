@@ -181,7 +181,7 @@ class Bobbit(object):
                 if module.TYPE == 'command':
                     commands.extend(module.register(self))
             except Exception as e:
-                self.logger.info('Failed to enable module %s: %s', module_name, e)
+                self.logger.warn('Failed to enable module %s: %s', module_name, e)
 
         # Update instance modules and commands
         self.modules  = modules
