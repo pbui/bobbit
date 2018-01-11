@@ -6,9 +6,10 @@ from urllib.parse import unquote, urlencode
 
 import re
 
+import tornado.gen
 import tornado.httpclient
 
-# Meta-data --------------------------------------------------------------------
+# Metadata ---------------------------------------------------------------------
 
 NAME    = 'google'
 ENABLE  = True
@@ -26,18 +27,21 @@ GOOGLE_URL = 'http://www.google.com/search'
 
 # Command ----------------------------------------------------------------------
 
+@tornado.gen.coroutine
 def command(bot, nick, message, channel, query=None):
-    params  = {'q': query}
-    url     = GOOGLE_URL + '?' + urlencode(params)
-    result  = tornado.httpclient.HTTPClient().fetch(url)
+    params = {'q': query}
+    url    = GOOGLE_URL + '?' + urlencode(params)
+    client = tornado.httpclient.AsyncHTTPClient()
+    result = yield tornado.gen.Task(client.fetch, url)
+
     try:
-        url      = unquote(re.findall(b'/url\?q=([^&]*)', result.body)[0].decode())
-        response = shorten_url(url)
+        urls     = re.findall(b'/url\?q=([^&]*)', result.body)
+        response = shorten_url(unquote(urls[0].decode()))
     except (IndexError, ValueError) as e:
         bot.logger.warn(e)
         response = 'No results'
 
-    return bot.format_responses(response, nick, channel)
+    bot.send_response(response, nick, channel)
 
 # Register ---------------------------------------------------------------------
 
