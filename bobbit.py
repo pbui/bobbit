@@ -80,7 +80,7 @@ class Bobbit(object):
         message += '\r\n'
         yield self.tcp_stream.write(message.encode('utf-8'))
 
-    def send_message(self, message, channel=None, nick=None):
+    def send_command(self, command, message, channel=None, nick=None):
         if channel:
             receiver = channel
         elif nick:
@@ -89,19 +89,28 @@ class Bobbit(object):
             receiver = None
 
         if receiver:
-            self.send('PRIVMSG {} :{}'.format(receiver, message))
+            self.send('{} {} :{}'.format(command, receiver, message))
         else:
-            self.logging.warn('No channel or nick specified for: %s', message)
+            self.logger.warn('No channel or nick specified for: %s', message)
 
-    def send_response(self, response, nick=None, channel=None):
+    def send_message(self, message, channel=None, nick=None):
+        self.send_command('PRIVMSG', message, channel, nick)
+
+    def send_notice(self, message, channel=None, nick=None):
+        self.send_command('NOTICE', message, channel, nick)
+
+    def send_response(self, response, nick=None, channel=None, notice=False):
         if response is None or (nick is None and channel is None):
             return
 
         if isinstance(response, str):
-            self.send_message(response, nick, channel)
+            if notice:
+                self.send_notice(response, nick, channel)
+            else:
+                self.send_message(response, nick, channel)
         else:
             for r in response:
-                self.send_response(r, nick, channel)
+                self.send_response(r, nick, channel, notice)
 
     def recv_message(self, message):
         # Receive message
