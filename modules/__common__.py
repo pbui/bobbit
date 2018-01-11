@@ -13,7 +13,7 @@ def shorten_url(url):
     result  = tornado.httpclient.HTTPClient().fetch(request)
 
     try:
-        return result.body.decode()
+        return result.body.decode().strip()
     except AttributeError:
         return url 
 
