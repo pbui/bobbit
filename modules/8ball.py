@@ -2,7 +2,7 @@
 
 import random
 
-# Meta-data --------------------------------------------------------------------
+# Metadata ---------------------------------------------------------------------
 
 NAME    = '8ball'
 ENABLE  = True
@@ -51,7 +51,7 @@ RESPONSES = (
 
 def command(bot, nick, message, channel, question=None):
     response = random.choice(random.choice(RESPONSES))
-    return bot.format_responses(response, nick, channel)
+    bot.send_response(response, nick, channel)
 
 # Register ---------------------------------------------------------------------
 
