@@ -6,7 +6,6 @@ import glob
 import logging
 import os
 import re
-import time
 import sys
 
 from importlib import reload
@@ -20,10 +19,10 @@ import tornado.tcpclient
 
 # Regular Expressions ----------------------------------------------------------
 
-PING_RE     = re.compile('^PING (?P<payload>.*)')
-CHANMSG_RE  = re.compile(':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+(?P<channel>#+[-\w]+)\s+:(?P<message>[^\n\r]+)')
-PRIVMSG_RE  = re.compile(':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+[^#][^:]+:(?P<message>[^\n\r]+)')
-REGISTER_RE = re.compile(':(?P<server>.*?)\s+(?:376|422)')
+PING_RE     = re.compile(r'^PING (?P<payload>.*)')
+CHANMSG_RE  = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+(?P<channel>#+[-\w]+)\s+:(?P<message>[^\n\r]+)')
+PRIVMSG_RE  = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+[^#][^:]+:(?P<message>[^\n\r]+)')
+REGISTER_RE = re.compile(r':(?P<server>.*?)\s+(?:376|422)')
 
 # Bobbit -----------------------------------------------------------------------
 
