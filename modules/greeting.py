@@ -8,7 +8,7 @@ import re
 NAME    = 'greeting'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = '^(hi|hello|hey|greetings|hola|sup)$'
+PATTERN = '^(hi|hello|hey|greetings|hola|sup|bonjour|ciao|salut)$'
 USAGE   = '''Usage: <greeting>
 Given a greeting such as hi or hello, this module responds with a similar
 greeting.
@@ -23,6 +23,7 @@ RESPONSES = (
     'greetings',
     'hola',
     'yo',
+    'bonjour',
 )
 
 # Command ----------------------------------------------------------------------
