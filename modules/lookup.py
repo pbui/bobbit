@@ -33,7 +33,7 @@ LOOKUP_TIME = None
 
 # Lookup -----------------------------------------------------------------------
 
-def lookup_data(path=None):
+def lookup_data():
     global LOOKUP_TIME, LOOKUP_DATA
 
     mtime = os.path.getmtime(LOOKUP_PATH)
@@ -53,7 +53,10 @@ def lookup(key, data=None):
 
     if isinstance(result, str):
         if result.startswith('!'):
-            return lookup(result[1:])
+            if args.split()[-1] == '-a':
+                return lookup(result[1:] + ' -a')
+            else:
+                return lookup(result[1:])
         return result.split('\n')
     elif isinstance(result, list):
         if args.split()[-1] == '-a':
@@ -78,7 +81,7 @@ def command(bot, nick, message, channel, query=None):
 # Register ---------------------------------------------------------------------
 
 def register(bot):
-    global LOOKUP_PATH
+    global LOOKUP_PATH, LOOKUP_DATA
 
     LOOKUP_PATH = os.path.join(bot.config_dir, 'lookup.yaml')
     LOOKUP_DATA = lookup_data()
