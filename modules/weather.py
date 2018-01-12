@@ -26,8 +26,7 @@ import tornado.httpclient
 NAME    = 'weather'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN0= '^!weather$'
-PATTERN1= '^!weather (?P<zipcode>\d{5})'
+PATTERN = '^!weather\s*(?P<zipcode>\d{5})*$'
 USAGE   = '''Usage: !weather <zip code>
 Given a zip code, this returns the current weather for that location
 Example:
@@ -80,8 +79,7 @@ def register(bot):
     OWM_APPID       = config.get('appid', None)
 
     return (
-        (PATTERN0, command),
-        (PATTERN1, command),
+        (PATTERN, command),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
