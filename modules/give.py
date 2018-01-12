@@ -5,9 +5,9 @@
 NAME    = 'give'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = '^!give (?P<other>[^\s]*) (?P<command>.*)'
-USAGE   = '''Usage: !give <nick> <command>
-Send specified nick the result of the given command.
+PATTERN = '^!give (?P<other>[^\s]*) (?P<message>.*)'
+USAGE   = '''Usage: !give <nick> <message>
+Send specified nick the result of the given message.
 Example:
     > !give bobbit !8ball does this work?
     bobbit: Don't count on it
@@ -15,8 +15,8 @@ Example:
 
 # Command ----------------------------------------------------------------------
 
-def command(bot, nick, message, channel, other, command=None):
-    bot.process_command(other, command, channel)
+def command(bot, nick, message, channel, other, message=None):
+    bot.process_command(other, message, channel)
 
 # Register ---------------------------------------------------------------------
 
