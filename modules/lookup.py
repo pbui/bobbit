@@ -38,7 +38,7 @@ def lookup_data(path=None):
 
     mtime = os.path.getmtime(LOOKUP_PATH)
     if LOOKUP_TIME is None or LOOKUP_TIME < mtime:
-        LOOKUP_DATA = yaml.load(open(LOOKUP_PATH))
+        LOOKUP_DATA = yaml.load(open(LOOKUP_PATH, 'rb'))
         LOOKUP_TIME = mtime
 
     return LOOKUP_DATA
@@ -68,7 +68,7 @@ def lookup(key, data=None):
 
 def command(bot, nick, message, channel, query=None):
     try:
-        response = lookup(query)
+        response = lookup(query.lower())
     except (IOError, ValueError) as e:
         bot.logger.warn(e)
         return
