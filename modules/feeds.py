@@ -93,7 +93,7 @@ def script(config_dir):
         try:
             result = client.fetch(request)
         except tornado.httpclient.HTTPError as e:
-            logger.warn(e)
+            logger.warning(e)
             continue
 
         logger.info('Parsing %s (%s)', feed_title, feed_url)
@@ -160,6 +160,6 @@ if __name__ == '__main__':
     try:
         script(os.path.expanduser(options.get('config_dir', '~/.config/bobbit')))
     except Exception as e:
-        logging.getLogger().warn(e)
+        logging.getLogger().warning(e)
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
