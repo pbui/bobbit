@@ -23,6 +23,7 @@ import tornado.tcpclient
 PING_RE     = re.compile('^PING (?P<payload>.*)')
 CHANMSG_RE  = re.compile(':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+(?P<channel>#+[-\w]+)\s+:(?P<message>[^\n\r]+)')
 PRIVMSG_RE  = re.compile(':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+[^#][^:]+:(?P<message>[^\n\r]+)')
+REGISTER_RE = re.compile(':(?P<server>.*?)\s+(?:376|422)')
 
 # Bobbit -----------------------------------------------------------------------
 
@@ -35,9 +36,10 @@ class Bobbit(object):
         self.commands    = []
         self.timers      = []
         self.handlers    = [
-             (PING_RE   , self.handle_ping),
-             (CHANMSG_RE, self.handle_channel_message),
-             (PRIVMSG_RE, self.handle_private_message),
+             (PING_RE    , self.handle_ping),
+             (CHANMSG_RE , self.handle_channel_message),
+             (PRIVMSG_RE , self.handle_private_message),
+             (REGISTER_RE, self.handle_registration),
         ]
 
         self.load_configuration(config_dir)
@@ -65,22 +67,14 @@ class Bobbit(object):
         self.logger.info('Registering as %s', self.nick)
         self.send('NICK {}'.format(self.nick))
 
-        # Identify
-        self.logger.info('Identifying as %s', self.nick)
-        if not self.password.startswith('CONN:'):
-            self.send_message('IDENTIFY {}'.format(self.password), nick='NickServ')
-
-        # Join channels
-        for channel in self.channels:
-            self.send('JOIN {}'.format(channel))
-
-        # Wait for next message
+        # Start reading
         self.recv_message(b'')
 
     # Send / receive messages --------------------------------------------------
 
     @tornado.gen.coroutine
     def send(self, message):
+        self.logger.debug('SEND: %s', message)
         message += '\r\n'
         yield self.tcp_stream.write(message.encode('utf-8'))
 
@@ -120,7 +114,7 @@ class Bobbit(object):
     def recv_message(self, message):
         # Receive message
         message = message.decode().rstrip()
-        self.logger.debug(message)
+        self.logger.debug('RECV: %s', message)
 
         # Process handlers
         for pattern, callback in self.handlers:
@@ -147,6 +141,21 @@ class Bobbit(object):
     def handle_private_message(self, nick, message):
         self.logger.info('Handling Private Message: %s | %s', nick, message)
         self.process_command(nick, message)
+
+    def handle_registration(self, server):
+        # Identify
+        self.logger.info('Identifying as %s', self.nick)
+        if not self.password.startswith('CONN:'):
+            self.send_message('IDENTIFY {}'.format(self.password), nick='NickServ')
+
+        # Declare as bot
+        self.logger.info('Declaring as bot')
+        self.send('MODE {} +B'.format(self.nick))
+
+        # Join channels
+        for channel in self.channels:
+            self.logger.info('Joining %s', channel)
+            self.send('JOIN {}'.format(channel))
 
     # Modules ------------------------------------------------------------------
 
