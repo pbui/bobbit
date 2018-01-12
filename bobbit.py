@@ -35,10 +35,10 @@ class Bobbit(object):
         self.commands    = []
         self.timers      = []
         self.handlers    = [
-             (PING_RE    , self.handle_ping),
-             (CHANMSG_RE , self.handle_channel_message),
-             (PRIVMSG_RE , self.handle_private_message),
-             (REGISTER_RE, self.handle_registration),
+            (PING_RE    , self.handle_ping),
+            (CHANMSG_RE , self.handle_channel_message),
+            (PRIVMSG_RE , self.handle_private_message),
+            (REGISTER_RE, self.handle_registration),
         ]
 
         self.load_configuration(config_dir)
@@ -88,7 +88,7 @@ class Bobbit(object):
         if receiver:
             self.send('{} {} :{}'.format(command, receiver, message))
         else:
-            self.logger.warn('No channel or nick specified for: %s', message)
+            self.logger.warning('No channel or nick specified for: %s', message)
 
     def send_message(self, message, nick=None, channel=None):
         self.send_command('PRIVMSG', message, nick, channel)
@@ -194,7 +194,7 @@ class Bobbit(object):
 
                 modules[module_name] = module
             except ImportError as e:
-                self.logger.warn('Failed to import module %s: %s', module_name, e)
+                self.logger.warning('Failed to import module %s: %s', module_name, e)
                 continue
 
             # Enable module
@@ -210,7 +210,7 @@ class Bobbit(object):
                         timer.start()
                         timers.append(timer)
             except Exception as e:
-                self.logger.warn('Failed to enable module %s: %s', module_name, e)
+                self.logger.warning('Failed to enable module %s: %s', module_name, e)
 
         # Update instance modules and commands
         self.modules  = modules
