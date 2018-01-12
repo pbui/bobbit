@@ -1,10 +1,9 @@
 # ddg.py -----------------------------------------------------------------------
 
-from modules.__common__ import shorten_url
-
 from urllib.parse import unquote, urlencode
-
 import re
+
+from modules.__common__ import shorten_url
 
 import tornado.gen
 import tornado.httpclient
@@ -36,8 +35,8 @@ def command(bot, nick, message, channel, query=None):
     result = yield tornado.gen.Task(client.fetch, url)
     try:
         urls     = [unquote(url)
-                        for url in re.findall(DDG_RX, result.body.decode())
-                        if 'y.js' not in url]
+                    for url in re.findall(DDG_RX, result.body.decode())
+                    if 'y.js' not in url]
         response = shorten_url(urls[0])
     except (IndexError, ValueError):
         response = 'No results'
