@@ -8,7 +8,7 @@ NAME    = '8ball'
 ENABLE  = True
 TYPE    = 'command'
 PATTERN = '^!8ball (?P<question>.*)'
-USAGE   = '''Usage:  !8ball <question>
+USAGE   = '''Usage: !8ball <question>
 Given a question, this module responds with a magic 8-ball prediction.
 Example:
     > !8ball Will pbui ever get tenure at Notre Dame?

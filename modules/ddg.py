@@ -15,7 +15,7 @@ NAME    = 'ddg'
 ENABLE  = True
 TYPE    = 'command'
 PATTERN = '^!ddg (?P<query>.*$)'
-USAGE   = '''Usage:  !ddg <query>
+USAGE   = '''Usage: !ddg <query>
 Given a search query, this returns the first result from DuckDuckGo.
 Example:
     > !ddg who likes short shorts?

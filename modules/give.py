@@ -6,7 +6,7 @@ NAME    = 'give'
 ENABLE  = True
 TYPE    = 'command'
 PATTERN = '^!give (?P<other>[^\s]*) (?P<command>.*)'
-USAGE   = '''Usage:  !give <nick> <command>
+USAGE   = '''Usage: !give <nick> <command>
 Send specified nick the result of the given command.
 Example:
     > !give bobbit !8ball does this work?

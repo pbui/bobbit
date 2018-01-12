@@ -28,7 +28,7 @@ ENABLE  = True
 TYPE    = 'command'
 PATTERN0= '^!weather$'
 PATTERN1= '^!weather (?P<zipcode>\d{5})'
-USAGE   = '''Usage:  !weather <zip code>
+USAGE   = '''Usage: !weather <zip code>
 Given a zip code, this returns the current weather for that location
 Example:
     > !weather          # Default location

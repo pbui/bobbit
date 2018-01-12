@@ -15,7 +15,7 @@ NAME    = 'google'
 ENABLE  = True
 TYPE    = 'command'
 PATTERN = '^!g (?P<query>.*$)'
-USAGE   = '''Usage:  !g <query>
+USAGE   = '''Usage: !g <query>
 Given a search query, this returns the first result from Google
 Example:
     > !g who likes short shorts?

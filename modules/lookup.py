@@ -18,7 +18,7 @@ NAME    = 'lookup'
 ENABLE  = True
 TYPE    = 'command'
 PATTERN = '^!(?P<query>.*)'
-USAGE   = '''Usage:  !<query> [-a]
+USAGE   = '''Usage: !<query> [-a]
 This looks up the given query (-a displays all matches).
 Example:
     > !whois pbui
