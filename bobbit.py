@@ -122,7 +122,7 @@ class Bobbit(object):
                 try:
                     callback(**match.groupdict())
                 except Exception as e:
-                    self.logger.exception('Unhandled exception: %s' % e)
+                    self.logger.exception('Unhandled exception: %s', e)
 
         # Wait for next message
         self.tcp_stream.read_until(b'\n', self.recv_message)
