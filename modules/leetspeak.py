@@ -8,7 +8,7 @@ NAME    = 'leetspeak'
 ENABLE  = True
 TYPE    = 'command'
 PATTERN = '^!leet (?P<phrase>.*)'
-USAGE   = '''Usage:  !leet <question>
+USAGE   = '''Usage: !leet <phrase>
 Given a phrase, this translates the phrase into leetspeak.
 Example:
     > !leet notre dame
