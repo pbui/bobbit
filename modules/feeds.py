@@ -54,7 +54,7 @@ def timer(bot):
 
                 # Mark entry as delivered
                 bot.logger.info('Delivered %s from %s to %s', title, feed, ', '.join(channels))
-                feeds_cache[key] = 'delivered'
+                feeds_cache[key] = str(time.time())
 
 # Register ---------------------------------------------------------------------
 
@@ -110,14 +110,14 @@ def script(config_dir):
                 continue
 
             # If key is in cache and the timestamp is > 1.0, then skip
-            if key in feeds_cache and feeds_cache[key] in (b'delivered', b'skipped'):
+            if key in feeds_cache and float(feeds_cache[key]) > 1.0:
                 logger.debug('Skipping %s (already %s)', link, feeds_cache[key].decode())
                 continue
 
             # If feed is not in cache, then it is new, so mark all entries as skipped
             if feed_key not in feeds_cache:
                 logger.debug('Skipping %s (new feed)', link)
-                feeds_cache[key] = 'skipped'
+                feeds_cache[key] = str(time.time())
                 continue
 
             # If date published is too old, then mark and skip recording
@@ -125,12 +125,12 @@ def script(config_dir):
             timestamp = time.mktime(timestamp) if timestamp else time.time()
             if time.time() - timestamp > 24*60*60:
                 logger.debug('Skipping %s (too old)', link)
-                feeds_cache[key] = 'skipped'
+                feeds_cache[key] = str(time.time())
                 continue
 
             # Record entry with a key of 1.0 and then add to list of items
             logger.info('Recording %s', link)
-            feeds_cache[key] = 'pending'
+            feeds_cache[key] = str(1.0)
             entries[feed_title].append({
                 'title'     : title,
                 'author'    : author,
