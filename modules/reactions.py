@@ -19,7 +19,7 @@ AGREEMENTS = (
     'ikr',
     'indeed',
     'u betcha',
-    'zong',
+    'zomg',
     '\o/',
 )
 
