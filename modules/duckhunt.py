@@ -9,7 +9,7 @@ import tornado.ioloop
 # Metadata ---------------------------------------------------------------------
 
 NAME    = 'duckhunt'
-ENABLE  = True
+ENABLE  = False
 TYPE    = 'command'
 PATTERN = re.compile('.*(FLAP|QUACK)!$', re.IGNORECASE)
 USAGE   = '''Usage: N/A
