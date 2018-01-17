@@ -130,15 +130,15 @@ class Bobbit(object):
     # Handlers -----------------------------------------------------------------
 
     def handle_ping(self, payload):
-        self.logger.info('Handling PING: %s', payload)
+        self.logger.debug('Handling PING: %s', payload)
         self.send('PONG {}'.format(payload))
 
     def handle_channel_message(self, nick, channel, message):
-        self.logger.info('Handling Channel Message: %s | %s | %s', channel, nick, message)
+        self.logger.debug('Handling Channel Message: %s | %s | %s', channel, nick, message)
         self.process_command(nick, message, channel)
 
     def handle_private_message(self, nick, message):
-        self.logger.info('Handling Private Message: %s | %s', nick, message)
+        self.logger.debug('Handling Private Message: %s | %s', nick, message)
         self.process_command(nick, message)
 
     def handle_registration(self, server):
