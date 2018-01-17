@@ -199,10 +199,10 @@ class Bobbit(object):
 
             # Enable module
             try:
-                if module.TYPE == 'command':
+                if module.TYPE == 'command' and module.ENABLE:
                     self.logger.info('Enabling %s command', module_name)
                     commands.extend(module.register(self))
-                elif module.TYPE == 'timer':
+                elif module.TYPE == 'timer' and module.ENABLE:
                     self.logger.info('Enabling %s timer', module_name)
                     for timeout, timer in module.register(self):
                         partial = functools.partial(timer, self)
