@@ -5,7 +5,7 @@ import random
 # Metadata ---------------------------------------------------------------------
 
 NAME    = 'reactions'
-ENABLE  = True
+ENABLE  = False
 TYPE    = 'command'
 PATTERN = '^(?P<phrase>(hott|yes|omg|yay|yeah))$'
 USAGE   = '''Usage: <phrase>
