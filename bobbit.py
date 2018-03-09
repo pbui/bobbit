@@ -3,6 +3,8 @@
 import functools
 import getpass
 import glob
+import itertools
+import json
 import logging
 import os
 import re
@@ -16,33 +18,18 @@ import tornado.gen
 import tornado.ioloop
 import tornado.options
 import tornado.tcpclient
+import tornado.websocket
 
-# Regular Expressions ----------------------------------------------------------
+# IRC Client -------------------------------------------------------------------
 
-PING_RE     = re.compile(r'^PING (?P<payload>.*)')
-CHANMSG_RE  = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+(?P<channel>#+[-\w]+)\s+:(?P<message>[^\n\r]+)')
-PRIVMSG_RE  = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+[^#][^:]+:(?P<message>[^\n\r]+)')
-REGISTER_RE = re.compile(r':(?P<server>.*?)\s+(?:376|422)')
+class IRCClient(object):
+    ''' IRC Client '''
 
-# Bobbit -----------------------------------------------------------------------
-
-class Bobbit(object):
-
-    def __init__(self, config_dir=None, **kwargs):
-        self.logger      = logging.getLogger()
-        self.tcp_client  = tornado.tcpclient.TCPClient()
-        self.modules     = {}
-        self.commands    = []
-        self.timers      = []
-        self.handlers    = [
-            (PING_RE    , self.handle_ping),
-            (CHANMSG_RE , self.handle_channel_message),
-            (PRIVMSG_RE , self.handle_private_message),
-            (REGISTER_RE, self.handle_registration),
-        ]
-
-        self.load_configuration(config_dir)
-        self.load_modules()
+    # Regular Expressions ------------------------------------------------------
+    PING_RE     = re.compile(r'^PING (?P<payload>.*)')
+    CHANMSG_RE  = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+(?P<channel>#+[-\w]+)\s+:(?P<message>[^\n\r]+)')
+    PRIVMSG_RE  = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+[^#][^:]+:(?P<message>[^\n\r]+)')
+    REGISTER_RE = re.compile(r':(?P<server>.*?)\s+(?:376|422)')
 
     # Connect ------------------------------------------------------------------
 
@@ -50,7 +37,11 @@ class Bobbit(object):
     def connect(self):
         ''' Connect to IRC server, authorize, register, and identify '''
         self.logger.info('Connecting to %s:%d', self.host, self.port)
-        self.tcp_stream  = yield self.tcp_client.connect(self.host, self.port)
+
+        # Connect to IRC server
+        self.tcp_client = tornado.tcpclient.TCPClient()
+        self.tcp_stream = yield self.tcp_client.connect(self.host, self.port)
+        self.tcp_stream.set_close_callback(lambda: sys.exit(1))
 
         # Send connection password (e.g. Slack)
         if self.password.startswith('CONN:'):
@@ -66,10 +57,18 @@ class Bobbit(object):
         self.logger.info('Registering as %s', self.nick)
         self.send('NICK {}'.format(self.nick))
 
+        # Add handlers
+        self.handlers   = [
+            (self.PING_RE    , self.handle_ping),
+            (self.CHANMSG_RE , self.handle_channel_message),
+            (self.PRIVMSG_RE , self.handle_private_message),
+            (self.REGISTER_RE, self.handle_registration),
+        ]
+
         # Start reading
         self.recv_message(b'')
 
-    # Send / receive messages --------------------------------------------------
+    # Send / Receive Messages --------------------------------------------------
 
     @tornado.gen.coroutine
     def send(self, message):
@@ -96,20 +95,6 @@ class Bobbit(object):
     def send_notice(self, message, nick=None, channel=None):
         self.send_command('NOTICE', message, nick, channel)
 
-    def send_response(self, response, nick=None, channel=None, notice=False):
-        if response is None or (nick is None and channel is None):
-            return
-
-        if isinstance(response, str):
-            if notice:
-                self.send_notice(response, nick, channel)
-            else:
-                response = self.format_response(response, nick, channel)
-                self.send_message(response, nick, channel)
-        else:
-            for r in response:
-                self.send_response(r, nick, channel, notice)
-
     def recv_message(self, message):
         # Receive message
         message = message.decode().rstrip()
@@ -127,19 +112,14 @@ class Bobbit(object):
         # Wait for next message
         self.tcp_stream.read_until(b'\n', self.recv_message)
 
+    def format_response(self, response, nick=None, channel=None):
+        return '{}{}: {}'.format(self.nick_prefix, nick, response) if channel else response
+
     # Handlers -----------------------------------------------------------------
 
     def handle_ping(self, payload):
         self.logger.debug('Handling PING: %s', payload)
         self.send('PONG {}'.format(payload))
-
-    def handle_channel_message(self, nick, channel, message):
-        self.logger.debug('Handling Channel Message: %s | %s | %s', channel, nick, message)
-        self.process_command(nick, message, channel)
-
-    def handle_private_message(self, nick, message):
-        self.logger.debug('Handling Private Message: %s | %s', nick, message)
-        self.process_command(nick, message)
 
     def handle_registration(self, server):
         # Identify
@@ -155,6 +135,96 @@ class Bobbit(object):
         for channel in self.channels:
             self.logger.info('Joining %s', channel)
             self.send('JOIN {}'.format(channel))
+
+# Slack Client -----------------------------------------------------------------
+
+class SlackClient(object):
+    API_DOMAIN = 'https://api.slack.com'
+
+    @tornado.gen.coroutine
+    def connect(self):
+        self.channels = {}
+
+        self.url = None
+        http_uri = '{}/api/rtm.connect?token={}'.format(self.API_DOMAIN, self.token)
+        self.logger.info('Retrieving websocket URL from: %s', http_uri)
+
+        while not self.url:
+            response = yield tornado.httpclient.AsyncHTTPClient().fetch(http_uri)
+            data     = json.loads(response.body)
+            if data['ok']:
+                self.url = data['url']
+                self.id  = data['self']['id']
+
+        self.logger.info('Connecting to websocket: %s', self.url)
+        self.ws      = yield tornado.websocket.websocket_connect(self.url)
+        self.counter = itertools.count()
+
+        self.process_messages()
+
+    @tornado.gen.coroutine
+    def process_messages(self):
+        while True:
+            message = yield self.ws.read_message()
+            self.logger.debug('RECV: %s', message)
+            if message is None:
+                break
+
+            message = json.loads(message)
+            try:
+                if message['type'] == 'message':
+                    self.handle_channel_message(message['user'], message['channel'], message['text'])
+            except KeyError:
+                pass
+
+        self.connect()
+
+    def send_notice(self, message, nick=None, channel=None):
+        self.send_message(message, nick, channel)
+
+    def send_message(self, message, nick=None, channel=None):
+        if channel.startswith('#'):
+            channel = self.get_channel(channel)
+
+        self.ws.write_message(json.dumps({
+            'id'        : next(self.counter),
+            'type'      : 'message',
+            'channel'   : channel,
+            'text'      : message,
+        }))
+
+    def format_response(self, response, nick=None, channel=None):
+        if channel and channel.startswith('C'):
+            return '<{}{}>: {}'.format(self.nick_prefix, nick, response)
+        else:
+            return response
+
+    def get_channel(self, channel):
+        if channel not in self.channels:
+            http_uri = '{}/api/channels.list?exclude_archived=true&exclude_members=true&token={}'.format(self.API_DOMAIN, self.token)
+            response = tornado.httpclient.HTTPClient().fetch(http_uri) # TODO: Async?
+            data     = json.loads(response.body)
+            if data['ok']:
+                for c in data['channels']:
+                    self.channels['#' + c['name']] = c['id']
+
+        try:
+            return self.channels[channel]
+        except KeyError:
+            return channel
+
+# Bobbit -----------------------------------------------------------------------
+
+class Bobbit(object):
+
+    def __init__(self, config_dir=None, **kwargs):
+        self.logger      = logging.getLogger()
+        self.modules     = {}
+        self.commands    = []
+        self.timers      = []
+
+        self.load_configuration(config_dir)
+        self.load_modules()
 
     # Modules ------------------------------------------------------------------
 
@@ -217,16 +287,35 @@ class Bobbit(object):
         self.commands = [(re.compile(p), c) for p, c in commands]
         self.timers   = timers
 
+    # Handlers -----------------------------------------------------------------
+
+    def handle_channel_message(self, nick, channel, message):
+        self.logger.debug('Handling Channel Message: %s | %s | %s', channel, nick, message)
+        self.process_command(nick, message, channel)
+
+    def handle_private_message(self, nick, message):
+        self.logger.debug('Handling Private Message: %s | %s', nick, message)
+        self.process_command(nick, message)
+
     def process_command(self, nick, message, channel=None):
         for pattern, callback in self.commands:
             match = pattern.match(message)
             if match:
                 callback(self, nick, message, channel, **match.groupdict())
 
-    # Utilities ----------------------------------------------------------------
+    def send_response(self, response, nick=None, channel=None, notice=False):
+        if response is None or (nick is None and channel is None):
+            return
 
-    def format_response(self, response, nick=None, channel=None):
-        return '{}{}: {}'.format(self.nick_prefix, nick, response) if channel else response
+        if isinstance(response, str):
+            if notice:
+                self.send_notice(response, nick, channel)
+            else:
+                response = self.format_response(response, nick, channel)
+                self.send_message(response, nick, channel)
+        else:
+            for r in response:
+                self.send_response(r, nick, channel, notice)
 
     # Configuration ------------------------------------------------------------
 
@@ -245,20 +334,28 @@ class Bobbit(object):
         self.logger.info('Configuration Path:      %s', self.config_path)
         self.logger.info('Modules Path:            %s', self.modules_dir)
 
-        self.host        = config.get('host'       , 'irc.freenode.net')
-        self.port        = config.get('port'       , 6667)
-        self.owner       = config.get('owner'      , getpass.getuser())
         self.nick        = config.get('nick'       , 'bobbit')
         self.nick_prefix = config.get('nick_prefix', '')
-        self.password    = config.get('password'   , '')
-        self.channels    = config.get('channels'   , [])
+        self.owner       = config.get('owner'      , getpass.getuser())
 
-        self.logger.info('IRC Server:         %s:%d', self.host, self.port)
-        self.logger.info('IRC Owner:          %s'   , self.owner)
-        self.logger.info('IRC Nick:           %s'   , self.nick)
-        self.logger.info('IRC Nick Prefix:    %s'   , self.nick_prefix)
-        self.logger.info('IRC Password:       %s'   , self.password)
-        self.logger.info('IRC Channels:       %s'   , ', '.join(self.channels))
+        self.logger.info('Nick:           %s', self.nick)
+        self.logger.info('Nick Prefix:    %s', self.nick_prefix)
+        self.logger.info('Owner:          %s', self.owner)
+
+        if config.get('token', None):
+            self.__class__  = type('SlackBobbit', (Bobbit, SlackClient), {})
+            self.token       = config.get('token'   , '')
+            self.logger.info('Token:          %s'   , self.token)
+        else:
+            self.__class__  = type('IRCBobbit', (Bobbit, IRCClient), {})
+            self.host        = config.get('host'    , 'irc.freenode.net')
+            self.port        = config.get('port'    , 6667)
+            self.password    = config.get('password', '')
+            self.channels    = config.get('channels', [])
+
+            self.logger.info('Server:         %s:%d', self.host, self.port)
+            self.logger.info('Password:       %s'   , self.password)
+            self.logger.info('Channels:       %s'   , ', '.join(self.channels))
 
     # Run ----------------------------------------------------------------------
 
