@@ -195,7 +195,10 @@ class SlackClient(object):
 
     def format_response(self, response, nick=None, channel=None):
         if channel and channel.startswith('C'):
-            return '<{}{}>: {}'.format(self.nick_prefix, nick, response)
+            if nick.startswith(self.nick_prefix) or nick.startswith('<'):
+                return '{}: {}'.format(nick, response)
+            else:
+                return '<{}{}>: {}'.format(self.nick_prefix, nick, response)
         else:
             return response
 
