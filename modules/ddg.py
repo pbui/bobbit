@@ -31,13 +31,13 @@ DDG_RX  = '.*result__url.*uddg=([^"]*)">'
 def command(bot, nick, message, channel, query=None):
     params = {'q': query, 's': 0}
     url    = DDG_URL + '?' + urlencode(params)
-    client = tornado.httpclient.HTTPClient()
+    client = tornado.httpclient.AsyncHTTPClient()
     result = yield tornado.gen.Task(client.fetch, url)
     try:
         urls     = [unquote(url)
                     for url in re.findall(DDG_RX, result.body.decode())
                     if 'y.js' not in url]
-        response = shorten_url(urls[0])
+        response = yield shorten_url(urls[0])
     except (IndexError, ValueError):
         response = 'No results'
 

@@ -36,7 +36,7 @@ def command(bot, nick, message, channel, query=None):
 
     try:
         urls     = re.findall(b'/url\?q=([^&]*)', result.body)
-        response = shorten_url(unquote(urls[0].decode()))
+        response = yield shorten_url(unquote(urls[0].decode()))
     except (IndexError, ValueError) as e:
         bot.logger.warn(e)
         response = 'No results'

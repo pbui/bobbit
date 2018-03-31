@@ -47,7 +47,7 @@ def command(bot, nick, message, channel, subreddit, query=''):
                 continue
 
             response = 'From {} - {}{} @ {}'.format(subreddit, nsfw, title, url)
-            shorturl = shorten_url(url)
+            shorturl = yield shorten_url(url)
             if url != shorturl:
                 response += ' || ' + shorturl
             break

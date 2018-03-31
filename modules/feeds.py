@@ -43,7 +43,7 @@ def timer(bot):
             for entry in entries:
                 title    = entry['title'].replace('\r', ' ').replace('\n', ' ')
                 key      = entry['link'].encode('ascii', 'ignore')
-                link     = shorten_url(entry['link'])
+                link     = yield shorten_url(entry['link'])
                 author   = entry['author']
                 channels = entry['channels']
                 message  = TEMPLATE.format(feed=feed, title=title, link=link, author=author)

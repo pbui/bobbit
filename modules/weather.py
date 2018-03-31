@@ -56,7 +56,7 @@ def command(bot, nick, message, channel, zipcode=None):
         'units': 'imperial',
     }
     url    = OWM_URL + '?' + urlencode(params)
-    client = tornado.httpclient.HTTPClient()
+    client = tornado.httpclient.AsyncHTTPClient()
     result = yield tornado.gen.Task(client.fetch, url)
 
     try:

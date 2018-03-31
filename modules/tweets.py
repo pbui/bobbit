@@ -29,8 +29,6 @@ TEMPLATE = 'From "{user}" twitter: {text}'
 
 @tornado.gen.coroutine
 def timer(bot):
-    from modules.__common__ import shorten_url
-
     # Execute tweets script
     bot.logger.info('Executing %s', __file__)
     command = ['python3', __file__, '--config-dir={}'.format(bot.config_dir)]
