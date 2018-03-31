@@ -182,9 +182,10 @@ class SlackClient(object):
     def send_notice(self, message, nick=None, channel=None):
         self.send_message(message, nick, channel)
 
+    @tornado.gen.coroutine
     def send_message(self, message, nick=None, channel=None):
         if channel.startswith('#'):
-            channel = self.get_channel(channel)
+            channel = yield self.get_channel(channel)
 
         self.ws.write_message(json.dumps({
             'id'        : next(self.counter),
@@ -202,10 +203,11 @@ class SlackClient(object):
         else:
             return response
 
+    @tornado.gen.coroutine
     def get_channel(self, channel):
         if channel not in self.channels:
             http_uri = '{}/api/channels.list?exclude_archived=true&exclude_members=true&token={}'.format(self.API_DOMAIN, self.token)
-            response = tornado.httpclient.HTTPClient().fetch(http_uri) # TODO: Async?
+            response = yield tornado.httpclient.AsyncHTTPClient().fetch(http_uri)
             data     = json.loads(response.body)
             if data['ok']:
                 for c in data['channels']:
