@@ -5,20 +5,21 @@
 NAME    = 'suggest'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = '^!suggest (?P<target>[-\w]*) (?P<suggestion>.*)'
+PATTERN = '^!suggest (?P<target>[-\w#]*) (?P<suggestion>.*)'
 USAGE   = '''Usage: !suggest <channel> <message>
 This anonymously sends a message to the specified channel.
 Example:
-    > !suggest cse-40175-sp18 what about bob?
+    > !suggest #cse-40175-fa18 what about bob?
 '''
 
 # Constants --------------------------------------------------------------------
 
-CHANNELS = ('cse-40175-sp18', 'cse-40850-sp18')
+CHANNELS = ('cse-40175-fa18',)
 
 # Command ----------------------------------------------------------------------
 
 def command(bot, nick, message, channel, target, suggestion):
+    target = target[1:] if target.startswith('#') else target
     if target in CHANNELS:
         bot.logger.info('Anonymous message from %s: %s', nick, message)
         bot.send_response(suggestion, 'anonymous', '#' + target)
