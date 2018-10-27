@@ -284,6 +284,15 @@ class Bobbit(object):
                         timer   = tornado.ioloop.PeriodicCallback(partial, timeout*1000)
                         timer.start()
                         timers.append(timer)
+                elif module.TYPE == {'command', 'timer'} and module.ENABLE:
+                    self.logger.info('Enabling %s command and timer', module_name)
+                    command_info, timer_info = module.register(self)
+                    commands.extend(command_info)
+                    for timeout, timer in timer_info:
+                        partial = functools.partial(timer, self)
+                        timer   = tornado.ioloop.PeriodicCallback(partial, timeout*1000)
+                        timer.start()
+                        timers.append(timer)
             except Exception as e:
                 self.logger.warning('Failed to enable module %s: %s', module_name, e)
 
