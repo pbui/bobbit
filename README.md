@@ -13,8 +13,34 @@ The previous ad-hoc version can be found at
 - [PyYAML]
 
 ## Configuration
+Bobbit requires a configuration YAML file to run, which should be in the
+directory specified by `config-dir` (default: `~/.config/bobbit`). An example
+config file looks like this:
+
+```
+nick:       "bobbit"
+password:   <password>
+owner:      <owner>
+host:       <irc server>
+port:       6667
+channels:
+    - <channel>
+```
+
+The following modules also require configuration files (in `config-dir`):
+- lookup: requires `lookup.yaml`. Here's an example:
+  ```
+  cool kids:
+  - I wish that I could be like the cool kids \\ 'Cause all the cool kids, they seem to fit in
+  ```
+- weather: requires `weather.yaml`. Here's an example:
+  ```
+  appid:      <api-key>
+  default:    <zipcode>
+  ```
 
 ## Execution
+Just run `bobbit.py`. Optionally, you can specify `config-dir`.
 
 [Python]:   https://python.org
 [Tornado]:  http://www.tornadoweb.org/en/stable/
