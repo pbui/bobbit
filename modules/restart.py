@@ -1,11 +1,11 @@
-# restart.py -------------------------------------------------------------------
+# restart.py
 
 import os
 import random
 import sys
 import time
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'restart'
 ENABLE  = True
@@ -15,7 +15,7 @@ Given one of these two commands, the bot will either restart the entire process
 or reload the bot modules.
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 RELOAD_MESSAGES = (
     "I'm... back!",
@@ -25,7 +25,7 @@ RELOAD_MESSAGES = (
 
 RESTART_TIMEOUT = 5
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def reload_command(bot, nick, message, channel, question=None):
     if nick != bot.owner:
@@ -44,7 +44,7 @@ def restart_command(bot, nick, message, channel, question=None):
     time.sleep(RESTART_TIMEOUT)
     os.execvp(sys.argv[0], sys.argv)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
@@ -52,4 +52,4 @@ def register(bot):
         ('^!reload$' , reload_command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

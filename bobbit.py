@@ -20,18 +20,19 @@ import tornado.options
 import tornado.tcpclient
 import tornado.websocket
 
-# IRC Client -------------------------------------------------------------------
+# IRC Client
 
 class IRCClient(object):
     ''' IRC Client '''
 
-    # Regular Expressions ------------------------------------------------------
+    # Regular Expressions
+
     PING_RE     = re.compile(r'^PING (?P<payload>.*)')
     CHANMSG_RE  = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+(?P<channel>#+[-\w]+)\s+:(?P<message>[^\n\r]+)')
     PRIVMSG_RE  = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+[^#][^:]+:(?P<message>[^\n\r]+)')
     REGISTER_RE = re.compile(r':(?P<server>.*?)\s+(?:376|422)')
 
-    # Connect ------------------------------------------------------------------
+    # Connect
 
     @tornado.gen.coroutine
     def connect(self):
@@ -68,7 +69,7 @@ class IRCClient(object):
         # Start reading
         self.recv_message(b'')
 
-    # Send / Receive Messages --------------------------------------------------
+    # Send / Receive Messages
 
     @tornado.gen.coroutine
     def send(self, message):
@@ -115,7 +116,7 @@ class IRCClient(object):
     def format_response(self, response, nick=None, channel=None):
         return '{}{}: {}'.format(self.nick_prefix, nick, response) if channel else response
 
-    # Handlers -----------------------------------------------------------------
+    # Handlers
 
     def handle_ping(self, payload):
         self.logger.debug('Handling PING: %s', payload)
@@ -136,7 +137,7 @@ class IRCClient(object):
             self.logger.info('Joining %s', channel)
             self.send('JOIN {}'.format(channel))
 
-# Slack Client -----------------------------------------------------------------
+# Slack Client
 
 class SlackClient(object):
     API_DOMAIN = 'https://api.slack.com'
@@ -187,12 +188,17 @@ class SlackClient(object):
         if channel.startswith('#'):
             channel = yield self.get_channel(channel)
 
-        self.ws.write_message(json.dumps({
-            'id'        : next(self.counter),
-            'type'      : 'message',
-            'channel'   : channel,
-            'text'      : message,
-        }))
+        try:
+            self.ws.write_message(json.dumps({
+                'id'        : next(self.counter),
+                'type'      : 'message',
+                'channel'   : channel,
+                'text'      : message,
+            }))
+        except AttributeError:
+            self.logger.info('Disconnect detected, exiting...')
+            self.connect()
+            self.send_message(message, nick, channel)
 
     def format_response(self, response, nick=None, channel=None):
         if channel and channel.startswith('C'):
@@ -218,7 +224,7 @@ class SlackClient(object):
         except KeyError:
             return channel
 
-# Bobbit -----------------------------------------------------------------------
+# Bobbit
 
 class Bobbit(object):
 
@@ -231,7 +237,7 @@ class Bobbit(object):
         self.load_configuration(config_dir)
         self.load_modules()
 
-    # Modules ------------------------------------------------------------------
+    # Modules
 
     def load_modules(self):
         self.logger.info('Importing modules from %s', self.modules_dir)
@@ -292,7 +298,7 @@ class Bobbit(object):
         self.commands = [(re.compile(p), c) for p, c in commands]
         self.timers   = timers
 
-    # Handlers -----------------------------------------------------------------
+    # Handlers
 
     def handle_channel_message(self, nick, channel, message):
         self.logger.debug('Handling Channel Message: %s | %s | %s', channel, nick, message)
@@ -322,7 +328,7 @@ class Bobbit(object):
             for r in response:
                 self.send_response(r, nick, channel, notice)
 
-    # Configuration ------------------------------------------------------------
+    # Configuration
 
     def load_configuration(self, config_dir=None):
         ''' Load configuration from YAML file '''
@@ -362,13 +368,13 @@ class Bobbit(object):
             self.logger.info('Password:       %s'   , self.password)
             self.logger.info('Channels:       %s'   , ', '.join(self.channels))
 
-    # Run ----------------------------------------------------------------------
+    # Run
 
     def run(self):
         self.connect()
         tornado.ioloop.IOLoop.current().start()
 
-# Main Execution ---------------------------------------------------------------
+# Main Execution
 
 if __name__ == '__main__':
     tornado.options.define('config_dir', default=None,  help='Configuration directory')

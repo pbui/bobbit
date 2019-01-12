@@ -1,8 +1,8 @@
-# interject.py -----------------------------------------------------------------
+# interject.py
 
 import tornado.gen
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'interject'
 ENABLE  = True
@@ -17,21 +17,21 @@ Example:
     Linux. 
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 TEMPLATE = "I'd just like to interject for a moment. What you’re referring to as {first}, is in fact, {second}/{first}, or as I’ve recently taken to calling it, {second} plus {first}."
 
-# Command ----------------------------------------------------------------------
+# Command
 
 @tornado.gen.coroutine
 def command(bot, nick, message, channel, first='Linux', second='GNU'):
     bot.send_response(TEMPLATE.format(first=first, second=second), nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

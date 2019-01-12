@@ -1,4 +1,4 @@
-# urbandictionary.py -----------------------------------------------------------
+# urbandictionary.py
 
 from urllib.parse import urlencode
 
@@ -7,7 +7,7 @@ import json
 import tornado.gen
 import tornado.httpclient
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'urbandictionary'
 ENABLE  = True
@@ -19,12 +19,12 @@ Example:
     > !ud pancakes
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 UD_URL      = 'http://api.urbandictionary.com/v0/define'
 UD_TEMPLATE = '"{word}" is {definition}; an example is: "{example}" @ {url}'
 
-# Command ----------------------------------------------------------------------
+# Command
 
 @tornado.gen.coroutine
 def command(bot, nick, message, channel, query=None):
@@ -47,11 +47,11 @@ def command(bot, nick, message, channel, query=None):
 
     bot.send_response(response, nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

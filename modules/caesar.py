@@ -1,8 +1,8 @@
-# caesar.py --------------------------------------------------------------------
+# caesar.py
 
 import string
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'caesar'
 ENABLE  = True
@@ -15,7 +15,7 @@ Example:
     Irqv, irav, ivpv
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 SOURCE  = string.ascii_lowercase
 TARGET  = SOURCE[13:] + SOURCE[:13]
@@ -23,16 +23,16 @@ SOURCE += SOURCE.upper()
 TARGET += TARGET.upper()
 CIPHER  = str.maketrans(SOURCE, TARGET)
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel, phrase):
     bot.send_response(phrase.translate(CIPHER), nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

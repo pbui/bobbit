@@ -1,4 +1,4 @@
-# duckhunt.py ------------------------------------------------------------------
+# duckhunt.py
 
 import random
 import re
@@ -6,7 +6,7 @@ import time
 
 import tornado.ioloop
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'duckhunt'
 ENABLE  = False
@@ -16,11 +16,11 @@ USAGE   = '''Usage: N/A
 This module snipes ducks from gonzobot.
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 SNIPES = ('.bef', '.bang')
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel):
     if nick != 'gonzobot':
@@ -30,11 +30,11 @@ def command(bot, nick, message, channel):
         time.time() + random.randint(1, 5),
         lambda: bot.send_message(random.choice(SNIPES), None, channel))
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

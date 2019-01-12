@@ -1,8 +1,8 @@
-# leetspeak.py -----------------------------------------------------------------
+# leetspeak.py
 
 import random
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'leetspeak'
 ENABLE  = True
@@ -15,7 +15,7 @@ Example:
     n07r3 d4m3
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 # Mapping from http://en.wikipedia.org/wiki/Leet
 
@@ -27,7 +27,7 @@ _O = ('o', '0', '0', '0', '()')
 _S = ('s', '5', '5', '$', 'z')
 _T = ('t', '7', '+', '7', '+')
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel, phrase):
     response = phrase.lower().strip()\
@@ -40,11 +40,11 @@ def command(bot, nick, message, channel, phrase):
                      .replace('t', random.choice(_T))
     bot.send_response(response, nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

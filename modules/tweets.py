@@ -1,4 +1,4 @@
-# tweets.py --------------------------------------------------------------------
+# tweets.py
 
 import dbm.gnu
 import collections
@@ -18,14 +18,14 @@ import tornado.httpclient
 import tornado.options
 import tornado.process
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME     = 'tweets'
 ENABLE   = True
 TYPE     = 'timer'
 TEMPLATE = 'From "{user}" twitter: {text}'
 
-# Timer ------------------------------------------------------------------------
+# Timer
 
 @tornado.gen.coroutine
 def timer(bot):
@@ -46,7 +46,7 @@ def timer(bot):
             for channel in channels:
                 bot.send_message(message, channel=channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     config_path   = os.path.join(bot.config_dir, 'tweets.yaml')
@@ -57,7 +57,7 @@ def register(bot):
         (timeout, timer),
     )
 
-# Script -----------------------------------------------------------------------
+# Script
 
 def script(config_dir):
     # Open configuration
@@ -136,7 +136,7 @@ def script(config_dir):
     # Dump entries as JSON
     json.dump(entries, sys.stdout)
 
-# Utilities --------------------------------------------------------------------
+# Utilities
 
 def strip_html(s):
     try:
@@ -144,7 +144,7 @@ def strip_html(s):
     except lxml.etree.XMLSyntaxError:
         return s
 
-# Main Execution ---------------------------------------------------------------
+# Main Execution
 
 if __name__ == '__main__':
     tornado.options.define('config_dir', default=None,  help='Configuration directory')
@@ -156,4 +156,4 @@ if __name__ == '__main__':
     except Exception as e:
         logging.getLogger().warn(e)
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

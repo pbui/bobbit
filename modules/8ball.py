@@ -1,8 +1,8 @@
-# 8ball.py ---------------------------------------------------------------------
+# 8ball.py
 
 import random
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = '8ball'
 ENABLE  = True
@@ -15,7 +15,7 @@ Example:
     Don't count on it
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 RESPONSES = (
     (   # Affirmative
@@ -47,17 +47,17 @@ RESPONSES = (
     )
 )
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel, question=None):
     response = random.choice(random.choice(RESPONSES))
     bot.send_response(response, nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

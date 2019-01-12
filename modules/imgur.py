@@ -1,4 +1,4 @@
-# imgr.py ----------------------------------------------------------------------
+# imgr.py
 
 import random
 import re
@@ -6,7 +6,7 @@ import re
 import tornado.gen
 import tornado.httpclient
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'imgur'
 ENABLE  = True
@@ -18,7 +18,7 @@ Example:
     > !imgur sad
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 IMGUR_ALBUMS  = {
     'nope'          : 'http://imgur.com/a/JNzjB',
@@ -62,7 +62,7 @@ BAD_RESPONSES = (
     'Bzzt',
 )
 
-# Command ----------------------------------------------------------------------
+# Command
 
 @tornado.gen.coroutine
 def command(bot, nick, message, channel, album=None):
@@ -99,11 +99,11 @@ def command(bot, nick, message, channel, album=None):
 
     bot.send_response(response, nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

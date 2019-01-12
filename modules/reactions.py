@@ -1,8 +1,8 @@
-# reactions.py -----------------------------------------------------------------
+# reactions.py
 
 import random
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'reactions'
 ENABLE  = False
@@ -12,7 +12,7 @@ USAGE   = '''Usage: <phrase>
 This reacts to certain words like hott or yay
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 AGREEMENTS = (
     'totes',
@@ -23,16 +23,16 @@ AGREEMENTS = (
     '\o/',
 )
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel, phrase=None):
     bot.send_message(random.choice(AGREEMENTS), nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:
