@@ -1,4 +1,4 @@
-# feeds.py ---------------------------------------------------------------------
+# feeds.py
 
 import dbm.gnu
 import collections
@@ -16,14 +16,14 @@ import tornado.httpclient
 import tornado.options
 import tornado.process
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME     = 'feeds'
 ENABLE   = True
 TYPE     = 'timer'
 TEMPLATE = 'From "{feed}" feed: {title} by {author} @ {link}'
 
-# Timer ------------------------------------------------------------------------
+# Timer
 
 @tornado.gen.coroutine
 def timer(bot):
@@ -56,7 +56,7 @@ def timer(bot):
                 bot.logger.info('Delivered %s from %s to %s', title, feed, ', '.join(channels))
                 feeds_cache[key] = str(time.time())
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     config_path  = os.path.join(bot.config_dir, 'feeds.yaml')
@@ -67,7 +67,7 @@ def register(bot):
         (timeout, timer),
     )
 
-# Script -----------------------------------------------------------------------
+# Script
 
 def script(config_dir):
     config_path  = os.path.join(config_dir, 'feeds.yaml')
@@ -150,7 +150,7 @@ def script(config_dir):
 
     json.dump(entries, sys.stdout)
 
-# Main Execution ---------------------------------------------------------------
+# Main Execution
 
 if __name__ == '__main__':
     tornado.options.define('config_dir', default=None,  help='Configuration directory')
@@ -162,4 +162,4 @@ if __name__ == '__main__':
     except Exception as e:
         logging.getLogger().warning(e)
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

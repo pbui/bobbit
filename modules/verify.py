@@ -1,4 +1,4 @@
-# verify.py --------------------------------------------------------------------
+# verify.py
 
 import base64
 import hashlib
@@ -7,7 +7,7 @@ import re
 import string
 import time
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'verify'
 ENABLE  = True
@@ -19,7 +19,7 @@ Example:
     > !verify pbui 1cc8de27f54ab8f6ab92706354d483e5e5efc6d1
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 ROT13         = str.maketrans('ABCDEFGHIJKLMabcdefghijklmNOPQRSTUVWXYZnopqrstuvwxyz',
                               'NOPQRSTUVWXYZnopqrstuvwxyzABCDEFGHIJKLMabcdefghijklm')
@@ -35,7 +35,7 @@ FAILURES      = (
     "Segmentation Fault",
 )
 
-# Functions --------------------------------------------------------------------
+# Functions
 
 def cksum(s):
     return hashlib.sha1(s.encode()).hexdigest()
@@ -43,7 +43,7 @@ def cksum(s):
 def rot13(s):
     return str.translate(s, ROT13)
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel, netid, passcode):
     if passcode == cksum(netid):
@@ -57,11 +57,11 @@ def command(bot, nick, message, channel, netid, passcode):
         response = random.choice(FAILURES)
     bot.send_response(response, nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

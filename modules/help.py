@@ -1,6 +1,6 @@
-# help.py -----------------------------------------------------------------------
+# help.py
 
-# Metadata ----------------------------------------------------------------------
+# Metadata
 
 NAME    = 'help'
 ENABLE  = True
@@ -11,7 +11,7 @@ Either list all the modules or provide the usage message for a particular
 module.
 '''
 
-# Command -----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel, module_name=None):
     if not module_name or module_name == 'all':
@@ -23,11 +23,11 @@ def command(bot, nick, message, channel, module_name=None):
             response = module.USAGE.splitlines()
             bot.send_response(response, nick, channel, notice=True)
 
-# Register ----------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: ---------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

@@ -1,9 +1,9 @@
-# greeting.py ------------------------------------------------------------------
+# greeting.py
 
 import random
 import re
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'greeting'
 ENABLE  = True
@@ -14,7 +14,7 @@ Given a greeting such as hi or hello, this module responds with a similar
 greeting.
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 RESPONSES = (
     'hi',
@@ -26,17 +26,17 @@ RESPONSES = (
     'bonjour',
 )
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel, question=None):
     response = random.choice(RESPONSES)
     bot.send_response(response, nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

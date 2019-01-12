@@ -1,4 +1,4 @@
-# weather.py -------------------------------------------------------------------
+# weather.py
 
 '''
 Configuration
@@ -21,7 +21,7 @@ import yaml
 import tornado.gen
 import tornado.httpclient
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'weather'
 ENABLE  = True
@@ -34,7 +34,7 @@ Example:
     > !weather 46556    # Specific zip code
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 OWM_URL   = 'http://api.openweathermap.org/data/2.5/weather'
 OWM_APPID = None
@@ -45,7 +45,7 @@ ZIPCODE   = {
 }
 DEFAULT_ZIPCODE = None
 
-# Command ----------------------------------------------------------------------
+# Command
 
 @tornado.gen.coroutine
 def command(bot, nick, message, channel, zipcode=None):
@@ -69,7 +69,7 @@ def command(bot, nick, message, channel, zipcode=None):
 
     bot.send_response(response, nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     global OWM_APPID, DEFAULT_ZIPCODE
@@ -82,4 +82,4 @@ def register(bot):
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

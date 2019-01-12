@@ -1,9 +1,9 @@
-# __common__.py: ---------------------------------------------------------------
+# __common__.py:
 
 import tornado.httpclient
 import tornado.gen
 
-# Short URLs -------------------------------------------------------------------
+# Short URLs
 
 @tornado.gen.coroutine
 def shorten_url(url):
@@ -19,4 +19,4 @@ def shorten_url(url):
     except AttributeError:
         return url 
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

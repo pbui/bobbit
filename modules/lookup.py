@@ -1,4 +1,4 @@
-# lookup.py -------------------------------------------------------------------
+# lookup.py
 
 '''
 Configuration
@@ -12,7 +12,7 @@ import os
 import random
 import yaml
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'lookup'
 ENABLE  = True
@@ -25,13 +25,13 @@ Example:
     Worst professor ever!
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 LOOKUP_PATH = None
 LOOKUP_DATA = {}
 LOOKUP_TIME = None
 
-# Lookup -----------------------------------------------------------------------
+# Lookup
 
 def lookup_data():
     global LOOKUP_TIME, LOOKUP_DATA
@@ -67,7 +67,7 @@ def lookup(key, data=None):
     else:
         return []
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel, query=None):
     try:
@@ -78,7 +78,7 @@ def command(bot, nick, message, channel, query=None):
 
     bot.send_response(response, nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     global LOOKUP_PATH, LOOKUP_DATA
@@ -90,4 +90,4 @@ def register(bot):
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

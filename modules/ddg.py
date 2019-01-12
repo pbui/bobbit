@@ -1,4 +1,4 @@
-# ddg.py -----------------------------------------------------------------------
+# ddg.py
 
 from urllib.parse import unquote, urlencode
 import re
@@ -8,7 +8,7 @@ from modules.__common__ import shorten_url
 import tornado.gen
 import tornado.httpclient
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'ddg'
 ENABLE  = True
@@ -20,12 +20,12 @@ Example:
     > !ddg who likes short shorts?
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 DDG_URL = 'http://duckduckgo.com/html/'
 DDG_RX  = '.*result__url.*uddg=([^"]*)">'
 
-# Command ----------------------------------------------------------------------
+# Command
 
 @tornado.gen.coroutine
 def command(bot, nick, message, channel, query=None):
@@ -43,11 +43,11 @@ def command(bot, nick, message, channel, query=None):
 
     bot.send_response(response, nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

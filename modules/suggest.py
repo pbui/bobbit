@@ -1,6 +1,6 @@
-# suggest.py -------------------------------------------------------------------
+# suggest.py
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'suggest'
 ENABLE  = True
@@ -12,11 +12,11 @@ Example:
     > !suggest #cse-40175-fa18 what about bob?
 '''
 
-# Constants --------------------------------------------------------------------
+# Constants
 
 CHANNELS = ('cse-40175-fa18',)
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel, target, suggestion):
     target = target[1:] if target.startswith('#') else target
@@ -26,11 +26,11 @@ def command(bot, nick, message, channel, target, suggestion):
     else:
         bot.send_response('Channel {} not allowed'.format(target), nick, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:

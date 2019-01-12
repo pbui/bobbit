@@ -1,6 +1,6 @@
-# give.py ----------------------------------------------------------------------
+# give.py
 
-# Metadata ---------------------------------------------------------------------
+# Metadata
 
 NAME    = 'give'
 ENABLE  = True
@@ -13,16 +13,16 @@ Example:
     bobbit: Don't count on it
 '''
 
-# Command ----------------------------------------------------------------------
+# Command
 
 def command(bot, nick, message, channel, other, phrase=None):
     bot.process_command(other, phrase, channel)
 
-# Register ---------------------------------------------------------------------
+# Register
 
 def register(bot):
     return (
         (PATTERN, command),
     )
 
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python: --------------------------------
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:
