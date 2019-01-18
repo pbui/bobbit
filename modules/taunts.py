@@ -45,6 +45,7 @@ TAUNTS = {
     '23' : 'Raiding party!',
     '24' : 'Dadgum.',
     '25' : 'Eh, smite me.',
+    '26' : 'The wonder, the wonder, the... no!',
     '27' : 'You played two hours to die like this?',
     '28' : 'Yeah, well, you should see the other guy.',
     '29' : 'Roggan',
