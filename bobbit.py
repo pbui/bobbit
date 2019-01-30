@@ -44,11 +44,10 @@ class IRCClient(object):
         self.tcp_stream = yield self.tcp_client.connect(self.host, self.port)
         self.tcp_stream.set_close_callback(lambda: sys.exit(1))
 
-        # Send connection password (e.g. Slack)
-        if self.password.startswith('CONN:'):
-            password = self.password[5:]
-            self.logger.info('Sending Connection Password: %s', password)
-            self.send('PASS {}'.format(password))
+        # Send connection password (e.g. Twitch)
+        if self.password.startswith('oauth:'):
+            self.logger.info('Sending Connection Password: %s', self.password)
+            self.send('PASS {}'.format(self.password))
 
         # Authorize
         self.logger.info('Authorizing as %s', self.nick)
