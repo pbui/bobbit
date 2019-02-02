@@ -31,16 +31,16 @@ def command(bot, nick, message, channel, command=None):
 
     global PollData
     global PollNicks
-    if command == 'start':
+    if command in ('start', 'open', 'begin'):
         PollData  = collections.defaultdict(int)
         PollNicks = set()
 
         response = 'Starting poll...'
         bot.send_message(response, channel=channel)
         bot.suppress_taunts = True
-    elif command == 'stop':
+    elif command in ('stop', 'close', 'end'):
         n = sum(PollData.values())
-        d = ['{} ({:0.2f}%)'.format(k, v *100.0/ n) for k,v in PollData.items()]
+        d = ['{} ({}: {:0.2f}%)'.format(k, v, v *100.0/ n) for k,v in sorted(PollData.items())]
         response = 'Results: ' + ', '.join(d)
         bot.send_message(response, channel=channel)
         bot.suppress_taunts = False
