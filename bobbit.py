@@ -45,7 +45,7 @@ class IRCClient(object):
         self.tcp_stream.set_close_callback(lambda: sys.exit(1))
 
         # Send connection password (e.g. Twitch)
-        if self.password.startswith('oauth:'):
+        if self.password.startswith('oauth:'):      # Twitch
             self.logger.info('Sending Connection Password: %s', self.password)
             self.send('PASS {}'.format(self.password))
 
@@ -56,6 +56,12 @@ class IRCClient(object):
         # Register
         self.logger.info('Registering as %s', self.nick)
         self.send('NICK {}'.format(self.nick))
+
+        if self.password.startswith('token:'):    # Mattermost
+            token   = self.password.split(':')[-1]
+            message = 'LOGIN {} token={}'.format(self.nick, token)
+            self.logger.info('Logging in with Token: %s', token)
+            self.send_command('PRIVMSG', message, 'mattermost', None)
 
         # Add handlers
         self.handlers   = [
