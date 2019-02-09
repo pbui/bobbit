@@ -12,16 +12,12 @@ COUNTRX = '^(?P<number>[0-9])$'
 USAGE   = '''Usage: !poll <command>
 This starts and stops a poll and displays a tally.
 Example:
-    > !poll start
+    > !poll start question...
+    Poll: question...
 
     > !poll stop
     Results: 1 (50%) 2 (50%)
 '''
-
-# Globals
-
-PollData  = collections.defaultdict(int)
-PollNicks = set()
 
 # Command
 
@@ -29,32 +25,31 @@ def command(bot, nick, message, channel, command=None):
     if nick != bot.owner:
         return
 
-    global PollData
-    global PollNicks
-    if command in ('start', 'open', 'begin'):
-        PollData  = collections.defaultdict(int)
-        PollNicks = set()
+    try:
+        command, question = command.split(' ', 1)
+    except ValueError:
+        pass
 
-        response = 'Starting poll...'
+    if command in ('start', 'open', 'begin'):
+        bot.poll_votes = {}
+
+        response = 'Starting poll: {}'.format(question)
         bot.send_message(response, channel=channel)
         bot.suppress_taunts = True
     elif command in ('stop', 'close', 'end'):
-        n = sum(PollData.values())
-        d = ['{} ({}: {:0.2f}%)'.format(k, v, v *100.0/ n) for k,v in sorted(PollData.items())]
+        c = collections.Counter(bot.poll_votes.values())
+        d = ['{} ({}: {:0.2f}%)'.format(k, v, v *100.0/ len(c)) for k,v in sorted(c.items())]
         response = 'Results: ' + ', '.join(d)
         bot.send_message(response, channel=channel)
         bot.suppress_taunts = False
 
 def count(bot, nick, message, channel, number=None):
-    if not number or nick in PollNicks:
-        return
-
-    PollData[number] += 1
-    PollNicks.add(nick)
+    bot.poll_votes[nick] = number
 
 # Register
 
 def register(bot):
+    bot.poll_votes = {}
     return (
         (PATTERN, command),
         (COUNTRX, count),
