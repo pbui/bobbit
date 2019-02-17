@@ -65,13 +65,13 @@ TAUNTS = {
 
 def command(bot, nick, message, channel, taunt):
     response = TAUNTS.get(taunt, None)
-    if response and not bot.suppress_taunts:
+    if response and not channel in bot.suppress_taunts:
         bot.send_message(response, None if channel else nick, channel)
 
 # Register
 
 def register(bot):
-    bot.suppress_taunts = False
+    bot.suppress_taunts = set()
     return (
         (PATTERN, command),
     )
