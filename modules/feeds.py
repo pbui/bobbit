@@ -92,7 +92,7 @@ def script(config_dir):
         request = tornado.httpclient.HTTPRequest(feed_url, request_timeout=10)
         try:
             result = client.fetch(request)
-        except tornado.httpclient.HTTPError as e:
+        except Exception as e:
             logger.warning(e)
             continue
 
