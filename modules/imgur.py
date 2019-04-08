@@ -74,7 +74,7 @@ def command(bot, nick, message, channel, album=None):
     client   = tornado.httpclient.AsyncHTTPClient()
     result   = yield tornado.gen.Task(client.fetch, url)
     text     = result.body.decode()
-    images   = re.findall('<div id="([^"]+)" class="post">', text)
+    images   = re.findall('<div id="([^"]+)" class="post', text)
     response = None
 
     if images:
