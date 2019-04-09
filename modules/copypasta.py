@@ -1,16 +1,27 @@
 #!/usr/bin/env python3
 
-# reddit.py
-# gets info abt subreddits
+# copypasta.py
+# module for bobbit that pulls posts from r/copypasta
+# i don't claim any responsibility for the content of the posts
 # Gavin Inglis
-# 2 20 2019
 
 import os
 import requests
 import random
+import re
 
-# Functions
+# Metadata
+
+NAME    = 'copypasta'
+ENABLE  = True
+TYPE    = 'command'
+PATTERN = re.compile('^!copypasta$')
 URL = 'https://www.reddit.com/r/copypasta/.json'
+USAGE   = '''Usage: !copypasta
+Displays a random post from r/copypasta\n
+WARNING: can be pretty offcolor. Use at your own discretion
+'''
+# Functions
 
 def get_pasta(url=URL):
 	''' Load reddit data from specified URL into dictionary '''
@@ -19,15 +30,26 @@ def get_pasta(url=URL):
 	response = requests.get(url, headers=headers)
 	data = response.json()
 
-	text = []
+	pastas = []
 	for i in range(0,len(data['data']['children'])):
-		# get relevent info from data
+		# ignore empty result
 		if len(data['data']['children'][i]['data']['selftext']) == 0:
 			continue
-		text.append(data['data']['children'][i]['data']['selftext'])
+		pastas.append(data['data']['children'][i]['data']['selftext'])
 
-	return random.choice(text)
+	return random.choice(pastas)
 
-# Main Execution
-result = get_pasta(URL)
-print(result)
+# def command(bot, nick, message, channel, URL):
+#     response = get_pasta(URL)
+#     if response and not channel in bot.suppress_taunts:
+#         bot.send_message(response, None if channel else nick, channel)
+
+# # Register
+
+# def register(bot):
+#     bot.suppress_taunts = set()
+#     return (
+#         (PATTERN, command),
+#     )
+res = get_pasta(URL)
+print(res)
