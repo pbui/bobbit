@@ -39,8 +39,8 @@ def get_pasta(url=URL):
 
 	return random.choice(pastas)
 
-def command(bot, nick, message, channel, URL):
-    response = get_pasta(URL)
+def command(bot, nick, message, channel, url=URL):
+    response = get_pasta(url)
     if response and not channel in bot.suppress_taunts:
         bot.send_message(response, None if channel else nick, channel)
 
@@ -51,5 +51,3 @@ def register(bot):
     return (
         (PATTERN, command),
     )
-# res = get_pasta(URL)
-# print(res)
