@@ -1,14 +1,13 @@
-#!/usr/bin/env python3
-
 # copypasta.py
+
 # module for bobbit that pulls posts from r/copypasta
 # i don't claim any responsibility for the content of the posts
 # Gavin Inglis
 
 import os
-import requests
-import random
 import re
+import random
+
 import tornado.gen
 import tornado.httpclient
 import json
@@ -25,26 +24,6 @@ USAGE   = '''Usage: !copypasta
 Displays a random post from r/copypasta\n
 WARNING: can be pretty offcolor. Use at your own discretion
 '''
-# Functions
-
-# def get_pasta(url=URL):
-# 	# trick reddit w user agent
-# 	headers  = {'user-agent': 'reddit-{}'.format(os.environ.get('USER', 'cse-20289-sp19'))}
-
-# 	client = tornado.httpclient.AsyncHTTPClient()
-# 	result = yield tornado.gen.Task(client.fetch, url)
-# 	for r in json.loads(result.body.decode())['data']['children']:
-# 		print(r)
-
-# 	pastas = []
-# 	for i in range(len(r)):
-# 		# ignore empty result
-# 		if len(r[i]['data']['selftext']) == 0:
-# 			continue
-# 		pastas.append(r[i]['data']['selftext'])
-# 		#print(r[i]['data']['selftext'])
-
-# 	response = random.choice(pastas)
 
 # Command
 
@@ -59,13 +38,18 @@ def command(bot, nick, message, channel, url=URL):
             data  = result['data']
             pasta = data['selftext']
 
+			# ignore long posts b/c irc
+            if(len(pasta) > 120):
+                continue
             pastas.append(pasta)
+
+        response = random.choice(pastas)
 
     except (IndexError, KeyError, ValueError) as e:
         bot.logger.warn(e)
         response = 'No results'
 
-    bot.send_response(random.choice(pastas), None if channel else nick, channel)
+    bot.send_response(response, None if channel else nick, channel)
 
 # Register
 
