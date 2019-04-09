@@ -39,17 +39,17 @@ def get_pasta(url=URL):
 
 	return random.choice(pastas)
 
-# def command(bot, nick, message, channel, URL):
-#     response = get_pasta(URL)
-#     if response and not channel in bot.suppress_taunts:
-#         bot.send_message(response, None if channel else nick, channel)
+def command(bot, nick, message, channel, URL):
+    response = get_pasta(URL)
+    if response and not channel in bot.suppress_taunts:
+        bot.send_message(response, None if channel else nick, channel)
 
-# # Register
+# Register
 
-# def register(bot):
-#     bot.suppress_taunts = set()
-#     return (
-#         (PATTERN, command),
-#     )
-res = get_pasta(URL)
-print(res)
+def register(bot):
+    bot.suppress_taunts = set()
+    return (
+        (PATTERN, command),
+    )
+# res = get_pasta(URL)
+# print(res)
