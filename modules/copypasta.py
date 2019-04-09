@@ -36,7 +36,7 @@ def command(bot, nick, message, channel, url=URL):
     try:
         for result in json.loads(result.body.decode())['data']['children']:
             data  = result['data']
-            pasta = data['selftext']
+            pasta = data['selftext'].replace('\n', ' ')
 
 			# ignore long posts b/c irc
             if(len(pasta) > 120 or len(pasta) < 0):
