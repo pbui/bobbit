@@ -9,6 +9,9 @@ import os
 import requests
 import random
 import re
+import tornado.gen
+import tornado.httpclient
+import json
 
 # Metadata
 
@@ -24,25 +27,45 @@ WARNING: can be pretty offcolor. Use at your own discretion
 '''
 # Functions
 
-def get_pasta(url=URL):
-	# trick reddit w user agent
-	headers  = {'user-agent': 'reddit-{}'.format(os.environ.get('USER', 'cse-20289-sp19'))}
-	response = requests.get(url, headers=headers)
-	data = response.json()
+# def get_pasta(url=URL):
+# 	# trick reddit w user agent
+# 	headers  = {'user-agent': 'reddit-{}'.format(os.environ.get('USER', 'cse-20289-sp19'))}
 
-	pastas = []
-	for i in range(0,len(data['data']['children'])):
-		# ignore empty result
-		if len(data['data']['children'][i]['data']['selftext']) == 0:
-			continue
-		pastas.append(data['data']['children'][i]['data']['selftext'])
+# 	client = tornado.httpclient.AsyncHTTPClient()
+# 	result = yield tornado.gen.Task(client.fetch, url)
+# 	for r in json.loads(result.body.decode())['data']['children']:
+# 		print(r)
 
-	return random.choice(pastas)
+# 	pastas = []
+# 	for i in range(len(r)):
+# 		# ignore empty result
+# 		if len(r[i]['data']['selftext']) == 0:
+# 			continue
+# 		pastas.append(r[i]['data']['selftext'])
+# 		#print(r[i]['data']['selftext'])
 
+# 	response = random.choice(pastas)
+
+# Command
+
+@tornado.gen.coroutine
 def command(bot, nick, message, channel, url=URL):
-    response = get_pasta(url)
-    if response and not channel in bot.suppress_taunts:
-        bot.send_message(response, None if channel else nick, channel)
+    client = tornado.httpclient.AsyncHTTPClient()
+    result = yield tornado.gen.Task(client.fetch, url)
+
+    pastas = []
+    try:
+        for result in json.loads(result.body.decode())['data']['children']:
+            data  = result['data']
+            pasta = data['selftext']
+
+            pastas.append(pasta)
+
+    except (IndexError, KeyError, ValueError) as e:
+        bot.logger.warn(e)
+        response = 'No results'
+
+    bot.send_response(random.choice(pastas), None if channel else nick, channel)
 
 # Register
 
@@ -51,3 +74,4 @@ def register(bot):
     return (
         (PATTERN, command),
     )
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:
