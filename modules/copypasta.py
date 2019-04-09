@@ -18,12 +18,12 @@ NAME    = 'copypasta'
 ENABLE  = True
 TYPE    = 'command'
 PATTERN = re.compile('^!copypasta$')
-URL = 'https://www.reddit.com/r/copypasta/.json'
+URL 	= 'https://www.reddit.com/r/copypasta/.json'
 MIN_LEN = 0
 MAX_LEN = 120
 
 USAGE   = '''Usage: !copypasta
-Displays a random post from r/copypasta\n
+Displays a random post from r/copypasta
 WARNING: can be pretty offcolor. Use at your own discretion
 '''
 
