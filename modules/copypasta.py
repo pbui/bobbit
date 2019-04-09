@@ -24,6 +24,7 @@ MAX_LEN = 120
 
 USAGE   = '''Usage: !copypasta
 Displays a random post from r/copypasta
+
 WARNING: can be pretty offcolor. Use at your own discretion
 '''
 
@@ -40,10 +41,9 @@ def command(bot, nick, message, channel, url=URL):
             data  = result['data']
             pasta = data['selftext'].replace('\n', ' ')
 
-			# ignore long posts b/c irc
-            if(len(pasta) > MAX_LEN or len(pasta) < MIN_LEN):
-                continue
-            pastas.append(pasta)
+	    # Ignore long posts b/c IRC
+            if MIN_LEN < len(pasta) < MAX_LEN:
+                pastas.append(pasta)
 
         response = random.choice(pastas)
 
@@ -59,4 +59,5 @@ def register(bot):
     return (
         (PATTERN, command),
     )
+
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
