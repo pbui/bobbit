@@ -17,6 +17,7 @@ ENABLE  = True
 TYPE    = 'command'
 PATTERN = re.compile('^!copypasta$')
 URL = 'https://www.reddit.com/r/copypasta/.json'
+
 USAGE   = '''Usage: !copypasta
 Displays a random post from r/copypasta\n
 WARNING: can be pretty offcolor. Use at your own discretion
@@ -24,7 +25,6 @@ WARNING: can be pretty offcolor. Use at your own discretion
 # Functions
 
 def get_pasta(url=URL):
-	''' Load reddit data from specified URL into dictionary '''
 	# trick reddit w user agent
 	headers  = {'user-agent': 'reddit-{}'.format(os.environ.get('USER', 'cse-20289-sp19'))}
 	response = requests.get(url, headers=headers)
