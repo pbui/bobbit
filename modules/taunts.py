@@ -34,7 +34,7 @@ TAUNTS = {
     '12' : 'AGH, He rushed.',
     '13' : 'Sure, blame it on your ISP.',
     '14' : 'Start the game already!',
-    '15' : "Don't point that thing at me!'",
+    '15' : "Don't point that thing at me!",
     '16' : 'Enemy sighted!',
     '17' : 'It is good to be the king.',
     '18' : 'Monk! I need a monk!',
