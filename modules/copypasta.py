@@ -39,7 +39,7 @@ def command(bot, nick, message, channel, url=URL):
             pasta = data['selftext']
 
 			# ignore long posts b/c irc
-            if(len(pasta) > 120):
+            if(len(pasta) > 120 or len(pasta) < 0):
                 continue
             pastas.append(pasta)
 
@@ -49,12 +49,11 @@ def command(bot, nick, message, channel, url=URL):
         bot.logger.warn(e)
         response = 'No results'
 
-    bot.send_response(response, None if channel else nick, channel)
+    bot.send_response(response, nick, channel)
 
 # Register
 
 def register(bot):
-    bot.suppress_taunts = set()
     return (
         (PATTERN, command),
     )
