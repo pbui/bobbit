@@ -31,7 +31,6 @@ WARNING: can be pretty offcolor. Use at your own discretion
 
 @tornado.gen.coroutine
 def command(bot, nick, message, channel, url=URL):
-    global MIN_LEN, MAX_LEN
     client = tornado.httpclient.AsyncHTTPClient()
     result = yield tornado.gen.Task(client.fetch, url)
 
@@ -42,7 +41,7 @@ def command(bot, nick, message, channel, url=URL):
             pasta = data['selftext'].replace('\n', ' ')
 
 			# ignore long posts b/c irc
-            if(len(pasta) > 120 or len(pasta) < 0):
+            if(len(pasta) > MAX_LEN or len(pasta) < MIN_LEN):
                 continue
             pastas.append(pasta)
 
