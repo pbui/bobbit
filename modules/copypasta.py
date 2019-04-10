@@ -20,7 +20,7 @@ TYPE    = 'command'
 PATTERN = re.compile('^!copypasta$')
 URL 	= 'https://www.reddit.com/r/copypasta/.json'
 MIN_LEN = 0
-MAX_LEN = 120
+MAX_LEN = 480
 
 USAGE   = '''Usage: !copypasta
 Displays a random post from r/copypasta
