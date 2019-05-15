@@ -5,8 +5,16 @@ import tornado.gen
 
 # Short URLs
 
+BLACKLIST = (
+    'i.redd.it',
+)
+
 @tornado.gen.coroutine
 def shorten_url(url):
+    for b in BLACKLIST:
+        if b in url:
+            return url
+
     request = tornado.httpclient.HTTPRequest(
         url    = 'https://yld.me/url',
         method = 'POST',
