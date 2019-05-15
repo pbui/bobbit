@@ -317,6 +317,7 @@ class Bobbit(object):
         for pattern, callback in self.commands:
             match = pattern.match(message)
             if match:
+                self.logger.debug('MATCHED: %s', pattern)
                 callback(self, nick, message, channel, **match.groupdict())
 
     def send_response(self, response, nick=None, channel=None, notice=False):
