@@ -8,6 +8,7 @@ import json
 import logging
 import os
 import re
+import socket
 import sys
 
 from importlib import reload
@@ -41,8 +42,13 @@ class IRCClient(object):
 
         # Connect to IRC server
         self.tcp_client = tornado.tcpclient.TCPClient()
-        self.tcp_stream = yield self.tcp_client.connect(self.host, self.port)
-        self.tcp_stream.set_close_callback(lambda: sys.exit(1))
+        self.tcp_stream = None
+        while not self.tcp_stream:
+            try:
+                self.tcp_stream = yield self.tcp_client.connect(self.host, self.port)
+                self.tcp_stream.set_close_callback(lambda: sys.exit(1))
+            except socket.gaierror as e:
+                self.tcp_stream = None
 
         # Send connection password (e.g. Twitch)
         if self.password.startswith('oauth:'):      # Twitch
@@ -156,11 +162,14 @@ class SlackClient(object):
         self.logger.info('Retrieving websocket URL from: %s', http_uri)
 
         while not self.url:
-            response = yield tornado.httpclient.AsyncHTTPClient().fetch(http_uri)
-            data     = json.loads(response.body)
-            if data['ok']:
-                self.url = data['url']
-                self.id  = data['self']['id']
+            try:
+                response = yield tornado.httpclient.AsyncHTTPClient().fetch(http_uri)
+                data     = json.loads(response.body)
+                if data['ok']:
+                    self.url = data['url']
+                    self.id  = data['self']['id']
+            except socket.gaierror:
+                continue
 
         self.logger.info('Connecting to websocket: %s', self.url)
         self.ws      = yield tornado.websocket.websocket_connect(self.url)
