@@ -8,8 +8,8 @@ import re
 NAME    = 'lenny'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = re.compile('^[!.][Ll]enny$')
-USAGE   = '''Usage: [!.][Ll]enny
+PATTERN = re.compile('^![Ll]enny$')
+USAGE   = '''Usage: ![Ll]enny
 Displays a Lenny face ( ͡° ͜ʖ ͡°)
 '''
 
