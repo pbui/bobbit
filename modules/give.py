@@ -1,5 +1,7 @@
 # give.py
 
+from modules.__common__ import PrefixedNick
+
 # Metadata
 
 NAME    = 'give'
@@ -13,19 +15,10 @@ Example:
     bobbit: Don't count on it
 '''
 
-# Class
-
-class Nick(str):
-    def __new__(cls, content):
-        self = super().__new__(cls, content)
-        self.prefix = True
-        return self
-
 # Command
 
 def command(bot, nick, message, channel, other, phrase=None):
-    nick = Nick(other)
-    bot.process_command(nick, phrase, channel)
+    bot.process_command(PrefixedNick(other), phrase, channel)
 
 # Register
 

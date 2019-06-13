@@ -3,6 +3,14 @@
 import tornado.httpclient
 import tornado.gen
 
+# Nick Wrapper
+
+class PrefixedNick(str):
+    def __new__(cls, content):
+        self = super().__new__(cls, content)
+        self.prefix = True
+        return self
+
 # Short URLs
 
 BLACKLIST = (
