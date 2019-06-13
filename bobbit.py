@@ -124,8 +124,8 @@ class IRCClient(object):
         # Wait for next message
         self.tcp_stream.read_until(b'\n', self.recv_message)
 
-    def format_response(self, response, nick=None, channel=None):
-        return '{}{}: {}'.format(self.nick_prefix, nick, response) if channel else response
+    def format_response(self, response, nick=None, channel=None, prefix=False):
+        return '{}{}: {}'.format(self.nick_prefix, nick, response) if prefix else response
 
     # Handlers
 
@@ -214,8 +214,8 @@ class SlackClient(object):
             self.connect()
             self.send_message(message, nick, channel)
 
-    def format_response(self, response, nick=None, channel=None):
-        if channel and channel.startswith('C'):
+    def format_response(self, response, nick=None, channel=None, prefix=False):
+        if prefix:
             if nick.startswith(self.nick_prefix) or nick.startswith('<'):
                 return '{}: {}'.format(nick, response)
             else:
@@ -333,11 +333,16 @@ class Bobbit(object):
         if response is None or (nick is None and channel is None):
             return
 
+        try:
+            prefix = nick.prefix
+        except AttributeError:
+            prefix = False
+
         if isinstance(response, str):
             if notice:
                 self.send_notice(response, nick, channel)
             else:
-                response = self.format_response(response, nick, channel)
+                response = self.format_response(response, nick, channel, prefix)
                 self.send_message(response, nick, channel)
         else:
             for r in response:
