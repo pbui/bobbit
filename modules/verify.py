@@ -34,6 +34,12 @@ FAILURES      = (
     "I'm sorry, I'm afraid I can't do that",
     "Segmentation Fault",
 )
+SUCCESSES    = (
+    "Welcome to the Party",
+    "Authentication Verified",
+    "Access Granted",
+    "With great power, comes great responsibility",
+)
 
 # Functions
 
@@ -47,12 +53,16 @@ def rot13(s):
 
 def command(bot, nick, message, channel, netid, passcode):
     if passcode == cksum(netid):
+        '''
         message  = rot13('{}={}'.format(netid, int(time.time()))).encode()
         response = '{} {}! Please tell the ORACLE the following MESSAGE: {}'.format(
             random.choice(GREETINGS).title(),
             netid,
             base64.b64encode(message).decode(),
         )
+        '''
+        response = random.choice(SUCCESSES)
+        bot.verified.add(nick)
     else:
         response = random.choice(FAILURES)
     bot.send_response(response, nick, channel)
@@ -60,6 +70,7 @@ def command(bot, nick, message, channel, netid, passcode):
 # Register
 
 def register(bot):
+    bot.verified = {'U0HK21CP2', 'pbui', 'pnutzh4x0r'}
     return (
         (PATTERN, command),
     )
