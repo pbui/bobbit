@@ -24,31 +24,20 @@ ESPN_TEMPLATE = 'http://www.espn.com/{sport}/bottomline/scores'
 
 @tornado.gen.coroutine
 def command(bot, nick, message, channel, sport):
-    url = ESPN_TEMPLATE.format(sport=sport)
-    client = tornado.httpclient.AsyncHTTPClient()
-    result = yield tornado.gen.Task(client.fetch, url)
+    url      = ESPN_TEMPLATE.format(sport=sport)
+    client   = tornado.httpclient.AsyncHTTPClient()
+    result   = yield tornado.gen.Task(client.fetch, url)
+    response = 'No results'
 
     try:
-        text = " "
-        raw = result.body.decode("UTF-8")
-        raw = raw.replace('%20', ' ')
-        raw = raw.replace('^', '')
-        raw = raw.replace('&', '\n')
-        pattern = re.compile(r"{}_s_left\d+=(.*)".format(sport))
-
-        scores = []
-
-        for match in re.findall(pattern, raw):
-            if text.lower() in match.lower():
-                scores.append(match)
-
-        response = ""
-        for i in scores:
-            response += i + "\t"
-
+        text     = result.body.decode("UTF-8")\
+                    .replace('%20', ' ')\
+                    .replace('^', '')\
+                    .replace('&', '\n')
+        pattern  = re.compile(r"{}_s_left\d+=(.*)".format(sport))
+        response = [match for match in re.findall(pattern, text) if ' ' in match]
     except (IndexError, ValueError) as e:
         bot.logger.warn(e)
-        response = 'No results'
 
     bot.send_response(response, nick, channel)
 
