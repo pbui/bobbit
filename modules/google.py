@@ -43,11 +43,17 @@ def command(bot, nick, message, channel, query=None):
 
     bot.send_response(response, nick, channel)
 
+# Generator
+
+def site_search(site):
+    return lambda b, n, m, c, query: command(b, n, m, c, 'site:' + site + ' ' + query)
+
 # Register
 
 def register(bot):
     return (
         (PATTERN, command),
+        ('^!so (?P<query>.*$)', site_search('stackoverflow.com')),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
