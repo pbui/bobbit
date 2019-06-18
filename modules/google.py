@@ -53,6 +53,7 @@ def site_search(site):
 def register(bot):
     return (
         (PATTERN, command),
+        ('^!nd (?P<query>.*$)', site_search('nd.edu')),
         ('^!so (?P<query>.*$)', site_search('stackoverflow.com')),
     )
 
