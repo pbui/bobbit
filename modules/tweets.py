@@ -36,15 +36,24 @@ def timer(bot):
     results = yield tornado.gen.Task(process.stdout.read_until_close)
 
     # Read and process results
-    for user, entries in json.loads(results).items():
-        for entry in entries:
-            text     = entry['text']
-            channels = entry['channels']
-            message  = TEMPLATE.format(user=user, text=text)
+    cache_path = os.path.join(bot.config_dir, 'tweets.cache')
+    with dbm.open(cache_path, 'c') as tweet_cache:
+        for user, entries in json.loads(results).items():
+            for entry in entries:
+                text        = entry['text']
+                channels    = entry['channels']
+                status_key  = entry['status_key']
+                status_id   = entry['status_id']
+                message     = TEMPLATE.format(user=user, text=text)
 
-            # Send each entry to the appropriate channel
-            for channel in channels:
-                bot.send_message(message, channel=channel)
+                # Send each entry to the appropriate channel
+                for channel in channels:
+                    bot.send_message(message, channel=channel)
+
+                # Mark entry as delivered
+                bot.logger.info('Delivered %s from %s to %s', text, user, ', '.join(channels))
+                tweet_cache['since_id'] = str(max(int(tweet_cache['since_id']), status_id))
+                tweet_cache[status_key] = str(time.time())
 
 # Register
 
@@ -101,11 +110,8 @@ def script(config_dir):
         except twitter.error.TwitterError:
             logger.warn('Could not get timeline for %s', user)
             continue
-        
-        for status in statuses:
-            # Update since_id
-            tweets_cache['since_id'] = str(max(int(tweets_cache['since_id']), status.id))
 
+        for status in statuses:
             # Skip if message is older than timeout
             if current_time - status.created_at_in_seconds >= tweets_timeout:
                 logger.debug('Skipping message from %s (too old)', user)
@@ -123,14 +129,13 @@ def script(config_dir):
                 logger.debug('Skipping message from %s (in cache)', user)
                 continue
 
-            # Mark message in cache
-            tweets_cache[status_key] = str(time.time())
-
             # Add message to entries
             logger.debug('Recording message from %s: %s', user, status_text)
             entries[user].append({
-                'text'     : status_text,
-                'channels' : channels,
+                'text'      : status_text,
+                'channels'  : channels,
+                'status_key': status_key,
+                'status_id' : status.id,
             })
 
     # Dump entries as JSON
