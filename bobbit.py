@@ -40,12 +40,19 @@ class IRCClient(object):
         ''' Connect to IRC server, authorize, register, and identify '''
         self.logger.info('Connecting to %s:%d', self.host, self.port)
 
+        # Check SSL
+        if self.use_ssl:
+            import ssl
+            self.ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        else:
+            self.ssl_context = None
+
         # Connect to IRC server
         self.tcp_client = tornado.tcpclient.TCPClient()
         self.tcp_stream = None
         while not self.tcp_stream:
             try:
-                self.tcp_stream = yield self.tcp_client.connect(self.host, self.port)
+                self.tcp_stream = yield self.tcp_client.connect(self.host, self.port, ssl_options=self.ssl_context)
                 self.tcp_stream.set_close_callback(lambda: sys.exit(1))
             except socket.gaierror as e:
                 self.tcp_stream = None
@@ -368,10 +375,12 @@ class Bobbit(object):
         self.nick        = config.get('nick'       , 'bobbit')
         self.nick_prefix = config.get('nick_prefix', '')
         self.owner       = config.get('owner'      , getpass.getuser())
+        self.use_ssl     = config.get('ssl'        , False)
 
         self.logger.info('Nick:           %s', self.nick)
         self.logger.info('Nick Prefix:    %s', self.nick_prefix)
         self.logger.info('Owner:          %s', self.owner)
+        self.logger.info('SSL:            %s', self.use_ssl)
 
         if config.get('token', None):
             self.__class__  = type('SlackBobbit', (Bobbit, SlackClient), {})
