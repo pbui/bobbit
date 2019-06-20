@@ -23,7 +23,6 @@ REJECTS  = (
     "You better check yourself before you wreck yourself",
     "Doesn't look like anything to me",
     "I'm sorry, I'm afraid I can't do that",
-    "Channel {channel} not allowed",
     "You shall not pass!",
     "I'll be reporting this to MD",
     "RAMZI SAYS NO SUDO",
@@ -33,11 +32,13 @@ REJECTS  = (
 
 def command(bot, nick, message, channel, target, suggestion):
     target = target[1:] if target.startswith('#') else target
-    if target in CHANNELS and nick in bot.verified:
+    if not target in CHANNELS:
+        bot.send_response('Channel {} not allowed'.format(target), nick, channel)
+    elif not nick in bot.verified:
+        bot.send_response(random.choice(REJECTS), nick, channel)
+    else:
         bot.logger.info('Anonymous message from %s: %s', nick, message)
         bot.send_response('Anonymous coward suggests: ' + suggestion, 'anonymous', '#' + target)
-    else:
-        bot.send_response(random.choice(REJECTS).format(channel=target), nick, channel)
 
 # Register
 
