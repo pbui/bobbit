@@ -33,7 +33,8 @@ def timer(bot):
     # Execute tweets script
     bot.logger.info('Executing %s', __file__)
     command = ['python3', __file__, '--config-dir={}'.format(bot.config_dir)]
-    process = tornado.process.Subprocess(command, stdout=tornado.process.Subprocess.STREAM)
+    environ = dict(os.environ, **{'PYTHONPATH': os.path.join(__file__, '..', '..') + ':' + os.environ.get('PYTHONPATH', '')})
+    process = tornado.process.Subprocess(command, stdout=tornado.process.Subprocess.STREAM, env=environ)
     results = yield tornado.gen.Task(process.stdout.read_until_close)
 
     # Read and process results
