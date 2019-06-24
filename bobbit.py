@@ -134,6 +134,9 @@ class IRCClient(object):
     def format_response(self, response, nick=None, channel=None, prefix=False):
         return '{}{}: {}'.format(self.nick_prefix, nick, response) if prefix else response
 
+    def format_bold(self, text):
+        return '\x02\x0300{}\x03\x02'.format(text)
+
     # Handlers
 
     def handle_ping(self, payload):
@@ -233,6 +236,9 @@ class SlackClient(object):
                 return '<{}{}>: {}'.format(self.nick_prefix, nick, response)
         else:
             return response
+
+    def format_bold(self, text):
+        return '*{}*'.format(text)
 
     @tornado.gen.coroutine
     def get_channel(self, channel):
