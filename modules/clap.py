@@ -1,18 +1,17 @@
-# clapback.py
+# clap.py
 
 # Metadata
 
-NAME    = 'clapback'
+NAME    = 'clap'
 ENABLE  = True
 TYPE    = 'command'
 PATTERN = '^!clap (?P<phrase>.*)'
 USAGE   = '''Usage: !clap <phrase>
-Given a phrase, this adds a clap emoji in the whitespace.
+Given a phrase, this replaces all spaces with the clap emoji.
 Example:
     > !clap Do I look like I'm joking
-	Do U0001F44F I U0001F44F look U0001F44F like U0001F44F I'm U0001F44F joking U0001F44F
-		  '''
-# Constants
+    Do U0001F44F I U0001F44F look U0001F44F like U0001F44F I'm U0001F44F joking U0001F44F
+'''
 
 # Command
 def command(bot, nick, message, channel, phrase):
