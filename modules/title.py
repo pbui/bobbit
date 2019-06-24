@@ -10,7 +10,7 @@ import tornado.httpclient
 NAME    = 'title'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = '^(?P<url>http.*$)'
+PATTERN = '.*(?P<url>http[^\s]+$).*'
 USAGE   = '''Usage: !g <query>
 Looks up title of URL.
 Example:
@@ -20,7 +20,7 @@ Example:
 
 # Constants
 
-WHITELIST = ('##bx612', '#nd-cse')
+WHITELIST = ('##bx612', '##grillers', '#nd-cse', '#uwec-cs')
 
 # Command
 
