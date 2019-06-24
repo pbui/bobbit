@@ -1,5 +1,7 @@
 # title.py
 
+from modules.__common__ import strip_html
+
 import re
 
 import tornado.gen
@@ -34,6 +36,7 @@ def command(bot, nick, message, channel, url=None):
 
     try:
         title    = re.findall(r'<title>(.*)</title>', result.body.decode('utf-8'))[0]
+        title    = strip_html(title)
         response = 'Title: {}'.format(bot.format_bold(title))
     except (IndexError, ValueError) as e:
         return
