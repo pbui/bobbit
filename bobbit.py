@@ -141,6 +141,12 @@ class IRCClient(object):
         self.send('PONG {}'.format(payload))
 
     def handle_registration(self, server):
+        def complete_registration():
+            # Join channels
+            for channel in self.channels:
+                self.logger.info('Joining %s', channel)
+                self.send('JOIN {}'.format(channel))
+
         # Identify
         self.logger.info('Identifying as %s', self.nick)
         if not self.password.startswith('CONN:'):
@@ -150,10 +156,8 @@ class IRCClient(object):
         self.logger.info('Declaring as bot')
         self.send('MODE {} +B'.format(self.nick))
 
-        # Join channels
-        for channel in self.channels:
-            self.logger.info('Joining %s', channel)
-            self.send('JOIN {}'.format(channel))
+        # Delay joining channels to allow for identification
+        tornado.ioloop.IOLoop.current().call_later(5.0, complete_registration)
 
 # Slack Client
 
