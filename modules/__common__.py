@@ -1,5 +1,7 @@
 # __common__.py:
 
+import lxml.html
+
 import tornado.httpclient
 import tornado.gen
 
@@ -34,5 +36,13 @@ def shorten_url(url):
         return result.body.decode().strip()
     except AttributeError:
         return url 
+
+# Strip HTML
+
+def strip_html(s):
+    try:
+        return lxml.html.fromstring(s).text_content()
+    except lxml.etree.XMLSyntaxError:
+        return s
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
