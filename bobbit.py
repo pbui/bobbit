@@ -135,7 +135,7 @@ class IRCClient(object):
         return '{}{}: {}'.format(self.nick_prefix, nick, response) if prefix else response
 
     def format_bold(self, text):
-        return '\x02\x0300{}\x03\x02'.format(text)
+        return '\x02{}\x02'.format(text)
 
     # Handlers
 
