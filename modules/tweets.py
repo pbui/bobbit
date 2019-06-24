@@ -1,5 +1,7 @@
 # tweets.py
 
+from modules.__common__ import strip_html
+
 import dbm.gnu
 import collections
 import hashlib
@@ -9,7 +11,6 @@ import os
 import sys
 import time
 
-import lxml.html
 import twitter
 import yaml
 
@@ -140,14 +141,6 @@ def script(config_dir):
 
     # Dump entries as JSON
     json.dump(entries, sys.stdout)
-
-# Utilities
-
-def strip_html(s):
-    try:
-        return lxml.html.fromstring(s).text_content()
-    except lxml.etree.XMLSyntaxError:
-        return s
 
 # Main Execution
 
