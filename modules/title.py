@@ -35,7 +35,8 @@ def command(bot, nick, message, channel, url=None):
     result = yield tornado.gen.Task(client.fetch, url)
 
     try:
-        title    = re.findall(r'<title>(.*)</title>', result.body.decode('utf-8'))[0]
+        body     = result.body.decode('utf-8').replace('\n', ' ')
+        title    = re.findall(r'<title.*>(.*)</title>', body)[0]
         title    = strip_html(title)
         response = 'Title: {}'.format(bot.format_bold(title))
     except (IndexError, ValueError) as e:
