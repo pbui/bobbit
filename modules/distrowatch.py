@@ -40,7 +40,8 @@ def command(bot, nick, message, channel, distro):
         # Get only text from table
         quotes   = re.findall(b'\n.*<br /><br /><br /><form name=like method=get>', result.body)
         quotes   = [re.sub('<[^<]+?>', '', str(quote)[2:-1]) for quote in quotes]
-        response = re.sub(r'(\\n|\\r|\\)', ' ', random.choice(quotes))
+        response = re.sub(r'(\\n|\\r)', ' ', random.choice(quotes))
+        response = re.sub(r'\\', '', response)
 
         # Send multiple messages to get the whole review
         responses = [x.strip() for x in wrap(response, width=MAX_LEN)]
