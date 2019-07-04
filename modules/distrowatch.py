@@ -26,8 +26,8 @@ Example:
 
 # Constants
 
-URL = 'https://distrowatch.com/dwres.php?resource=ratings&distro={dist}&distribution={dist}&sortby=votes'
-MAX_LEN = 430
+URL     = 'https://distrowatch.com/dwres.php?resource=ratings&distro={dist}&distribution={dist}&sortby=votes'
+MAX_LEN = 420
 
 # Command
 
@@ -37,17 +37,15 @@ def command(bot, nick, message, channel, distro):
     result = yield tornado.gen.Task(client.fetch, URL.format(dist=distro))
 
     if result.code == 200:
-        # get only text from table
+        # Get only text from table
         quotes   = re.findall(b'\n.*<br /><br /><br /><form name=like method=get>', result.body)
-        quotes = [re.sub('<[^<]+?>', '', str(quote)[2:-1]) for quote in quotes]
+        quotes   = [re.sub('<[^<]+?>', '', str(quote)[2:-1]) for quote in quotes]
         response = re.sub(r'(\\n|\\r|\\)', ' ', random.choice(quotes))
 
-        # send multiple messages to get the whole review
-        len_sent = 0
-        to_send  = len(response)
+        # Send multiple messages to get the whole review
         responses = [x.strip() for x in wrap(response, width=MAX_LEN)]
         bot.send_response(responses, nick, channel)
-                
+
 # Generator
 
 def get_review(distro):
@@ -59,11 +57,11 @@ def register(bot):
     return (
         (PATTERN, command),
         ('^!FerenOS$', get_review('ferenos')),
-        ('^!Solus$', get_review('solus')),
-        ('^!Fedora$', get_review('fedora')),
-        ('^!Ubuntu$', get_review('ubuntu')),
-        ('^!Arch$', get_review('arch')),
-        ('^!Void$', get_review('void')),
+        ('^!Solus$'  , get_review('solus')),
+        ('^!Fedora$' , get_review('fedora')),
+        ('^!Ubuntu$' , get_review('ubuntu')),
+        ('^!Arch$'   , get_review('arch')),
+        ('^!Void$'   , get_review('void')),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
