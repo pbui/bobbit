@@ -52,6 +52,9 @@ def rot13(s):
 # Command
 
 def command(bot, nick, message, channel, netid, passcode):
+    if hasattr(nick, 'prefix'):
+        return
+
     if passcode == cksum(netid):
         '''
         message  = rot13('{}={}'.format(netid, int(time.time()))).encode()
@@ -70,7 +73,7 @@ def command(bot, nick, message, channel, netid, passcode):
 # Register
 
 def register(bot):
-    bot.verified = {'U0HK21CP2', 'pbui', 'pnutzh4x0r'}
+    bot.verified = set(bot.owners)
     return (
         (PATTERN, command),
     )
