@@ -20,7 +20,8 @@ config file looks like this:
 ```
 nick:       "bobbit"
 password:   <password>
-owner:      <owner>
+owners:      
+    - <owner>
 host:       <irc server>
 port:       6667
 channels:
@@ -38,6 +39,10 @@ The following modules also require configuration files (in `config-dir`):
   appid:      <api-key>
   default:    <zipcode>
   ```
+  
+## Slack
+
+https://medium.com/@andrewarrow/how-to-get-slack-api-tokens-with-client-scope-e311856ebe9
 
 ## Execution
 Just run `bobbit.py`. Optionally, you can specify `config-dir`.

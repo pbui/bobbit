@@ -45,7 +45,7 @@ def cowsay(bot, nick, message, channel, phrase):
     return execute(bot, nick, message, channel, command)
 
 def mpc(bot, nick, message, channel, host, action):
-    if hasattr(nick, 'prefix') or nick != bot.owner:
+    if hasattr(nick, 'prefix') or nick not in bot.owners:
         return
 
     command = ['ssh', '-t', 'cable', 'mpc', '--host=' + host, action]

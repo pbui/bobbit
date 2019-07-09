@@ -384,12 +384,12 @@ class Bobbit(object):
 
         self.nick        = config.get('nick'       , 'bobbit')
         self.nick_prefix = config.get('nick_prefix', '')
-        self.owner       = config.get('owner'      , getpass.getuser())
+        self.owners      = config.get('owners'     , [getpass.getuser()])
         self.use_ssl     = config.get('ssl'        , False)
 
         self.logger.info('Nick:           %s', self.nick)
         self.logger.info('Nick Prefix:    %s', self.nick_prefix)
-        self.logger.info('Owner:          %s', self.owner)
+        self.logger.info('Owners:         %s', ', '.join(self.owners))
         self.logger.info('SSL:            %s', self.use_ssl)
 
         if config.get('token', None):

@@ -22,7 +22,7 @@ Example:
 # Command
 
 def command(bot, nick, message, channel, command=None):
-    if nick != bot.owner:
+    if nick not in bot.owners:
         return
 
     try:

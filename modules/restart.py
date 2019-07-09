@@ -28,7 +28,7 @@ RESTART_TIMEOUT = 5
 # Command
 
 def reload_command(bot, nick, message, channel, question=None):
-    if hasattr(nick, 'prefix') or nick != bot.owner:
+    if hasattr(nick, 'prefix') or nick not in bot.owners:
         return
 
     bot.logger.debug('Reload initiated by %s', nick)
@@ -36,7 +36,7 @@ def reload_command(bot, nick, message, channel, question=None):
     bot.send_response(random.choice(RELOAD_MESSAGES), nick, channel)
 
 def restart_command(bot, nick, message, channel, question=None):
-    if hasattr(nick, 'prefix') or nick != bot.owner:
+    if hasattr(nick, 'prefix') or nick not in bot.owners:
         return
 
     bot.logger.debug('Restart initiated by %s', nick)
