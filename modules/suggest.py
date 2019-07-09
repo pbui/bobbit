@@ -31,6 +31,9 @@ REJECTS  = (
 # Command
 
 def command(bot, nick, message, channel, target, suggestion):
+    if hasattr(nick, 'prefix'):
+        return
+
     target = target[1:] if target.startswith('#') else target
     if not target in CHANNELS:
         bot.send_response('Channel {} not allowed'.format(target), nick, channel)
