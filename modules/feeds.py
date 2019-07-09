@@ -35,6 +35,11 @@ def timer(bot):
     process = tornado.process.Subprocess(command, stdout=tornado.process.Subprocess.STREAM)
     results = yield tornado.gen.Task(process.stdout.read_until_close)
 
+    # Read configuration
+    config_path  = os.path.join(bot.config_dir, 'feeds.yaml')
+    feeds_config = yaml.load(open(config_path))
+    templates    = feeds_config.get('templates', {})
+
     # Read and process results
     cache_path = os.path.join(bot.config_dir, 'feeds.cache')
 
@@ -46,10 +51,11 @@ def timer(bot):
                 link     = yield shorten_url(entry['link'])
                 author   = entry['author']
                 channels = entry['channels']
-                message  = TEMPLATE.format(feed=feed, title=title, link=link, author=author)
 
                 # Send each entry to the appropriate channel
                 for channel in channels:
+                    template = templates.get(channel, TEMPLATE)
+                    message  = template.format(feed=feed, title=title, link=link, author=author)
                     bot.send_message(message, channel=channel)
 
                 # Mark entry as delivered
