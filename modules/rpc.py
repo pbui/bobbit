@@ -1,8 +1,10 @@
 # rpc.py
 
 import os
+import random
 import shlex
 
+import time
 import tornado.process
 
 # Metadata
@@ -21,14 +23,32 @@ Example:
 
 '''
 
+# Constants
+
+TIMEOUT = 5
+DENIALS = (
+    'Slow down',
+    'Whoa there',
+    'Not so fast',
+    'EAGAIN',
+    'haste, makes waste',
+    '503',
+)
+
 # Generic Command
 
 @tornado.gen.coroutine
 def execute(bot, nick, message, channel, command, environ=None):
+    if time.time() - bot.rpc_timestamp < 5:
+        bot.send_response(random.choice(DENIALS), nick, channel)
+        bot.rpc_timestamp = time.time()
+        return
+
     command  = shlex.split(command) if isinstance(command, str) else command
     process  = tornado.process.Subprocess(command, stdout=tornado.process.Subprocess.STREAM, env=environ)
     response = yield tornado.gen.Task(process.stdout.read_until_close)
     bot.send_response(response.decode().splitlines(), nick, channel)
+    bot.rpc_timestamp = time.time()
 
 # Specific Commands
 
@@ -55,6 +75,7 @@ def mpc(bot, nick, message, channel, host, action):
 # Register
 
 def register(bot):
+    bot.rpc_timestamp = time.time()
     return (
 	('^!ping (?P<host>.*)', ping),
 	('^!cowsay (?P<phrase>.*)', cowsay),
