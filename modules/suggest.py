@@ -16,8 +16,7 @@ Example:
 
 # Constants
 
-CHANNELS = ('csememes', 'gaming', 'ndlug')
-#NICKS    = ('pbui', 'U0HK21CP2', 'U6R5KVD4L', 'UF7RAN95W')
+CHANNELS = ('csememes', 'society')
 
 REJECTS  = (
     "You better check yourself before you wreck yourself",
