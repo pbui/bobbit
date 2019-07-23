@@ -35,8 +35,10 @@ def command(bot, nick, message, channel, query=None):
     result = yield tornado.gen.Task(client.fetch, url)
 
     try:
-        urls     = re.findall(b'/url\?q=([^&]*)', result.body)
-        response = yield shorten_url(unquote(urls[0].decode()))
+        matches  = re.findall(b'/url\?q=([^&]*)[^>]*><div class="[^"]+">([^<]+)</div', result.body)
+        url      = yield shorten_url(unquote(matches[0][0].decode()))
+        title    = unquote(matches[0][1].decode())
+        response = '{} @ {}'.format(title, url)
     except (IndexError, ValueError) as e:
         bot.logger.warn(e)
         response = 'No results'
