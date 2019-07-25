@@ -61,7 +61,8 @@ def command(bot, nick, message, channel, subreddit, query=''):
 
 def register(bot):
     return (
-        (PATTERN, command),
+        (PATTERN  , command),
+        ('^!riseup\s*(?P<query>.*)$', lambda b, n, m, c, query: command(b, n, m, c, 'gamersriseup', query)),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
