@@ -28,10 +28,11 @@ REDDIT_TEMPLATE = 'http://reddit.com/r/{subreddit}/.json'
 
 @tornado.gen.coroutine
 def command(bot, nick, message, channel, subreddit, query=''):
-    url    = REDDIT_TEMPLATE.format(subreddit=subreddit)
-    client = tornado.httpclient.AsyncHTTPClient()
-    result = yield tornado.gen.Task(client.fetch, url)
-    query  = query.lower()
+    url      = REDDIT_TEMPLATE.format(subreddit=subreddit)
+    client   = tornado.httpclient.AsyncHTTPClient()
+    result   = yield tornado.gen.Task(client.fetch, url)
+    query    = query.lower()
+    response = 'No results'
 
     try:
         for result in json.loads(result.body.decode())['data']['children']:
@@ -53,7 +54,6 @@ def command(bot, nick, message, channel, subreddit, query=''):
             break
     except (IndexError, KeyError, ValueError) as e:
         bot.logger.warn(e)
-        response = 'No results'
 
     bot.send_response(response, nick, channel)
 
@@ -61,8 +61,7 @@ def command(bot, nick, message, channel, subreddit, query=''):
 
 def register(bot):
     return (
-        (PATTERN  , command),
-        ('^!riseup\s*(?P<query>.*)$', lambda b, n, m, c, query: command(b, n, m, c, 'gamersriseup', query)),
+        (PATTERN, command),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:

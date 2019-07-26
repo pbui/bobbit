@@ -47,22 +47,11 @@ def command(bot, nick, message, channel, distro):
         responses = [x.strip() for x in wrap(response, width=MAX_LEN)]
         bot.send_response(responses, nick, channel)
 
-# Generator
-
-def get_review(distro):
-    return lambda b, n, m, c: command(b, n, m, c, distro)
-
 # Register
 
 def register(bot):
     return (
         (PATTERN, command),
-        ('^!FerenOS$', get_review('ferenos')),
-        ('^!Solus$'  , get_review('solus')),
-        ('^!Fedora$' , get_review('fedora')),
-        ('^!Ubuntu$' , get_review('ubuntu')),
-        ('^!Arch$'   , get_review('arch')),
-        ('^!Void$'   , get_review('void')),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
