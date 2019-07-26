@@ -2,13 +2,9 @@ FROM	    alpine:latest
 MAINTAINER  Peter Bui <pbui@yld.bx612.space>
 
 RUN	    apk update && \
-	    apk add python3 \
-		    py3-feedparser \
-		    py3-lxml \
-		    py3-tornado \
-		    py3-twitter \
-		    py3-yaml \
-		    figlet
+	    apk add python3 py3-pip py3-lxml figlet
+
+RUN	    pip3 install feedparser tornado==5.1.1 python-twitter PyYAML
 
 RUN	    wget -O - https://gitlab.com/pbui/bobbit-ng/-/archive/master/bobbit-ng-master.tar.gz | tar xzvf -
 
