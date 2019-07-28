@@ -16,6 +16,8 @@ import tornado.httpclient
 import tornado.options
 import tornado.process
 
+from modules.__common__ import shorten_url, strip_html
+
 # Metadata
 
 NAME     = 'feeds'
@@ -27,12 +29,11 @@ TEMPLATE = 'From "{feed}" feed: {title} by {author} @ {link}'
 
 @tornado.gen.coroutine
 def timer(bot):
-    from modules.__common__ import shorten_url
-
     # Execute feeds script
     bot.logger.info('Executing %s', __file__)
     command = ['python3', __file__, '--config-dir={}'.format(bot.config_dir)]
-    process = tornado.process.Subprocess(command, stdout=tornado.process.Subprocess.STREAM)
+    environ = dict(os.environ, **{'PYTHONPATH': os.path.join(__file__, '..', '..') + ':' + os.environ.get('PYTHONPATH', '')})
+    process = tornado.process.Subprocess(command, stdout=tornado.process.Subprocess.STREAM, env=environ)
     results = yield tornado.gen.Task(process.stdout.read_until_close)
 
     # Read configuration
@@ -106,7 +107,7 @@ def script(config_dir):
 
         for entry in feedparser.parse(result.body)['entries']:
             link   = entry.get('link', '')
-            title  = entry.get('title', '')
+            title  = strip_html(entry.get('title', ''))
             author = entry.get('author', 'Unknown')
             key    = link.encode('ascii','ignore')
 
