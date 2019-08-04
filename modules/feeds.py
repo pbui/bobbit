@@ -23,7 +23,7 @@ from modules.__common__ import shorten_url, strip_html
 NAME     = 'feeds'
 ENABLE   = True
 TYPE     = 'timer'
-TEMPLATE = 'From {color}{green}{feed}{color} feed: {bold}{title}{bold} by {color}{author}{color} @ {color}{blue}{link}{color}'
+TEMPLATE = 'From {color}{green}{feed}{color} feed: {bold}{title}{bold} by {color}{yellow}{author}{color} @ {color}{blue}{link}{color}'
 
 # Timer
 
