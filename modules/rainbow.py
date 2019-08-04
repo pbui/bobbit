@@ -14,21 +14,23 @@ Example:
     > !rainbow baby you're a firework!
     baby you're a firework!
 '''
+
 # Constants
 # https://github.com/myano/jenni/wiki/IRC-String-Formatting
 
 COLORS = (
-    '04',   # Red
-    '07',   # Orange
-    '08',   # Yellow
-    '03',   # Green
-    '09',   # Lime
-    '10',   # Teal
-    '11',   # Cyan
-    '02',   # Blue
-    '12',   # Royal
-    '06',   # Purple
-    '13',   # Fuchsia
+    'red',
+    'orange',
+    'yellow',
+    'gold',
+    'green',
+    'lime',
+    'cyan',
+    'teal',
+    'blue',
+    'royal',
+    'purple',
+    'fuchsia',
 )
 
 # Command
@@ -37,10 +39,11 @@ def command(bot, nick, message, channel, phrase):
     response = ''
     for letter in phrase:
         if not letter.isspace():
-            response += '\x02\x03{}{}\x03\x02'.format(next(colors), letter)
+            response += '{color}{' + next(colors) + '}' + letter + '{color}'
         else:
             response += letter
 
+    response = bot.format_text('{bold}' + response + '{bold}')
     bot.send_response(response, nick, channel)
 
 # Register
