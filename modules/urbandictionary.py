@@ -22,7 +22,7 @@ Example:
 # Constants
 
 UD_URL      = 'http://api.urbandictionary.com/v0/define'
-UD_TEMPLATE = '{color}{green}{word}{color} is {bold}{definition}{bold}; an example is: {color}{cyan}{example}{color}" @ {color}{blue}{url}{color}'
+UD_TEMPLATE = '{color}{green}{word}{color} is {bold}{definition}{bold}; an example is: {color}{cyan}{example}{color} @ {color}{blue}{url}{color}'
 
 # Command
 
