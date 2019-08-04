@@ -24,7 +24,7 @@ import tornado.process
 NAME     = 'tweets'
 ENABLE   = True
 TYPE     = 'timer'
-TEMPLATE = 'From "{user}" twitter: {text}'
+TEMPLATE = '[{color}{green}Tweets{color}] {bold}{user}{bold} tweeted: {bold}{text}{bold}'
 
 # Timer
 
@@ -46,7 +46,7 @@ def timer(bot):
                 channels    = entry['channels']
                 status_key  = entry['status_key']
                 status_id   = entry['status_id']
-                message     = TEMPLATE.format(user=user, text=text)
+                message     = bot.format_text(user=user, text=text)
 
                 # Send each entry to the appropriate channel
                 for channel in channels:
