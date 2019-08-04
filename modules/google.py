@@ -39,7 +39,7 @@ def command(bot, nick, message, channel, query=None):
         url      = yield shorten_url(unquote(matches[0][0].decode()))
         title    = unquote(matches[0][1].decode())
         response = bot.format_text(
-            '{bold}{title}{bold} @ {bold}{url}{bold}',
+            '{bold}{title}{bold} @ {color}{blue}{url}{color}',
             title = title,
             url   = url
         )
