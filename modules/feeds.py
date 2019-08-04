@@ -37,9 +37,10 @@ def timer(bot):
     results = yield tornado.gen.Task(process.stdout.read_until_close)
 
     # Read configuration
-    config_path  = os.path.join(bot.config_dir, 'feeds.yaml')
-    feeds_config = yaml.load(open(config_path))
-    templates    = feeds_config.get('templates', {})
+    config_path      = os.path.join(bot.config_dir, 'feeds.yaml')
+    feeds_config     = yaml.load(open(config_path))
+    templates        = feeds_config.get('templates', {})
+    default_template = templates.get('default', TEMPLATE)
 
     # Read and process results
     cache_path = os.path.join(bot.config_dir, 'feeds.cache')
@@ -55,7 +56,7 @@ def timer(bot):
 
                 # Send each entry to the appropriate channel
                 for channel in channels:
-                    template = templates.get(channel, TEMPLATE)
+                    template = templates.get(channel, default_template)
                     message  = bot.format_text(template,
                             feed   = feed,
                             title  = title,
