@@ -38,7 +38,7 @@ def command(bot, nick, message, channel, url=None):
         body     = result.body.decode('utf-8').replace('\n', ' ')
         title    = re.findall(r'<title[^>]*>([^<]+)</title>', body)[0]
         title    = strip_html(title)
-        response = 'Title: {}'.format(bot.format_bold(title))
+        response = bot.format_text('[{color}{green}Title{color}] {bold}{title}{bold}', title=title)
     except (IndexError, ValueError) as e:
         return
 
