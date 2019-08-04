@@ -23,7 +23,7 @@ from modules.__common__ import shorten_url, strip_html
 NAME     = 'feeds'
 ENABLE   = True
 TYPE     = 'timer'
-TEMPLATE = 'From "{feed}" feed: {title} by {author} @ {link}'
+TEMPLATE = 'From {bold}{feed}{bold} feed: {bold}{title}{bold} by {bold}{author}{bold} @ {bold}{link}{bold}'
 
 # Timer
 
@@ -56,7 +56,12 @@ def timer(bot):
                 # Send each entry to the appropriate channel
                 for channel in channels:
                     template = templates.get(channel, TEMPLATE)
-                    message  = template.format(feed=feed, title=title, link=link, author=author)
+                    message  = bot.format_text(template,
+                            feed   = feed,
+                            title  = title,
+                            link   = link,
+                            author = author
+                    )
                     bot.send_message(message, channel=channel)
 
                 # Mark entry as delivered
