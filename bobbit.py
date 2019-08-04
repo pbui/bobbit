@@ -134,8 +134,29 @@ class IRCClient(object):
     def format_response(self, response, nick=None, channel=None, prefix=False):
         return '{}{}: {}'.format(self.nick_prefix, nick, response) if prefix else response
 
-    def format_bold(self, text):
-        return '\x02{}\x02'.format(text)
+    def format_text(self, text, *args, **kwargs):
+        FORMAT_CODES = {
+            'bold'   : '\x02',
+            'color'  : '\x03',
+            'black'  : '01',
+            'blue'   : '02',
+            'green'  : '03',
+            'red'    : '04',
+            'brown'  : '05',
+            'purple' : '06',
+            'orange' : '07',
+            'yellow' : '08',
+            'lime'   : '09',
+            'teal'   : '10',
+            'cyan'   : '11',
+            'royal'  : '12',
+            'fuchsia': '13',
+            'gray'   : '14',
+            'silver' : '15',
+            'default': '99',
+        }
+        kwargs.update(FORMAT_CODES)
+        return text.format(*args, **kwargs)
 
     # Handlers
 
@@ -237,8 +258,29 @@ class SlackClient(object):
         else:
             return response
 
-    def format_bold(self, text):
-        return '*{}*'.format(text)
+    def format_text(self, text, *args, **kwargs):
+        FORMAT_CODES = {
+            'bold'   : '*',
+            'color'  : '',
+            'black'  : '',
+            'blue'   : '',
+            'green'  : '',
+            'red'    : '',
+            'brown'  : '',
+            'purple' : '',
+            'orange' : '',
+            'yellow' : '',
+            'lime'   : '',
+            'teal'   : '',
+            'cyan'   : '',
+            'royal'  : '',
+            'fuchsia': '',
+            'gray'   : '',
+            'silver' : '',
+            'default': '',
+        }
+        kwargs.update(FORMAT_CODES)
+        return text.format(*args, **kwargs)
 
     @tornado.gen.coroutine
     def get_channel(self, channel):
