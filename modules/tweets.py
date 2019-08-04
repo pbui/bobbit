@@ -24,7 +24,7 @@ import tornado.process
 NAME     = 'tweets'
 ENABLE   = True
 TYPE     = 'timer'
-TEMPLATE = 'From {bold}{user}{bold} twitter: {text}'
+TEMPLATE = 'From {color}{green}{user}{color} twitter: {bold}{text}{bold}'
 
 # Timer
 
