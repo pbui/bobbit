@@ -1,7 +1,5 @@
 # tweets.py
 
-from modules.__common__ import strip_html
-
 import dbm.gnu
 import collections
 import hashlib
@@ -18,6 +16,8 @@ import tornado.gen
 import tornado.httpclient
 import tornado.options
 import tornado.process
+
+from modules.__common__ import strip_html
 
 # Metadata
 
@@ -37,6 +37,12 @@ def timer(bot):
     process = tornado.process.Subprocess(command, stdout=tornado.process.Subprocess.STREAM, env=environ)
     results = yield tornado.gen.Task(process.stdout.read_until_close)
 
+    # Read configuration
+    config_path      = os.path.join(bot.config_dir, 'tweets.yaml')
+    tweets_config    = yaml.load(open(config_path))
+    templates        = tweets_config.get('templates', {})
+    default_template = templates.get('default', TEMPLATE)
+
     # Read and process results
     cache_path = os.path.join(bot.config_dir, 'tweets.cache')
     with dbm.open(cache_path, 'c') as tweet_cache:
@@ -46,10 +52,11 @@ def timer(bot):
                 channels    = entry['channels']
                 status_key  = entry['status_key']
                 status_id   = entry['status_id']
-                message     = bot.format_text(user=user, text=text)
 
                 # Send each entry to the appropriate channel
                 for channel in channels:
+                    template = templates.get(channel, default_template)
+                    message  = bot.format_text(template, user=user, text=text)
                     bot.send_message(message, channel=channel)
 
                 # Mark entry as delivered
