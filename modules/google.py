@@ -38,7 +38,11 @@ def command(bot, nick, message, channel, query=None):
         matches  = re.findall(b'/url\?q=([^&]*)[^>]*><div class="[^"]+">([^<]+)</div', result.body)
         url      = yield shorten_url(unquote(matches[0][0].decode()))
         title    = unquote(matches[0][1].decode())
-        response = '{} @ {}'.format(title, url)
+        response = bot.format_text(
+            '[{color}{green}Google{color}] {bold}{title}{bold} @ {color}{teal}{url}{color}',
+            title = title,
+            url   = url
+        )
     except (IndexError, ValueError) as e:
         bot.logger.warn(e)
         response = 'No results'
