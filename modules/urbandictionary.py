@@ -22,7 +22,7 @@ Example:
 # Constants
 
 UD_URL      = 'http://api.urbandictionary.com/v0/define'
-UD_TEMPLATE = '"{word}" is {definition}; an example is: "{example}" @ {url}'
+UD_TEMPLATE = '{color}{green}{word}{color} is {bold}{definition}{bold}; an example is: {color}{cyan}{example}{color}" @ {color}{blue}{url}{color}'
 
 # Command
 
@@ -35,7 +35,7 @@ def command(bot, nick, message, channel, query=None):
 
     try:
         data     = json.loads(result.body.decode())['list'][0]
-        response = UD_TEMPLATE.format(
+        response = bot.format_text(UD_TEMPLATE,
             word       = data['word'],
             definition = data['definition'].strip().replace('\r', ' ').replace('\n', ' '),
             example    = data['example'].strip().replace('\r', ' ').replace('\n', ' '),
