@@ -42,7 +42,7 @@ def shorten_url(url):
 def strip_html(s):
     try:
         return lxml.html.fromstring(s).text_content()
-    except lxml.etree.XMLSyntaxError:
+    except (lxml.etree.XMLSyntaxError, lxml.etree.ParserError):
         return s
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
