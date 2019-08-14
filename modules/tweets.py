@@ -2,7 +2,6 @@
 
 import dbm.gnu
 import collections
-import hashlib
 import json
 import logging
 import os
@@ -24,7 +23,7 @@ from modules.__common__ import strip_html
 NAME     = 'tweets'
 ENABLE   = True
 TYPE     = 'timer'
-TEMPLATE = 'From {color}{green}{user}{color} twitter: {bold}{text}{bold}'
+TEMPLATE = 'From {color}{green}{user}{color} twitter: {bold}{status}{bold}'
 
 # Timer
 
@@ -48,7 +47,7 @@ def timer(bot):
     with dbm.open(cache_path, 'c') as tweet_cache:
         for user, entries in json.loads(results).items():
             for entry in entries:
-                text        = entry['text']
+                status      = entry['status']
                 channels    = entry['channels']
                 status_key  = entry['status_key']
                 status_id   = entry['status_id']
@@ -56,11 +55,11 @@ def timer(bot):
                 # Send each entry to the appropriate channel
                 for channel in channels:
                     template = templates.get(channel, default_template)
-                    message  = bot.format_text(template, user=user, text=text)
+                    message  = bot.format_text(template, user=user, status=status)
                     bot.send_message(message, channel=channel)
 
                 # Mark entry as delivered
-                bot.logger.info('Delivered %s from %s to %s', text, user, ', '.join(channels))
+                bot.logger.info('Delivered %s from %s to %s', status, user, ', '.join(channels))
                 tweet_cache['since_id'] = str(max(int(tweet_cache['since_id']), status_id))
                 tweet_cache[status_key] = str(time.time())
 
@@ -121,27 +120,27 @@ def script(config_dir):
             continue
 
         for status in statuses:
-            # Skip if message is older than timeout
+            # Skip if status is older than timeout
             if current_time - status.created_at_in_seconds >= tweets_timeout:
-                logger.debug('Skipping message from %s (too old)', user)
+                logger.debug('Skipping status from %s (too old)', user)
                 continue
 
-            # Skip if message does not contain pattern
+            # Skip if status does not contain pattern
             status_text = strip_html(status.text)
             if pattern and pattern not in status_text:
-                logger.debug("Skipping message from %s (doesn't match pattern)", user)
+                logger.debug("Skipping status from %s (doesn't match pattern)", user)
                 continue
 
-            # Skip if message is in cache
+            # Skip if status is in cache
             status_key = '{}/{}'.format(user.lower(), status.id)
             if status_key in tweets_cache:
-                logger.debug('Skipping message from %s (in cache)', user)
+                logger.debug('Skipping status from %s (in cache)', user)
                 continue
 
-            # Add message to entries
-            logger.debug('Recording message from %s: %s', user, status_text)
+            # Add status to entries
+            logger.debug('Recording status from %s: %s', user, status_text)
             entries[user].append({
-                'text'      : status_text,
+                'status'    : status_text,
                 'channels'  : channels,
                 'status_key': status_key,
                 'status_id' : status.id,
