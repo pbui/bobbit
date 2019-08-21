@@ -23,7 +23,7 @@ from modules.__common__ import strip_html
 NAME     = 'tweets'
 ENABLE   = True
 TYPE     = 'timer'
-TEMPLATE = 'From {color}{green}{user}{color} twitter: {bold}{status}{bold}'
+TEMPLATE = 'From {color}{green}{user}{color} twitter: {bold}{status}{bold} @ {color}{blue}{link}{color}'
 
 # Timer
 
@@ -51,11 +51,12 @@ def timer(bot):
                 channels    = entry['channels']
                 status_key  = entry['status_key']
                 status_id   = entry['status_id']
+                link        = entry['link']
 
                 # Send each entry to the appropriate channel
                 for channel in channels:
                     template = templates.get(channel, default_template)
-                    message  = bot.format_text(template, user=user, status=status)
+                    message  = bot.format_text(template, user=user, status=status, link=link)
                     bot.send_message(message, channel=channel)
 
                 # Mark entry as delivered
@@ -144,6 +145,7 @@ def script(config_dir):
                 'channels'  : channels,
                 'status_key': status_key,
                 'status_id' : status.id,
+                'link'      : 'https://twitter.com/{}/status/{}'.format(user, status.id),
             })
 
     # Dump entries as JSON
@@ -156,9 +158,6 @@ if __name__ == '__main__':
     tornado.options.parse_command_line()
     options = tornado.options.options.as_dict()
 
-    try:
-        script(os.path.expanduser(options.get('config_dir', '~/.config/bobbit')))
-    except Exception as e:
-        logging.getLogger().warn(e)
+    script(os.path.expanduser(options.get('config_dir', '~/.config/bobbit')))
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
