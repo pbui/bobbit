@@ -16,7 +16,7 @@ import tornado.httpclient
 import tornado.options
 import tornado.process
 
-from modules.__common__ import strip_html
+from modules.__common__ import shorten_url, strip_html
 
 # Metadata
 
@@ -51,7 +51,7 @@ def timer(bot):
                 channels    = entry['channels']
                 status_key  = entry['status_key']
                 status_id   = entry['status_id']
-                link        = entry['link']
+                link        = yield shorten_url(entry['link'])
 
                 # Send each entry to the appropriate channel
                 for channel in channels:
