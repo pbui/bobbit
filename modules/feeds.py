@@ -170,9 +170,6 @@ if __name__ == '__main__':
     tornado.options.parse_command_line()
     options = tornado.options.options.as_dict()
 
-    try:
-        script(os.path.expanduser(options.get('config_dir', '~/.config/bobbit')))
-    except Exception as e:
-        logging.getLogger().warning(e)
+    script(os.path.expanduser(options.get('config_dir', '~/.config/bobbit')))
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
