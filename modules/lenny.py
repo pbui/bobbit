@@ -1,14 +1,13 @@
 # lenny.py
 
 import random
-import re
 
 # Metadata
 
 NAME    = 'lenny'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = re.compile('^![Ll]enny$')
+PATTERN = '^![Ll]enny\s*(?P<text>.*)$'
 USAGE   = '''Usage: ![Ll]enny
 Displays a Lenny face ( ͡° ͜ʖ ͡°)
 '''
@@ -31,8 +30,10 @@ LENNYS = [
 
 # Command
 
-def command(bot, nick, message, channel):
+def command(bot, nick, message, channel, text=''):
     response = random.choice(LENNYS)
+    if text:
+        response += ' ' + text
     bot.send_message(response, None if channel else nick, channel)
 
 # Register
