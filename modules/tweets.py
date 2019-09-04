@@ -141,7 +141,7 @@ def script(config_dir):
             # Add status to entries
             logger.debug('Recording status from %s: %s', user, status_text)
             entries[user].append({
-                'status'    : status_text,
+                'status'    : status_text.replace('\n', ' '),
                 'channels'  : channels,
                 'status_key': status_key,
                 'status_id' : status.id,
