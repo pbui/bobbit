@@ -74,7 +74,7 @@ def command(bot, nick, message, channel, zipcode=None):
 def register(bot):
     global OWM_APPID, DEFAULT_ZIPCODE
 
-    config          = yaml.load(open(os.path.join(bot.config_dir, 'weather.yaml')))
+    config          = yaml.safe_load(open(os.path.join(bot.config_dir, 'weather.yaml')))
     DEFAULT_ZIPCODE = config.get('default', ZIPCODE['#ndlug'])
     OWM_APPID       = config.get('appid', None)
 

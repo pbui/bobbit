@@ -38,7 +38,7 @@ def lookup_data():
 
     mtime = os.path.getmtime(LOOKUP_PATH)
     if LOOKUP_TIME is None or LOOKUP_TIME < mtime:
-        LOOKUP_DATA = yaml.load(open(LOOKUP_PATH, 'rb'))
+        LOOKUP_DATA = yaml.safe_load(open(LOOKUP_PATH, 'rb'))
         LOOKUP_TIME = mtime
 
     return LOOKUP_DATA

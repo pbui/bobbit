@@ -38,7 +38,7 @@ def timer(bot):
 
     # Read configuration
     config_path      = os.path.join(bot.config_dir, 'feeds.yaml')
-    feeds_config     = yaml.load(open(config_path))
+    feeds_config     = yaml.safe_load(open(config_path))
     templates        = feeds_config.get('templates', {})
     default_template = templates.get('default', TEMPLATE)
 
@@ -73,7 +73,7 @@ def timer(bot):
 
 def register(bot):
     config_path  = os.path.join(bot.config_dir, 'feeds.yaml')
-    feeds_config = yaml.load(open(config_path))
+    feeds_config = yaml.safe_load(open(config_path))
     timeout      = feeds_config.get('timeout', 5*60)
 
     return (
@@ -84,7 +84,7 @@ def register(bot):
 
 def script(config_dir):
     config_path  = os.path.join(config_dir, 'feeds.yaml')
-    feeds_config = yaml.load(open(config_path))
+    feeds_config = yaml.safe_load(open(config_path))
 
     cache_path   = os.path.join(config_dir, 'feeds.cache')
     feeds_cache  = dbm.open(cache_path, 'c')

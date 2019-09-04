@@ -416,7 +416,7 @@ class Bobbit(object):
         self.modules_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'modules'))
 
         if os.path.exists(self.config_path):
-            config = yaml.load(open(self.config_path))
+            config = yaml.safe_load(open(self.config_path))
         else:
             config = {}
 

@@ -38,7 +38,7 @@ def timer(bot):
 
     # Read configuration
     config_path      = os.path.join(bot.config_dir, 'tweets.yaml')
-    tweets_config    = yaml.load(open(config_path))
+    tweets_config    = yaml.safe_load(open(config_path))
     templates        = tweets_config.get('templates', {})
     default_template = templates.get('default', TEMPLATE)
 
@@ -68,7 +68,7 @@ def timer(bot):
 
 def register(bot):
     config_path   = os.path.join(bot.config_dir, 'tweets.yaml')
-    tweets_config = yaml.load(open(config_path))
+    tweets_config = yaml.safe_load(open(config_path))
     timeout       = tweets_config.get('timeout', 5*60)
 
     return (
@@ -80,7 +80,7 @@ def register(bot):
 def script(config_dir):
     # Open configuration
     config_path    = os.path.join(config_dir, 'tweets.yaml')
-    tweets_config  = yaml.load(open(config_path))
+    tweets_config  = yaml.safe_load(open(config_path))
     tweets_timeout = tweets_config.get('timeout', 5*60)
 
     # Open cache

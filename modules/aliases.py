@@ -55,7 +55,7 @@ def register(bot):
 
     try:
         aliases_path = os.path.join(bot.config_dir, 'aliases.yaml')
-        aliases_data = yaml.load(open(aliases_path))
+        aliases_data = yaml.safe_load(open(aliases_path))
         ALIASES      = aliases_data.get('aliases', {})
     except (KeyError, IOError):
         pass

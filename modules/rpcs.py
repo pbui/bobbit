@@ -103,7 +103,7 @@ def register(bot):
 
     try:
         rpcs_path = os.path.join(bot.config_dir, 'rpcs.yaml')
-        rpcs_data = yaml.load(open(rpcs_path))
+        rpcs_data = yaml.safe_load(open(rpcs_path))
         RPCS      = rpcs_data.get('rpcs', {})
     except (KeyError, IOError):
         pass
