@@ -13,8 +13,8 @@ The previous ad-hoc version can be found at
 - [PyYAML]
 
 ## Configuration
-Bobbit requires a configuration YAML file to run, which should be in the
-directory specified by `config-dir` (default: `~/.config/bobbit`). An example
+Bobbit requires a configuration YAML file (bobbit.yaml) to run, which should be in 
+the directory specified by `config-dir` (default: `~/.config/bobbit`). An example
 config file looks like this:
 
 ```
