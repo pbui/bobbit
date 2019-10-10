@@ -193,13 +193,14 @@ class SlackClient(object):
         self.channels = {}
 
         self.url = None
-        http_uri = '{}/api/rtm.connect?token={}'.format(self.API_DOMAIN, self.token)
+        http_uri = '{}/api/rtm.connect?token={}'.format(self.API_DOMAIN, self.token[0])
         self.logger.info('Retrieving websocket URL from: %s', http_uri)
 
         while not self.url:
             try:
                 response = yield tornado.httpclient.AsyncHTTPClient().fetch(http_uri)
-                data     = json.loads(response.body)
+                body = (response.body.decode('UTF-8'))
+                data     = json.loads(body)
                 if data['ok']:
                     self.url = data['url']
                     self.id  = data['self']['id']
