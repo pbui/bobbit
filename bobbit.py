@@ -193,7 +193,7 @@ class SlackClient(object):
         self.channels = {}
 
         self.url = None
-        http_uri = '{}/api/rtm.connect?token={}'.format(self.API_DOMAIN, self.token[0])
+        http_uri = '{}/api/rtm.connect?token={}'.format(self.API_DOMAIN, self.token)
         self.logger.info('Retrieving websocket URL from: %s', http_uri)
 
         while not self.url:
