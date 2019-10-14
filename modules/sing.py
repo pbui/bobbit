@@ -101,7 +101,7 @@ def command(bot, nick, message, channel, query=None):
     params  = {'q': query}
     url     = LYRICS_URL + '?' + urlencode(params)
 
-    client  = tornado.httpclient.AsyncHTTPClient()
+    client  = tornado.httpclient.AsyncHTTPClient(defaults=dict(request_timeout=180, connect_timeout=60))
     result  = yield tornado.gen.Task(client.fetch, url)
     tree = etree.HTML(result.body)
 
@@ -110,7 +110,7 @@ def command(bot, nick, message, channel, query=None):
     if response != "Song not found":
         song_url = response
 
-        client  = tornado.httpclient.AsyncHTTPClient()
+        client  = tornado.httpclient.AsyncHTTPClient(defaults=dict(request_timeout=180, connect_timeout=60))
         result  = yield tornado.gen.Task(client.fetch, song_url)
         tree = etree.HTML(result.body)
 
