@@ -8,8 +8,8 @@ import tornado.httpclient
 NAME    = 'sports'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = '^!(?P<sport>nba|nfl|mlb|wnba|nhl)$'
-USAGE   = '''Usage: ![nhl|nba|wnba|mlb|nfl]
+PATTERN = '^!(?P<sport>nba|nfl|mlb|wnba|nhl|cfb)$'
+USAGE   = '''Usage: ![nhl|nba|wnba|mlb|nfl|cfb]
 Given a search query, this returns the first result from Google
 Example:
     > !nba
@@ -19,11 +19,15 @@ Example:
 # Constants
 
 ESPN_TEMPLATE = 'http://www.espn.com/{sport}/bottomline/scores'
+SPORTS_ALIAS  = {
+    'cfb': 'ncf',
+}
 
 # Command
 
 @tornado.gen.coroutine
 def command(bot, nick, message, channel, sport):
+    sport    = SPORTS_ALIAS.get(sport, sport)
     url      = ESPN_TEMPLATE.format(sport=sport)
     client   = tornado.httpclient.AsyncHTTPClient()
     result   = yield tornado.gen.Task(client.fetch, url)
