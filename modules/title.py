@@ -22,7 +22,7 @@ Example:
 
 # Constants
 
-WHITELIST = ('##bx612', '##grillers', '#nd-cse', '#uwec-cs')
+WHITELIST = ('##bx612', '##grillers', '#nd-cse', '#ndlug', '#uwec-cs')
 
 # Command
 
