@@ -55,8 +55,7 @@ def command(bot, nick, message, channel, netid, passcode):
     if hasattr(nick, 'prefix'):
         return
 
-    if passcode == cksum(netid):
-        '''
+    if passcode == base64.b64encode((netid + '\n').encode()).decode():
         message  = rot13('{}={}'.format(netid, int(time.time()))).encode()
         response = '{} {}! Please tell the ORACLE the following MESSAGE: {}'.format(
             random.choice(GREETINGS).title(),
@@ -66,6 +65,7 @@ def command(bot, nick, message, channel, netid, passcode):
         '''
         response = random.choice(SUCCESSES)
         bot.verified.add(nick)
+        '''
     else:
         response = random.choice(FAILURES)
     bot.send_response(response, nick, channel)
