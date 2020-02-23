@@ -102,7 +102,8 @@ def script(config_dir):
         logger.info('Fetching %s (%s)', feed_title, feed_url)
 
         client  = tornado.httpclient.HTTPClient()
-        request = tornado.httpclient.HTTPRequest(feed_url, request_timeout=10)
+        headers = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) Chrome/73.0.3683.105'}
+        request = tornado.httpclient.HTTPRequest(feed_url, headers=headers, request_timeout=10)
         try:
             result = client.fetch(request)
         except Exception as e:
@@ -136,7 +137,7 @@ def script(config_dir):
             # If date published is too old, then mark and skip recording
             timestamp = entry.get('updated_parsed', entry.get('published_parsed', None))
             timestamp = time.mktime(timestamp) if timestamp else time.time()
-            if time.time() - timestamp > 24*60*60:
+            if abs(time.time() - timestamp) > 24*60*60:
                 logger.debug('Skipping %s (too old)', link)
                 feeds_cache[key] = str(time.time())
                 continue
