@@ -7,8 +7,8 @@ import tornado.gen
 NAME    = 'interject'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = '^!interject (?P<first>[^\s]+) (?P<second>[^\s]+)$'
-USAGE   = '''Usage: !ddg <query>
+PATTERN = '^!interject (?P<first>(".+")|([^\s]+)) (?P<second>(".+")|([^\s]+))$'
+USAGE   = '''Usage: !interject <first> <second>
 Creates interject meme with first and second arguments.
 Example:
     > !interject Linux GNU
@@ -25,6 +25,10 @@ TEMPLATE = "I'd just like to interject for a moment. What you’re referring to 
 
 @tornado.gen.coroutine
 def command(bot, nick, message, channel, first='Linux', second='GNU'):
+    if first[0] == '"' and first[-1] == '"':
+      first = first[1:-1]
+    if second[0] == '"' and second[-1] == '"':
+      second = second[1:-1]
     bot.send_response(TEMPLATE.format(first=first, second=second), nick, channel)
 
 # Register
