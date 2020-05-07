@@ -52,7 +52,7 @@ def timer(bot):
         except json.decoder.JSONDecodeError:
             return
 
-        for feed, entries in json.loads(results).items():
+        for feed, entries in json_data.items():
             for entry in entries:
                 title    = entry['title'].replace('\r', ' ').replace('\n', ' ')
                 key      = entry['link'].encode('ascii', 'ignore')
