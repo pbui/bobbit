@@ -35,6 +35,7 @@ def timer(bot):
     environ = dict(os.environ, **{'PYTHONPATH': os.path.join(__file__, '..', '..') + ':' + os.environ.get('PYTHONPATH', '')})
     process = tornado.process.Subprocess(command, stdout=tornado.process.Subprocess.STREAM, env=environ)
     results = yield tornado.gen.Task(process.stdout.read_until_close)
+    status  = yield process.wait_for_exit(raise_error=False)
 
     # Read configuration
     config_path      = os.path.join(bot.config_dir, 'feeds.yaml')
@@ -46,6 +47,11 @@ def timer(bot):
     cache_path = os.path.join(bot.config_dir, 'feeds.cache')
 
     with dbm.open(cache_path, 'c') as feeds_cache:
+        try:
+            json_data = json.loads(results)
+        except json.decoder.JSONDecodeError:
+            return
+
         for feed, entries in json.loads(results).items():
             for entry in entries:
                 title    = entry['title'].replace('\r', ' ').replace('\n', ' ')
@@ -117,6 +123,10 @@ def script(config_dir):
             title  = strip_html(entry.get('title', ''))
             author = entry.get('author', 'Unknown')
             key    = link.encode('ascii','ignore')
+
+            # If link starts with //, replace with https:// (workaround for the Week bug)
+            if link.startswith('//'):
+                link = 'https:' + link
 
             # If there is no key, then skip
             if not key:
