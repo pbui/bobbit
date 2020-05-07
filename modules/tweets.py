@@ -35,6 +35,7 @@ def timer(bot):
     environ = dict(os.environ, **{'PYTHONPATH': os.path.join(__file__, '..', '..') + ':' + os.environ.get('PYTHONPATH', '')})
     process = tornado.process.Subprocess(command, stdout=tornado.process.Subprocess.STREAM, env=environ)
     results = yield tornado.gen.Task(process.stdout.read_until_close)
+    status  = yield process.wait_for_exit(raise_error=False)
 
     # Read configuration
     config_path      = os.path.join(bot.config_dir, 'tweets.yaml')
@@ -45,7 +46,12 @@ def timer(bot):
     # Read and process results
     cache_path = os.path.join(bot.config_dir, 'tweets.cache')
     with dbm.open(cache_path, 'c') as tweet_cache:
-        for user, entries in json.loads(results).items():
+        try:
+            json_data = json.loads(results)
+        except json.decoder.JSONDecodeError:
+            return
+
+        for user, entries in json_data.items():
             for entry in entries:
                 status      = entry['status']
                 channels    = entry['channels']
