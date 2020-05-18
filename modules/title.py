@@ -2,7 +2,9 @@
 
 from modules.__common__ import strip_html
 
+import os
 import re
+import yaml
 
 import tornado.gen
 import tornado.httpclient
@@ -22,7 +24,7 @@ Example:
 
 # Constants
 
-WHITELIST = ('##bx612', '##grillers', '#nd-cse', '#ndlug', '#uwec-cs')
+WHITELIST = []
 
 # Command
 
@@ -47,6 +49,15 @@ def command(bot, nick, message, channel, url=None):
 # Register
 
 def register(bot):
+    global WHITELIST
+
+    config_path = os.path.join(bot.config_dir, 'title.yaml')
+    try:
+        config    = yaml.safe_load(open(config_path))
+        WHITELIST = config.get('whitelist', WHITELIST)
+    except (IOError, KeyError) as e:
+        bot.log.warn(e)
+
     return (
         (PATTERN, command),
     )
