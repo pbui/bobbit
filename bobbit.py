@@ -170,6 +170,9 @@ class IRCClient(object):
             for channel in self.channels:
                 self.logger.info('Joining %s', channel)
                 self.send('JOIN {}'.format(channel))
+            
+        # Uncomment if you need to REGISTER the bot
+        # self.send_message('REGISTER {}'.format(self.password), nick='NickServ')
 
         # Identify
         self.logger.info('Identifying as %s', self.nick)
