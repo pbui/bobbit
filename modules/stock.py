@@ -40,7 +40,7 @@ def command(bot, nick, message, channel, symbol=None):
         response = bot.format_text(
             "{bold}Symbol{bold}: {symbol}, "
             "{bold}Price{bold}: {price}, "
-            "{color}{cyan}Open{color}: {price_open}, "
+            "{color}{blue}Open{color}: {price_open}, "
             "{color}{green}High{color}: {day_high}, "
             "{color}{red}Low{color}: {day_low}, "
             "{color}{yellow}Change{color}: {day_change:0.2f}",
