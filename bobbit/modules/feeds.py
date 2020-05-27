@@ -6,6 +6,7 @@ import logging
 import os
 import time
 
+import aiohttp
 import feedparser
 import yaml
 
@@ -27,8 +28,12 @@ async def process_feed(http_client, feed, cache):
     feed_key      = feed_title.encode('ascii', 'ignore')
 
     logging.info('Fetching %s (%s)', feed_title, feed_url)
-    async with http_client.get(feed_url) as response:
-        text = await response.text()
+    try:
+        async with http_client.get(feed_url) as response:
+            text = await response.text()
+    except aiohttp.client_exceptions.ClientPayloadError as e:
+        logging.warning('Could not fetch %s: %s', feed_url, e)
+        return
 
     logging.info('Parsing %s (%s)', feed_title, feed_url)
     for entry in feedparser.parse(text)['entries']:
