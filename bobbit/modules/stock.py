@@ -1,9 +1,5 @@
 # stock.py
 
-import logging
-import os
-import yaml
-
 # Metadata
 
 NAME    = 'stock'
@@ -52,12 +48,8 @@ async def stock(bot, message, symbol=None):
 def register(bot):
     global API_KEY
 
-    config_path = os.path.join(bot.config.config_dir, 'stocks.yaml')
-    try:
-        config  = yaml.safe_load(open(config_path))
-        API_KEY = config.get('api_key', '')
-    except (IOError, KeyError) as e:
-        logging.warning(e)
+    config  = bot.config.load_module_config('stock')
+    API_KEY = config.get('api_key', '')
 
     if not API_KEY:
         return []
