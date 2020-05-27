@@ -1,0 +1,161 @@
+# feeds.py
+
+import dbm.gnu
+import collections
+import logging
+import os
+import time
+
+import feedparser
+import yaml
+
+from bobbit.message import Message
+from bobbit.utils   import shorten_url, strip_html
+
+# Metadata
+
+NAME     = 'feeds'
+ENABLE   = True
+TEMPLATE = 'From {color}{green}{feed}{color} feed: {bold}{title}{bold} by {color}{cyan}{author}{color} @ {color}{blue}{link}{color}'
+
+# Utilities
+
+async def process_feed(http_client, feed, cache):
+    feed_title    = feed['title']
+    feed_url      = feed['url']
+    feed_channels = feed['channels']
+    feed_key      = feed_title.encode('ascii', 'ignore')
+
+    logging.info('Fetching %s (%s)', feed_title, feed_url)
+    async with http_client.get(feed_url) as response:
+        text = await response.text()
+
+    logging.info('Parsing %s (%s)', feed_title, feed_url)
+    for entry in feedparser.parse(text)['entries']:
+        link   = entry.get('link', '')
+        title  = strip_html(entry.get('title', ''))
+        author = entry.get('author', 'Unknown')
+        key    = link.encode('ascii','ignore')
+
+        # If link starts with //, replace with https:// (workaround for the Week bug)
+        if link.startswith('//'):
+            link = 'https:' + link
+
+        # If there is no key, then skip
+        if not key:
+            logging.debug('No key for %s', link)
+            continue
+
+        # If key is in cache and the timestamp is > 1.0, then skip
+        if key in cache and float(cache[key]) > 1.0:
+            logging.debug('Skipping %s (already %s)', link, cache[key].decode())
+            continue
+
+        # If feed is not in cache, then it is new, so mark all entries as skipped
+        if feed_key not in cache:
+            logging.debug('Skipping %s (new feed)', link)
+            cache[key] = str(time.time())
+            continue
+
+        # If date published is too old, then mark and skip recording
+        timestamp = entry.get('updated_parsed', entry.get('published_parsed', None))
+        timestamp = time.mktime(timestamp) if timestamp else time.time()
+        if abs(time.time() - timestamp) > 24*60*60:
+            logging.debug('Skipping %s (too old)', link)
+            cache[key] = str(time.time())
+            continue
+
+        # Record entry with a key of 1.0 and then add to list of items
+        logging.info('Recording %s', link)
+        cache[key] = str(1.0)
+        yield {
+            'title'     : title,
+            'author'    : author,
+            'link'      : link,
+            'channels'  : feed_channels,
+            'timestamp' : timestamp,
+        }
+
+    # Mark feed in cache
+    cache[feed_key] = str(time.time())
+
+# Timer
+
+async def feeds_timer(bot):
+    logging.info('Feeds timer starting...')
+
+    # Read configuration
+    try:
+        config_path      = os.path.join(bot.config.config_dir, 'feeds.yaml')
+        feeds_config     = yaml.safe_load(open(config_path))
+        templates        = feeds_config.get('templates', {})
+        default_template = templates.get('default', TEMPLATE)
+    except (IOError, OSError) as e:
+        logging.warning(e)
+        return
+
+    # Read and process results
+    entries       = collections.defaultdict(list)
+    entries_limit = feeds_config.get('limit', 5)
+    cache_path    = os.path.join(bot.config.config_dir, 'feeds.cache')
+
+    with dbm.open(cache_path, 'c') as cache:
+        logging.debug('Processing feeds...')
+        for feed in feeds_config['feeds']:
+            feed_title = feed['title']
+
+            async for feed_entry in process_feed(bot.http_client, feed, cache):
+                entries[feed_title].append(feed_entry)
+
+        logging.debug('Delivering feeds...')
+        for feed_title, entries in entries.items():
+            logging.debug('Delivering %s...', feed_title)
+            for index, entry in enumerate(sorted(entries, key=lambda e: e['timestamp'])):
+                if index > entries_limit:   # Enforce entries limit
+                    break
+
+                title    = entry['title'].replace('\r', ' ').replace('\n', ' ')
+                key      = entry['link'].encode('ascii', 'ignore')
+                link     = await shorten_url(bot.http_client, entry['link'])
+                author   = entry['author']
+                channels = entry['channels']
+
+                logging.debug('Delivering %s...', title)
+
+                # Send each entry to the appropriate channel
+                for channel in channels:
+                    template = templates.get(channel, default_template)
+                    await bot.outgoing.put(Message(
+                        channel = channel,
+                        body    = bot.client.format_text(
+                            template,
+                            feed   = feed_title,
+                            title  = title,
+                            link   = link,
+                            author = author
+                        )
+                    ))
+
+                # Mark entry as delivered
+                logging.info(
+                    'Delivered %s from %s to %s',
+                    title, feed_title, ', '.join(channels)
+                )
+                cache[key] = str(time.time())
+
+# Register
+
+def register(bot):
+    try:
+        config_path  = os.path.join(bot.config.config_dir, 'feeds.yaml')
+        feeds_config = yaml.safe_load(open(config_path))
+        timeout      = feeds_config.get('timeout', 5*60)
+    except (IOError, OSError) as e:
+        logging.warning(e)
+        return []
+
+    return (
+        ('timer', timeout, feeds_timer),
+    )
+
+# vim: set sts=4 sw=4 ts=8 expandtab ft=python:
