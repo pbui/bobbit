@@ -41,6 +41,7 @@ def parse_recurrences(rrule, startdt, exclusions):
 
 async def events_timer(bot):
     logger = logging.getLogger()
+    logger.info('Events timer starting...')
 
     # Read configuration
     config           = bot.config.load_module_config('events')
