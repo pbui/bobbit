@@ -39,11 +39,11 @@ def command(bot, nick, message, channel, symbol=None):
         data     = json.loads(result.body.decode())
         response = bot.format_text(
             "{bold}Symbol{bold}: {symbol}, "
-            "{bold}Price{bold}: {price}, "
+            "{color}{magenta}Price{color}: {price}, "
             "{color}{blue}Open{color}: {price_open}, "
             "{color}{green}High{color}: {day_high}, "
             "{color}{red}Low{color}: {day_low}, "
-            "{color}{yellow}Change{color}: {day_change:0.2f}",
+            "{color}{cyan}Change{color}: {day_change:0.2f}",
             symbol     = symbol.upper(),
             price      = data['c'],
             price_open = data['o'],
