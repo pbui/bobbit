@@ -2,8 +2,6 @@
 
 import html
 import logging
-import os
-import yaml
 
 from bobbit.utils import shorten_url
 
@@ -56,12 +54,7 @@ async def google(bot, message, query=None):
 def register(bot):
     global GOOGLE_API_KEY, GOOGLE_API_CSE
 
-    try:
-        config = yaml.safe_load(open(os.path.join(bot.config.config_dir, 'google.yaml')))
-    except OSError as e:
-        logging.warning(e)
-        return []
-
+    config         = bot.config.load_module_config('google')
     GOOGLE_API_KEY = config.get('api_key', None)
     GOOGLE_API_CSE = config.get('api_cse', None)
 
