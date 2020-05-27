@@ -1,5 +1,6 @@
 # title.py
 
+import html
 import logging
 import os
 import re
@@ -31,10 +32,11 @@ async def title(bot, message, url=None):
 
     async with bot.http_client.get(url) as response:
         try:
-            text     = (await response.text()).replace('\n', ' ')
-            response = bot.client.format_text(
+            text       = (await response.text()).replace('\n', ' ')
+            html_title = re.findall(r'<title[^>]*>([^<]+)</title>', text)[0]
+            response   = bot.client.format_text(
                 '{color}{green}Title{color}: {bold}{title}{bold}',
-                title = strip_html(re.findall(r'<title[^>]*>([^<]+)</title>', text)[0])
+                title = strip_html(html.unescape(html_title))
             )
         except (IndexError, ValueError):
             return
