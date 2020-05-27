@@ -5,26 +5,21 @@
 
 Store aliases in aliases.yaml file in bobbit configuration directory:
 
-    aliases:
-        # Distrowatch aliases
-        Arch:     '!distrowatch arch'
-        Fedora:   '!distrowatch fedora'
-        FerenOS:  '!distrowatch ferenos'
-        Solus:    '!distrowatch solus'
-        Ubuntu:   '!distrowatch ubuntu'
-        Void:     '!distrowatch void'
+    # Distrowatch aliases
+    Arch:     '!distrowatch arch'
+    Fedora:   '!distrowatch fedora'
+    FerenOS:  '!distrowatch ferenos'
+    Solus:    '!distrowatch solus'
+    Ubuntu:   '!distrowatch ubuntu'
+    Void:     '!distrowatch void'
 
-        # Google aliases
-        so:       '!g site:stackoverflow.com'
-        nd:       '!g site:nd.edu'
+    # Google aliases
+    so:       '!g site:stackoverflow.com'
+    nd:       '!g site:nd.edu'
 
-        # Reddit aliases
-        riseup:   '!reddit gamersriseup'
+    # Reddit aliases
+    riseup:   '!reddit gamersriseup'
 '''
-
-import os
-import logging
-import yaml
 
 # Metadata
 
@@ -54,13 +49,7 @@ async def aliases(bot, message, alias=None, arguments=None):
 def register(bot):
     global ALIASES
 
-    try:
-        aliases_path = os.path.join(bot.config.config_dir, 'aliases.yaml')
-        aliases_data = yaml.safe_load(open(aliases_path))
-        ALIASES      = aliases_data.get('aliases', {})
-    except (KeyError, IOError) as e:
-        logging.warning(e)
-        return []
+    ALIASES = bot.config.load_module_config('aliases')
 
     return (
         ('command', PATTERN, aliases),
