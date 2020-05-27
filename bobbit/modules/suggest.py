@@ -1,8 +1,6 @@
 # suggest.py
 
 import logging
-import os
-import yaml
 
 # Metadata
 
@@ -26,15 +24,17 @@ async def suggest(bot, message, target, suggestion):
     if message.highlighted:
         return
 
-    target = target[1:] if target.startswith('#') else target
+    if not target.startswith('#'):
+        target = '#' + target
+
     if not target in WHITELIST:
-        return message.with_body(f'Channel #{target} not allowed')
+        return message.with_body(f'Channel {target} not allowed')
 
     logging.info('Anonymous message from %s: %s', message.nick, message.body)
     return message.copy(
         body    = bot.client.format_text(TEMPLATE, suggestion=suggestion),
         nick    = 'anonymous',
-        channel = '#' + target,
+        channel = target,
     )
 
 # Register
@@ -42,14 +42,9 @@ async def suggest(bot, message, target, suggestion):
 def register(bot):
     global WHITELIST, TEMPLATE
 
-    config_path = os.path.join(bot.config.config_dir, 'suggest.yaml')
-    try:
-        config    = yaml.safe_load(open(config_path))
-        WHITELIST = config.get('whitelist', WHITELIST)
-        TEMPLATE  = config.get('template' , TEMPLATE)
-    except (IOError, KeyError) as e:
-        logging.warning(e)
-        return []
+    config    = bot.config.load_module_config('suggest')
+    WHITELIST = config.get('whitelist', WHITELIST)
+    TEMPLATE  = config.get('template' , TEMPLATE)
 
     return (
         ('command', PATTERN, suggest),
