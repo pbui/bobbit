@@ -1,5 +1,6 @@
 # ddg.py
 
+import html
 import logging
 import re
 
@@ -30,7 +31,7 @@ async def ddg(bot, message, query=None):
             text     = await response.text()
             matches  = re.findall(DDG_RE, text)
             url      = await shorten_url(bot.http_client, unquote(matches[0][0]))
-            title    = strip_html(unquote(matches[0][1]))
+            title    = strip_html(html.unescape(matches[0][1]))
             response = bot.client.format_text(
                 '{color}{green}DDG{color}: ' +
                 '{bold}{title}{bold} @ {color}{blue}{url}{color}',
