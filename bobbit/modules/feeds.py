@@ -30,13 +30,13 @@ async def process_feed(http_client, feed, cache):
     logging.info('Fetching %s (%s)', feed_title, feed_url)
     try:
         async with http_client.get(feed_url) as response:
-            text = await response.text()
+            feed_content = await response.content.read()
     except aiohttp.client_exceptions.ClientPayloadError as e:
         logging.warning('Could not fetch %s: %s', feed_url, e)
         return
 
     logging.info('Parsing %s (%s)', feed_title, feed_url)
-    for entry in feedparser.parse(text)['entries']:
+    for entry in feedparser.parse(feed_content)['entries']:
         link   = entry.get('link', '')
         title  = strip_html(entry.get('title', ''))
         author = entry.get('author', 'Unknown')
@@ -109,8 +109,11 @@ async def feeds_timer(bot):
         for feed in feeds_config['feeds']:
             feed_title = feed['title']
 
-            async for feed_entry in process_feed(bot.http_client, feed, cache):
-                entries[feed_title].append(feed_entry)
+            try:
+                async for feed_entry in process_feed(bot.http_client, feed, cache):
+                    entries[feed_title].append(feed_entry)
+            except Exception as e:
+                logging.warning('Unable to process feed %s: %s', feed_title, e)
 
         logging.debug('Delivering feeds...')
         for feed_title, entries in entries.items():
