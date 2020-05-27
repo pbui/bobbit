@@ -4,9 +4,7 @@ import base64
 import dbm.gnu
 import collections
 import logging
-import os
 import time
-import yaml
 
 from bobbit.message import Message
 from bobbit.utils   import shorten_url, strip_html
@@ -99,35 +97,30 @@ async def tweets_timer(bot):
     logging.info('Tweets timer starting...')
 
     # Read configuration
-    try:
-        config_path      = os.path.join(bot.config.config_dir, 'tweets.yaml')
-        tweets_config    = yaml.safe_load(open(config_path))
-        templates        = tweets_config.get('templates', {})
-        default_template = templates.get('default', TEMPLATE)
-    except (IOError, OSError) as e:
-        logging.warning(e)
-        return
+    config           = bot.config.load_module_config('tweets')
+    templates        = config.get('templates', {})
+    default_template = templates.get('default', TEMPLATE)
 
     # Get access token
     access_token = await get_access_token(
         bot.http_client,
-        tweets_config['consumer_key'],
-        tweets_config['consumer_secret'],
+        config['consumer_key'],
+        config['consumer_secret'],
     )
 
     # Read tweets
     entries    = collections.defaultdict(list)
-    cache_path = os.path.join(bot.config.config_dir, 'tweets.cache')
+    cache_path = bot.config.get_config_path('tweets.cache')
 
     with dbm.open(cache_path, 'c') as cache:
         logging.debug('Processing tweets...')
-        for feed in tweets_config['feeds']:
+        for feed in config.get('feeds', []):
             user = feed['user']
             try:
                 async for tweet_entry in process_feed(bot.http_client, feed, cache, access_token):
                     entries[user].append(tweet_entry)
             except Exception as e:
-                logging.exception(e)
+                logging.warning('Unable to process %s feed: %s', user, e)
 
         logging.debug('Delivering tweets...')
         for user, entries in entries.items():
@@ -159,13 +152,8 @@ async def tweets_timer(bot):
 # Register
 
 def register(bot):
-    try:
-        config_path   = os.path.join(bot.config.config_dir, 'tweets.yaml')
-        tweets_config = yaml.safe_load(open(config_path))
-        timeout       = tweets_config.get('timeout', 5*60)
-    except (IOError, OSError) as e:
-        logging.warning(e)
-        return []
+    config  = bot.config.load_module_config('tweets')
+    timeout = config.get('timeout', 5*60)
 
     return (
         ('timer', timeout, tweets_timer),
