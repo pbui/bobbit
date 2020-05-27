@@ -2,12 +2,10 @@
 
 import datetime
 import logging
-import os
 import re
 
 import icalendar
 import dateutil
-import yaml
 
 from bobbit.message import Message
 
@@ -45,19 +43,13 @@ async def events_timer(bot):
     logger = logging.getLogger()
 
     # Read configuration
-    try:
-        config_path    = os.path.join(bot.config.config_dir, 'events.yaml')
-        events_config  = yaml.safe_load(open(config_path))
-        events_timeout = events_config.get('timeout', 10*60)
-    except (OSError, IOError) as e:
-        logger.warning(e)
-        return
-
-    templates        = events_config.get('templates', {})
+    config           = bot.config.load_module_config('events')
+    timeout          = config.get('timeout', 10*60)
+    templates        = config.get('templates', {})
     default_template = templates.get('default', TEMPLATE)
 
     # Read events feeds
-    for feed_config in events_config['feeds']:
+    for feed_config in config.get('feeds', []):
         feed_url      = feed_config['url']
         feed_title    = feed_config['title']
         feed_channels = feed_config.get('channels', [])
@@ -81,7 +73,7 @@ async def events_timer(bot):
             description = event.get('description', '')
             location    = event.get('location', '')
             now         = datetime.datetime.now(datetime.timezone.utc)
-            later       = now + datetime.timedelta(seconds=events_timeout)
+            later       = now + datetime.timedelta(seconds=timeout)
 
             try:
                 channels = re.findall(r'channels: (.*)', description)[0].split(',')
@@ -118,13 +110,8 @@ async def events_timer(bot):
 # Register
 
 def register(bot):
-    try:
-        config_path   = os.path.join(bot.config.config_dir, 'events.yaml')
-        events_config = yaml.safe_load(open(config_path))
-        timeout       = events_config.get('timeout', 10*60)
-    except (OSError, IOError) as e:
-        logging.warning(e)
-        return []
+    config  = bot.config.load_module_config('events')
+    timeout = config.get('timeout', 10*60)
 
     return (
         ('timer', timeout, events_timer),
