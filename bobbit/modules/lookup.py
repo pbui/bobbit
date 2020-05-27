@@ -26,9 +26,9 @@ Example:
 
 # Constants
 
-LOOKUP_PATH = None
 LOOKUP_DATA = {}
-LOOKUP_TIME = None
+LOOKUP_PATH = None
+LOOKUP_TIME = 0
 
 # Lookup
 
@@ -36,21 +36,25 @@ def lookup_data():
     global LOOKUP_TIME, LOOKUP_DATA
 
     mtime = os.path.getmtime(LOOKUP_PATH)
-    if LOOKUP_TIME is None or LOOKUP_TIME < mtime:
-        LOOKUP_DATA = yaml.safe_load(open(LOOKUP_PATH, 'rb'))
-        LOOKUP_TIME = mtime
+    if not LOOKUP_TIME or LOOKUP_TIME < mtime:
+        try:
+            LOOKUP_DATA = yaml.safe_load(open(LOOKUP_PATH))
+            LOOKUP_TIME = mtime
+        except (IOError, OSError, yaml.parser.ParserError) as e:
+            logging.warning('Unable to parse lookup data: %s', e)
 
     return LOOKUP_DATA
 
 def lookup_r(key, data=None):
-    # TODO: Document (there be dragons here)
-    data   = data or lookup_data()
+    data   = data or lookup_data()  # Use given directory or use global dictionary
     result = data.get(key, None)
     args   = '__default__'
     if not result:
         key, args = key.split(' ', 1)
         result    = data.get(key, None)
 
+    # Result is a string, so recursive if it is an alias, otherwise return all
+    # of by spliting by newlines.
     if isinstance(result, str):
         if result.startswith('!'):
             if args.split()[-1] == '-a':
@@ -58,14 +62,20 @@ def lookup_r(key, data=None):
             else:
                 return lookup_r(result[1:])
         return result.split('\n')
+
+    # Result is a list, so either turn all of it or pick one at random.
     elif isinstance(result, list):
         if args.split()[-1] == '-a':
             return result
         return [random.choice(result)]
+
+    # Result is a dictionary, so recurse on the remaining arguments with this
+    # dictionary or the default entry.
     elif isinstance(result, dict):
         return lookup_r(args, result) or lookup_r('__default__', result)
-    else:
-        return None
+
+    # Nothing matches, so return None.
+    return None
 
 # Command
 
@@ -80,15 +90,9 @@ async def lookup(bot, message, query=None):
 # Register
 
 def register(bot):
-    global LOOKUP_PATH, LOOKUP_DATA
+    global LOOKUP_PATH
 
-    try:
-        LOOKUP_PATH = os.path.join(bot.config.config_dir, 'lookup.yaml')
-        LOOKUP_DATA = lookup_data()
-    except (IOError, OSError) as e:
-        logging.warning(e)
-        return []
-
+    LOOKUP_PATH = bot.config.get_config_path('lookup.yaml')
     return (
         ('command', PATTERN, lookup),
     )
