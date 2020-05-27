@@ -113,6 +113,9 @@ def register(bot):
     config  = bot.config.load_module_config('events')
     timeout = config.get('timeout', 10*60)
 
+    if not config:
+        return []
+
     return (
         ('timer', timeout, events_timer),
     )

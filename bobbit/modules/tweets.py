@@ -155,6 +155,9 @@ def register(bot):
     config  = bot.config.load_module_config('tweets')
     timeout = config.get('timeout', 5*60)
 
+    if not config:
+        return []
+
     return (
         ('timer', timeout, tweets_timer),
     )
