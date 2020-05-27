@@ -12,11 +12,10 @@ Store RPCs in rpcs.yaml file in bobbit configuration directory:
             command:    'figlet {arguments}'
         mpc:
             command:    'ssh -t cable mpc --host={argument0} {argument1}'
-            environ:
-                SSH_AUTH_SOCK:    '/home/pbui/.ssh/agent'
             owners:     True
 '''
 
+import asyncio
 import logging
 import os
 import random
@@ -28,7 +27,7 @@ import yaml
 
 NAME    = 'rpc'
 ENABLE  = True
-PATTERN = '^!rpc (?P<program>[^ ]+)\s*(?P<arguments>.*)'
+PATTERN = r'^!rpc (?P<program>[^ ]+)\s*(?P<arguments>.*)'
 USAGE   = '''Usage: !rpc <program> <arguments>
 
 Executes a command and displays its results.  This is extremely dangerous, so
@@ -57,7 +56,7 @@ RPC_TIMESTAMP = None
 
 # Command
 
-async def execute(bot, message, command, environ=None):
+async def execute(bot, message, command):
     global RPC_TIMESTAMP
 
     if time.time() - RPC_TIMESTAMP < 5:
@@ -67,7 +66,7 @@ async def execute(bot, message, command, environ=None):
     command = shlex.split(command) if isinstance(command, str) else command
     process = await asyncio.create_subprocess_exec(*command, stdout=asyncio.subprocess.PIPE)
 
-    stdout, stderr = await process.communicate()
+    stdout, _ = await process.communicate()
     await process.wait()
     RPC_TIMESTAMP  = time.time()
     return stdout.decode().splitlines()
@@ -77,7 +76,6 @@ async def rpc(bot, message, program=None, arguments=None):
         return
 
     program   = RPCS[program]
-    environ   = program.get('environ', {})
     args      = dict(enumerate(arguments.split()))
     command   = shlex.split(program.get('command', '').format(
         arguments = arguments,
@@ -92,7 +90,7 @@ async def rpc(bot, message, program=None, arguments=None):
         return
 
     logging.debug('RPC command: %s', command)
-    return await execute(bot, message, command, environ)
+    return await execute(bot, message, command)
 
 # Register
 
