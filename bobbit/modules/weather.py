@@ -10,10 +10,6 @@ configuration directory and expects the following values:
     default:    This is the default zip code
 '''
 
-import logging
-import os
-import yaml
-
 # Metadata
 
 NAME    = 'weather'
@@ -64,12 +60,7 @@ async def weather(bot, message, zipcode=None):
 def register(bot):
     global OWM_APPID, DEFAULT_ZIPCODE
 
-    try:
-        config = yaml.safe_load(open(os.path.join(bot.config.config_dir, 'weather.yaml')))
-    except OSError as e:
-        logging.warning(e)
-        return []
-
+    config          = bot.config.load_module_config('weather')
     DEFAULT_ZIPCODE = config.get('default', ZIPCODE['#lug'])
     OWM_APPID       = config.get('appid', None)
 
