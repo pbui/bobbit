@@ -60,10 +60,23 @@ class Configuration():
             self.host        = config.get('host'    , 'irc.freenode.net')
             self.port        = config.get('port'    , 6667)
             self.password    = config.get('password', '')
-            
+
         self.channels = config.get('channels', [])
         logger.info('Server:         %s:%d', self.host, self.port)
         logger.info('Password:       %s'   , self.password)
         logger.info('Channels:       %s'   , ', '.join(self.channels))
+
+    def get_config_path(self, file_name):
+        return os.path.join(self.config_dir, file_name)
+
+    def load_module_config(self, module_name):
+        config_path = self.get_config_path(module_name + '.yaml')
+        try:
+            config_data = yaml.safe_load(open(config_path))
+        except (IOError, OSError, yaml.parser.ParserError) as e:
+            logging.warning('Unable to open configuration file %s: %s', config_path, e)
+            config_data = {}
+
+        return config_data
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
