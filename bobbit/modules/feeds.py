@@ -25,7 +25,7 @@ async def process_feed(http_client, feed, cache):
     feed_channels = feed['channels']
     feed_key      = feed_title.encode('ascii', 'ignore')
 
-    logging.info('Fetching %s (%s)', feed_title, feed_url)
+    logging.debug('Fetching %s (%s)', feed_title, feed_url)
     try:
         async with http_client.get(feed_url) as response:
             feed_content = await response.content.read()
@@ -33,7 +33,7 @@ async def process_feed(http_client, feed, cache):
         logging.warning('Could not fetch %s: %s', feed_url, e)
         return
 
-    logging.info('Parsing %s (%s)', feed_title, feed_url)
+    logging.debug('Parsing %s (%s)', feed_title, feed_url)
     for entry in feedparser.parse(feed_content)['entries']:
         link   = entry.get('link', '')
         title  = strip_html(entry.get('title', ''))
@@ -69,7 +69,7 @@ async def process_feed(http_client, feed, cache):
             continue
 
         # Record entry with a key of 1.0 and then add to list of items
-        logging.info('Recording %s', link)
+        logging.debug('Recording %s', link)
         cache[key] = str(1.0)
         yield {
             'title'     : title,

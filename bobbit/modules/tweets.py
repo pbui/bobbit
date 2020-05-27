@@ -67,7 +67,7 @@ async def process_feed(http_client, feed, cache, access_token):
     since_id = int(cache.get('since_id', 1))
     statuses = await get_user_timeline(http_client, user, since_id, access_token)
 
-    logging.info('Processing %s timeline...', user)
+    logging.debug('Processing %s timeline...', user)
     for status in statuses:
         # Skip if status does not contain pattern
         status_text = strip_html(status['text'])

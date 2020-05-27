@@ -54,14 +54,14 @@ async def events_timer(bot):
         feed_title    = feed_config['title']
         feed_channels = feed_config.get('channels', [])
 
-        logger.info('Fetching %s (%s)', feed_title, feed_url)
+        logger.debug('Fetching %s (%s)', feed_title, feed_url)
 
         async with bot.http_client.get(feed_url) as response:
             text = await response.text()
 
         events = icalendar.Calendar.from_ical(text).walk('vevent')
         events = filter(lambda e: isinstance(e['DTSTART'].dt, datetime.datetime), events)
-        logger.info('Parsing %s (%s)', feed_title, feed_url)
+        logger.debug('Parsing %s (%s)', feed_title, feed_url)
 
         # Check each event
         for event in events:
