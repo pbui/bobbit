@@ -1,5 +1,6 @@
 # google.py
 
+import html
 import logging
 import os
 import yaml
@@ -36,7 +37,7 @@ async def google(bot, message, query=None):
         try:
             data  = await response.json()
             item  = data['items'][0]
-            title = item['title']
+            title = html.unescape(item['title'])
             url   = await shorten_url(bot.http_client, item['link'])
             response = bot.client.format_text(
                 '{color}{green}Google{color}: ' +
