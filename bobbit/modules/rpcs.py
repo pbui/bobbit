@@ -5,23 +5,18 @@
 
 Store RPCs in rpcs.yaml file in bobbit configuration directory:
 
-    rpcs:
-        ping:
-            command:    'ping -c 3 -w 3 {argument0}'
-        figlet:
-            command:    'figlet {arguments}'
-        mpc:
-            command:    'ssh -t cable mpc --host={argument0} {argument1}'
-            owners:     True
+    ping:
+        command:    'ping -c 3 -w 3 {argument0}'
+    figlet:
+        command:    'figlet {arguments}'
+        owners:     True
 '''
 
 import asyncio
 import logging
-import os
 import random
 import shlex
 import time
-import yaml
 
 # Metadata
 
@@ -97,14 +92,8 @@ async def rpc(bot, message, program=None, arguments=None):
 def register(bot):
     global RPCS, RPC_TIMESTAMP
 
-    try:
-        rpcs_path     = os.path.join(bot.config.config_dir, 'rpcs.yaml')
-        rpcs_data     = yaml.safe_load(open(rpcs_path))
-        RPCS          = rpcs_data.get('rpcs', {})
-        RPC_TIMESTAMP = time.time()
-    except (KeyError, IOError) as e:
-        logging.warning(e)
-        return []
+    RPCS          = bot.config.load_module_config('rpcs')
+    RPC_TIMESTAMP = time.time()
 
     logging.debug('RPCs: %s', RPCS)
     return (
