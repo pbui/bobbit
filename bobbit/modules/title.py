@@ -1,10 +1,7 @@
 # title.py
 
 import html
-import logging
-import os
 import re
-import yaml
 
 from bobbit.utils import strip_html
 
@@ -48,13 +45,8 @@ async def title(bot, message, url=None):
 def register(bot):
     global WHITELIST
 
-    config_path = os.path.join(bot.config.config_dir, 'title.yaml')
-    try:
-        config    = yaml.safe_load(open(config_path))
-        WHITELIST = config.get('whitelist', WHITELIST)
-    except (IOError, KeyError) as e:
-        logging.warning(e)
-        return []
+    config    = bot.config.load_module_config('title')
+    WHITELIST = config.get('whitelist', WHITELIST)
 
     return (
         ('command', PATTERN, title),
