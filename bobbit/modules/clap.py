@@ -4,24 +4,27 @@
 
 NAME    = 'clap'
 ENABLE  = True
-PATTERN = '^!clap (?P<phrase>.*)'
 USAGE   = '''Usage: !clap <phrase>
 Given a phrase, this replaces all spaces with the clap emoji.
 Example:
     > !clap Do I look like I'm joking
-    Do U0001F44F I U0001F44F look U0001F44F like U0001F44F I'm U0001F44F joking U0001F44F
+    Do 👏 I 👏 look 👏 like 👏 I'm 👏 joking 👏
 '''
 
 # Command
 
 async def clap(bot, message, phrase):
-    return message.with_body(phrase.replace(' ', ' \U0001F44F '))
+    return message.with_body(phrase.replace(' ', ' 👏 '))
+
+async def crab(bot, message, phrase):
+    return message.with_body(phrase.replace(' ', ' 🦀 '))
 
 # Register
 
 def register(bot):
     return (
-        ('command', PATTERN, clap),
+        ('command', '^!clap (?P<phrase>.*)', clap),
+        ('command', '^!crab (?P<phrase>.*)', crab),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
