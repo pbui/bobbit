@@ -1,4 +1,4 @@
-''' bobbit.protocol.mock '''
+''' bobbit.protocol.local '''
 
 import asyncio
 import os
@@ -7,7 +7,7 @@ import sys
 from bobbit.protocol.base import BaseClient
 from bobbit.message       import Message
 
-class MockClient(BaseClient):
+class LocalClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
         pass
@@ -16,11 +16,12 @@ class MockClient(BaseClient):
         pass
 
     async def send_message(self, message):
-        sys.stdout.write(str(message))
-        sys.stdout.write('\n')
+        sys.stdout.write(f'=> {message.body}\n')
 
     async def recv_message(self):
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(0.1)
+        sys.stdout.write(f'<= ')
+        sys.stdout.flush()
         return Message(
             body    = sys.stdin.readline().rstrip(),
             nick    = os.environ['USER'],

@@ -19,7 +19,7 @@ example config file looks like this:
 ```
 nick:       "bobbit"
 password:   <password>
-owners:      
+owners:
     - <owner>
 host:       <irc server>
 port:       6667
@@ -30,19 +30,19 @@ channels:
 The following modules also require configuration files (in `config-dir`):
 
 - lookup: requires `lookup.yaml`. Here's an example:
-  
+
   ```
   cool kids:
   - I wish that I could be like the cool kids \\ 'Cause all the cool kids, they seem to fit in
   ```
-  
+
 - weather: requires `weather.yaml`. Here's an example:
-  
+
   ```
   appid:      <api-key>
   default:    <zipcode>
   ```
-  
+
 ### Slack
 
 TODO: Describe how to get Slack token.
@@ -51,20 +51,26 @@ https://medium.com/@andrewarrow/how-to-get-slack-api-tokens-with-client-scope-e3
 
 ## Execution
 
-Just run `bobbit.sh`:
+To start the the bot, run `bin/bobbit`:
 
 ```
-$ ./bobbit.sh -h 
-usage: bobbit [--config-dir CONFIG_DIR] [--log-path LOG_PATH] [--debug] [-h]
+$ ./bin/bobbit -h
+usage: bobbit [--config-dir CONFIG_DIR] [--log-path LOG_PATH] [--debug]
+              [--local] [-h]
 
 Simple Asynchronous IRC/Slack Bot
 
 optional arguments:
-  --config-dir CONFIG_DIR  Configuration directory
-  --log-path LOG_PATH      Path to log file (default: disabled)
-  --debug                  Enable debug logging (default: disabled)
+  --config-dir CONFIG_DIR  Configuration directory (default: ~/.config/bobbit)
+  --log-path LOG_PATH      Path to log file (default: None)
+  --debug                  Enable debug logging (default: False)
+  --local                  Enable local client (default: False)
   -h, --help               Show this help message and exit
 ```
+
+**Note**: The *local* client (ie. `--local`) allows you to test the modules
+directly in the terminal by using *standard input* rather than connecting to an
+actual IRC or Slack network.
 
 [Python]:   https://python.org
 [PyYAML]:   http://pyyaml.org/

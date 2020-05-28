@@ -5,12 +5,12 @@ import logging.handlers
 import os
 import yaml
 
-from bobbit.protocol import IRCClient, SlackClient
+from bobbit.protocol import IRCClient, LocalClient, SlackClient
 
 class Configuration():
     ''' Load configuration from YAML file '''
 
-    def __init__(self, config_dir=None, log_path=None, debug=False):
+    def __init__(self, config_dir=None, log_path=None, debug=False, local=False):
         self.config_dir  = os.path.expanduser(config_dir or '~/.config/bobbit')
         self.config_path = os.path.join(self.config_dir, 'bobbit.yaml')
         self.modules_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'modules'))
@@ -50,10 +50,15 @@ class Configuration():
         logger.info('Owners:         %s', ', '.join(self.owners))
         logger.info('SSL:            %s', self.use_ssl)
 
-        if config.get('token', None):
+        if local:
+            self.client      = LocalClient
+            self.host        = config.get('host'    , 'localhost')
+            self.port        = None
+            self.password    = None
+        elif config.get('token', None):
             self.client      = SlackClient
-            self.host        = config.get('host'    , 'api.slack.com')
-            self.port        = 443
+            self.host        = None
+            self.port        = None
             self.password    = config.get('token'   , '')
         else:
             self.client      = IRCClient

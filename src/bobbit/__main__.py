@@ -16,18 +16,24 @@ def Parser():
     parser.add_argument(
         '--config-dir',
         default = '~/.config/bobbit',
-        help    = 'Configuration directory',
+        help    = 'Configuration directory (default: %(default)s)',
     )
     parser.add_argument(
         '--log-path',
         default = None,
-        help    = 'Path to log file (default: disabled)',
+        help    = 'Path to log file (default: %(default)s)',
     )
     parser.add_argument(
         '--debug',
         default = False,
         action  = 'store_true',
-        help    = 'Enable debug logging (default: disabled)',
+        help    = 'Enable debug logging (default: %(default)s)',
+    )
+    parser.add_argument(
+        '--local',
+        default = False,
+        action  = 'store_true',
+        help    = 'Enable local client (default: %(default)s)',
     )
     parser.add_argument(
         '-h', '--help',
@@ -37,10 +43,10 @@ def Parser():
 
     return parser
 
-def main(argv=None):
+def main():
     parser = Parser()
     args   = parser.parse_args()
-    bobbit = Bobbit(args.config_dir, args.log_path)
+    bobbit = Bobbit(args.config_dir, args.log_path, args.debug, args.local)
 
     try:
         status = asyncio.run(bobbit.run())

@@ -12,8 +12,8 @@ from bobbit.modules  import load_modules
 
 class Bobbit():
 
-    def __init__(self, config_dir=None, log_path=None, debug=False):
-        self.config      = Configuration(config_dir, log_path, debug)
+    def __init__(self, config_dir=None, log_path=None, debug=False, local=False):
+        self.config      = Configuration(config_dir, log_path, debug, local)
         self.modules     = []
         self.commands    = []
         self.timers      = []
