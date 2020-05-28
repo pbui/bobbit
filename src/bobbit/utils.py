@@ -13,6 +13,22 @@ async def shorten_url(http_client, url):
         except AttributeError:
             return url
 
+def parse_options(options, arguments):
+    while arguments.startswith('-'):
+        try:
+            option, arguments = arguments.split(' ', 1)
+        except ValueError:
+            break
+
+        if isinstance(options.get(option), bool):
+            options[option] = True
+        else:
+            try:
+                options[option], arguments = arguments.split(' ', 1)
+            except ValueError:
+                break
+
+    return options, arguments
 
 def strip_html(s):
     return re.sub('<[^<]+?>', '', s)
