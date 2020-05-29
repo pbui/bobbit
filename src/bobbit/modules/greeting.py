@@ -27,7 +27,7 @@ RESPONSES = (
 # Command
 
 async def greeting(bot, message):
-    return random.choice(RESPONSES)
+    return message.with_body(random.choice(RESPONSES))
 
 # Register
 
