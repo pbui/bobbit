@@ -23,7 +23,7 @@ async def mock(bot, message, phrase):
             letter = letter.upper()
         response += letter
 
-    return response
+    return message.with_body(response)
 
 # Register
 
