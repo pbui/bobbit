@@ -18,8 +18,7 @@ async def sed(bot, message, pattern, replacement):
     replacement = bot.client.format_text('{bold}{}{bold}', replacement)
     for original in bot.history.search(message.channel, pattern=pattern, limit=1, reverse=True):
         replaced = re.sub(pattern, replacement, original.body)
-        nick     = bot.client.format_text('{bold}{}{bold}', original.nick)
-        return original.copy(body=replaced, nick=nick)
+        return original.copy(body=replaced)
 
 # Register
 
