@@ -136,7 +136,7 @@ class IRCClient(BaseClient):
         target  = message.channel if message.channel else message.nick
         command = 'NOTICE' if message.notice else 'PRIVMSG'
         if message.highlighted:
-            return f'{command} {target} :{message.nick}: {message.body}'
+            return f'{command} {target} :\x02{message.nick}\x02: {message.body}'
         else:
             return f'{command} {target} :{message.body}'
 
