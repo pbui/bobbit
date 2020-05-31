@@ -12,7 +12,7 @@ This repeats the phrase back to the sender.
 # Command
 
 async def echo(bot, message, phrase):
-    return phrase
+    return message.with_body(phrase)
 
 # Register
 
