@@ -50,7 +50,7 @@ async def grab(bot, message, nick):
         try:
             user['grabs'].append(grabbed.body)
         except KeyError:
-            user['grabs'] = [grabbed]
+            user['grabs'] = [grabbed.body]
 
     return message.copy(body=f'Grabbed last message from {nick}')
 
