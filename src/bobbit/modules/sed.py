@@ -6,7 +6,7 @@ import re
 
 NAME    = 'sed'
 ENABLE  = True
-PATTERN = '^s/(?P<pattern>[^/]+)/(?P<replacement>.*)/$'
+PATTERN = '^s/(?P<pattern>[^/]+)/(?P<replacement>[^/]+)[/]*$'
 USAGE   = '''Usage: s/pattern/replacement/
 This searches the channel's history for the most recent line that has the
 pattern and then performs the replacement.
