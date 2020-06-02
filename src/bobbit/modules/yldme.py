@@ -21,7 +21,7 @@ Example:
 async def yldme(bot, message, url):
     if url == 'last':
         for m in bot.history.search(message.channel, pattern='http[s]*://', limit=1, reverse=True):
-            url = re.findall('(http[s]*://[^\s]+)', m.body)[0]
+            url = re.findall('(http[s]*://[^\s<>]+)', m.body)[0]
 
     response = await shorten_url(bot.http_client, url)
     if response != url:
