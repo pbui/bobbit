@@ -4,6 +4,7 @@ import asyncio
 import logging
 
 import aiohttp
+import yaml
 
 from bobbit.config   import Configuration
 from bobbit.history  import History
@@ -18,12 +19,13 @@ class Bobbit():
         self.commands    = []
         self.timers      = []
         self.history     = History()
+        self.users       = self.load_users()
 
         self.http_client = None
         self.client      = None
         self.outgoing    = None
 
-    # Background co-routines / tasks
+    # Message processing
 
     async def _send_messages(self):
         while True:
@@ -80,6 +82,31 @@ class Bobbit():
     def restart(self):
         raise NotImplementedError
 
+    # Users
+
+    def load_users(self):
+        users_path = self.config.get_config_path('users.yaml')
+        try:
+            logging.info('Loading users from %s', users_path)
+            return yaml.safe_load(open(users_path))
+        except (IOError, OSError) as e:
+            logging.warning('Unable to load %s: %s', users_path, e)
+            return {}
+
+    def save_users(self):
+        users_path = self.config.get_config_path('users.yaml')
+        with open(users_path, 'w') as stream:
+            logging.info('Saving users to %s', users_path)
+            return yaml.safe_dump(self.users, stream, default_flow_style=False)
+
+    async def _checkpoint_users(self):
+        while True:
+            await asyncio.sleep(5*60)
+            try:
+                self.save_users()
+            except Exception as e:
+                logging.exception(e)
+
     # Main execution
 
     async def run(self):
@@ -87,7 +114,7 @@ class Bobbit():
         self.reload()
 
         # Start aiohttp client session
-        self.http_client = aiohttp.ClientSession()  # TODO: close
+        self.http_client = aiohttp.ClientSession()
 
         # Start Client
         self.client = self.config.client(
@@ -111,6 +138,7 @@ class Bobbit():
             await asyncio.gather(
                 self._send_messages(),
                 self._recv_messages(),
+                self._checkpoint_users(),
             )
         except Exception as e:
             logging.exception(e)
