@@ -12,10 +12,10 @@ from bobbit.utils import shorten_url, strip_html
 NAME    = 'ddg'
 ENABLE  = True
 PATTERN = '^!ddg (?P<query>.*$)'
-USAGE   = '''Usage: !g <query>
+USAGE   = '''Usage: !ddg <query>
 Given a search query, this returns the first result from DuckDuckGo.
 Example:
-    > !g who likes short shorts?
+    > !ddg who likes short shorts?
 '''
 
 # Constants
