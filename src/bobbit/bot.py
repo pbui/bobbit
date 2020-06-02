@@ -57,6 +57,9 @@ class Bobbit():
             # Add message to history
             self.history.insert(message)
 
+            # Update user last seen
+            self.update_user_seen(message.nick, message.timestamp)
+
     async def process_message(self, message):
         ''' Process a single message '''
         for pattern, command in self.commands:
@@ -97,7 +100,14 @@ class Bobbit():
         users_path = self.config.get_config_path('users.yaml')
         with open(users_path, 'w') as stream:
             logging.info('Saving users to %s', users_path)
-            return yaml.safe_dump(self.users, stream, default_flow_style=False)
+            yaml.safe_dump(self.users, stream, default_flow_style=False)
+
+    def update_user_seen(self, user, timestamp):
+        logging.debug('Updating last_seen for %s: %s', user, timestamp)
+        if user not in self.users:
+            self.users[user] = {'last_seen': timestamp}
+        else:
+            self.users[user]['last_seen'] = timestamp
 
     async def _checkpoint_users(self):
         while True:
