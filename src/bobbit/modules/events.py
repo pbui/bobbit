@@ -77,9 +77,9 @@ async def events_timer(bot):
             later       = now + datetime.timedelta(seconds=timeout)
 
             try:
-                channels = re.findall(r'channels: (.*)', description)[0].split(',')
+                channels = re.findall(r'channels:\s(.*)', description)[0].split(',')
                 channels = list(map(str.strip, channels))
-            except (IndexError, TypeError, AttributeError):
+            except IndexError:
                 channels = feed_channels
 
             if recurrences:
