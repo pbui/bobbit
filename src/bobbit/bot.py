@@ -19,7 +19,7 @@ class Bobbit():
         self.commands    = []
         self.timers      = []
         self.history     = History()
-        self.users       = self.load_users()
+        self.users       = self.load_users() or {}
 
         self.http_client = None
         self.client      = None
