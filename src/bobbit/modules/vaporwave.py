@@ -4,9 +4,9 @@
 
 NAME    = 'vapor'
 ENABLE  = True
-PATTERN = r'^!vapor (?P<phrase> *)'
+PATTERN = r'^!vapor (?P<phrase>.*)'
 USAGE   = '''Usage: !vapor <phrase>
-Given a pgrase, this transforms it into a vaporwave a e s t h e t i c phrase
+Given a phrase, this transforms it into a vaporwave a e s t h e t i c phrase
 with full-width characters. 
 Example:
     > !vapor it works!
