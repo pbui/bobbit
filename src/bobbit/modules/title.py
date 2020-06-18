@@ -33,7 +33,7 @@ async def title(bot, message, url=None):
             html_title = re.findall(r'<title[^>]*>([^<]+)</title>', text)[0]
             response   = bot.client.format_text(
                 '{color}{green}Title{color}: {bold}{title}{bold}',
-                title = strip_html(html.unescape(html_title))
+                title = strip_html(html.unescape(html_title)).strip()
             )
         except (IndexError, ValueError):
             return
