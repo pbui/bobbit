@@ -20,12 +20,13 @@ UD_TEMPLATE = '{color}{green}{word}{color}: {bold}{definition}{bold}; an example
 
 async def urbandictionary(bot, message, query=None):
     try:
-        query, index = query.rsplit(' ', 1)
+        term, index = query.rsplit(' ', 1)
         index = int(index)
     except ValueError:
+        term  = query
         index = 0
 
-    async with bot.http_client.get(UD_URL, params={'term': query}) as response:
+    async with bot.http_client.get(UD_URL, params={'term': term}) as response:
         try:
             data     = (await response.json())['list'][index]
             response = bot.client.format_text(UD_TEMPLATE,
