@@ -19,12 +19,12 @@ Example:
 
 # Constants
 
-WHITELIST = []
+BLACKLIST = []
 
 # Command
 
 async def title(bot, message, url=None):
-    if message.channel not in WHITELIST:
+    if message.channel in BLACKLIST:
         return
 
     async with bot.http_client.get(url) as response:
@@ -43,10 +43,13 @@ async def title(bot, message, url=None):
 # Register
 
 def register(bot):
-    global WHITELIST
+    global BLACKLIST
 
     config    = bot.config.load_module_config('title')
-    WHITELIST = config.get('whitelist', WHITELIST)
+    BLACKLIST = config.get('blacklist', BLACKLIST)
+
+    if config.get('disabled', False):
+        return []
 
     return (
         ('command', PATTERN, title),
