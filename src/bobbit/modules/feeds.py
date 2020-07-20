@@ -41,7 +41,7 @@ async def process_feed(http_client, feed, cache):
     for entry in feedparser.parse(feed_content)['entries']:
         link   = entry.get('link', '')
         title  = strip_html(entry.get('title', ''))
-        author = entry.get('author', 'Unknown').split(',')[0]   # Workaround long authorship in The Conversation
+        author = entry.get('author', 'Unknown').split(',')[0].split('(')[0].strip()   # Workaround long authorship in The Conversation, FiveThirtyEight
         key    = link.encode('ascii','ignore')
 
         # If link starts with //, replace with https:// (workaround for the Week bug)
