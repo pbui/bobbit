@@ -16,7 +16,10 @@ pattern and then performs the replacement.
 
 async def sed(bot, message, pattern, replacement):
     replacement = bot.client.format_text('{bold}{}{bold}', replacement)
-    for original in bot.history.search(message.channel, pattern=pattern, limit=1, reverse=True):
+    for original in bot.history.search(message.channel, pattern=pattern, limit=5, reverse=True):
+        if re.search(PATTERN, original.body):
+            continue
+
         replaced = re.sub(pattern, replacement, original.body)
         return original.copy(body=replaced)
 
