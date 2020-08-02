@@ -28,15 +28,10 @@ async def process_feed(http_client, feed, cache):
 
     logging.debug('Fetching %s (%s)', feed_title, feed_url)
     try:
-        http_headers = {
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
-            'Connection': 'keep-alive',
-        }
-
         if 'nonce' in feed_url:
             feed_url = feed_url.format(nonce=uuid.uuid4())
 
-        async with http_client.get(feed_url, headers=http_headers) as response:
+        async with http_client.get(feed_url) as response:
             feed_content = await response.content.read()
     except aiohttp.client_exceptions.ClientPayloadError as e:
         logging.warning('Could not fetch %s: %s', feed_url, e)
