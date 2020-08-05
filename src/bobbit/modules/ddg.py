@@ -4,7 +4,6 @@ import html
 import logging
 import re
 
-from urllib.parse import unquote
 from bobbit.utils import shorten_url, strip_html
 
 # Metadata
@@ -20,8 +19,8 @@ Example:
 
 # Constants
 
-DDG_URL = 'https://duckduckgo.com/html/'
-DDG_RE  = '<a.*class="result__a" href=".*ddg=([^"]+)">(.*)</a>'
+DDG_URL = 'https://html.duckduckgo.com/html/'
+DDG_RE  = '<a.*class="result__a" href="([^"]+)">(.*)</a>'
 
 # Command
 
@@ -29,8 +28,8 @@ async def ddg(bot, message, query=None):
     async with bot.http_client.get(DDG_URL, params={'q': query}) as response:
         try:
             text     = await response.text()
-            matches  = re.findall(DDG_RE, text)
-            url      = await shorten_url(bot.http_client, unquote(matches[0][0]))
+            matches  = [m for m in re.findall(DDG_RE, text) if 'ad_provider' not in m[0]]
+            url      = await shorten_url(bot.http_client, matches[0][0])
             title    = strip_html(html.unescape(matches[0][1]))
             response = bot.client.format_text(
                 '{color}{green}DDG{color}: ' +
