@@ -73,11 +73,15 @@ class IRCClient(BaseClient):
 
     async def _handle_motd(self, server):
         logging.debug('Handling MOTD')
-        await self.send_message(Message(
-            nick    = 'NickServ',
-            channel = None,
-            body    = f'IDENTIFY {self.password}',
-        ))
+
+        if self.password.startswith('oauth:'):  # Note: Twitch doesn't do registration
+            await self._handle_registration()
+        else:
+            await self.send_message(Message(
+                nick    = 'NickServ',
+                channel = None,
+                body    = f'IDENTIFY {self.password}',
+            ))
 
     async def _handle_registration(self):
         logging.debug('Handling Registration')
@@ -98,7 +102,10 @@ class IRCClient(BaseClient):
 
         # TODO: Add for SASL
         # NOTE: PASS works for freenode, snoonet, and soon ndlug
-        await self.send_message(f'PASS {self.nick}:{self.password}')
+        if self.password.startswith('oauth:'):  # Twitch
+            await self.send_message(f'PASS {self.password}')
+        else:
+            await self.send_message(f'PASS {self.nick}:{self.password}')
         await self.send_message(f'USER {self.nick} {self.host} bobbit :{self.nick}')
         await self.send_message(f'NICK {self.nick}')
 
