@@ -28,7 +28,7 @@ class IRCClient(BaseClient):
     - https://modern.ircdocs.horse/
     '''
 
-    def __init__(self, nick, password, host=None, port=None, ssl=False, channels=None):
+    def __init__(self, nick, password, host=None, port=None, ssl=False, channels=None, colorize=True):
         # Account information
         self.nick     = nick
         self.password = password
@@ -38,6 +38,9 @@ class IRCClient(BaseClient):
         self.port     = port or '6667'
         self.ssl      = ssl
         self.channels = channels or []
+
+        if not colorize:
+            self.format_text = BaseClient.format_text
 
         # TCP Streams
         self.reader   = None

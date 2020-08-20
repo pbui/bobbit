@@ -42,13 +42,15 @@ class Configuration():
         logger.info('Configuration Path:      %s', self.config_path)
         logger.info('Modules Path:            %s', self.modules_dir)
 
-        self.nick    = config.get('nick'       , 'bobbit')
-        self.owners  = config.get('owners'     , [os.environ['USER']])
-        self.use_ssl = config.get('ssl'        , False)
+        self.nick     = config.get('nick'       , 'bobbit')
+        self.owners   = config.get('owners'     , [os.environ['USER']])
+        self.use_ssl  = config.get('ssl'        , False)
+        self.colorize = config.get('colorize'   , True)
 
         logger.info('Nick:           %s', self.nick)
         logger.info('Owners:         %s', ', '.join(self.owners))
         logger.info('SSL:            %s', self.use_ssl)
+        logger.info('Colorize:       %s', self.colorize)
 
         if local:
             self.client      = LocalClient

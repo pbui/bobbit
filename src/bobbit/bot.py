@@ -137,6 +137,7 @@ class Bobbit():
             port     = self.config.port,
             ssl      = self.config.use_ssl,
             channels = self.config.channels,
+            colorize = self.config.colorize,
         )
         try:
             await self.client.connect()
