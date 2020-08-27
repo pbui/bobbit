@@ -20,6 +20,9 @@ def parse_options(options, arguments):
         except ValueError:
             break
 
+        if option not in options:
+            continue
+
         if isinstance(options.get(option), bool):
             options[option] = True
         else:
