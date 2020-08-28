@@ -69,7 +69,8 @@ class Configuration():
             self.password    = config.get('password', '')
 
         self.channels = config.get('channels', [])
-        logger.info('Server:         %s:%d', self.host, self.port)
+        if self.host and self.port:
+            logger.info('Server:         %s:%d', self.host, self.port)
         logger.info('Password:       %s'   , self.password)
         logger.info('Channels:       %s'   , ', '.join(self.channels))
 
