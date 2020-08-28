@@ -106,7 +106,8 @@ async def events_timer(bot):
                         )
                     ))
 
-                logger.info('Delivered %s to %s', summary, ', '.join(channels))
+                if channels:
+                    logger.info('Delivered %s to %s', summary, ', '.join(channels))
 
 # Register
 
