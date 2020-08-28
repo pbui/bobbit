@@ -29,7 +29,7 @@ class SlackClient(BaseClient):
 
     async def get_channel(self, channel):
         if channel not in self.channels:
-            url    = f'{SLACK_API_DOMAIN}/api/conversations.list'
+            url    = f'{SLACK_API_DOMAIN}/api/channels.list'
             params = {
                 'exclude_archived': 'true',
                 'exclude_members' : 'true',
