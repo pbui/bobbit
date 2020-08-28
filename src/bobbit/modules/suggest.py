@@ -46,6 +46,11 @@ def register(bot):
     WHITELIST = config.get('whitelist', WHITELIST)
     TEMPLATE  = config.get('template' , TEMPLATE)
 
+    if not WHITELIST:
+        return []
+
+    logging.info('Suggest Whitelist: %s', WHITELIST)
+
     return (
         ('command', PATTERN, suggest),
     )
