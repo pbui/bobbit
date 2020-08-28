@@ -3,6 +3,7 @@
 import itertools
 import json
 import logging
+import re
 
 import aiohttp
 
@@ -12,6 +13,7 @@ from bobbit.protocol.base import BaseClient
 # Slack Constants
 
 SLACK_API_DOMAIN = 'https://api.slack.com'
+SLACK_CHANNEL_RX = r'<#[0-9A-Z]+\|([^>]+)>'
 
 # Slack Client
 
@@ -90,7 +92,7 @@ class SlackClient(BaseClient):
 
             try:
                 message = Message(
-                    body    = json_message['text'],
+                    body    = re.sub(SLACK_CHANNEL_RX, r'#\1', json_message['text']),
                     nick    = json_message['user'],
                     channel = json_message['channel'],
                 )
