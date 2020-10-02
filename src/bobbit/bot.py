@@ -6,10 +6,11 @@ import logging
 import aiohttp
 import yaml
 
-from bobbit.config   import Configuration
-from bobbit.history  import History
-from bobbit.message  import Message
-from bobbit.modules  import load_modules
+from bobbit.config       import Configuration
+from bobbit.history      import History
+from bobbit.message      import Message
+from bobbit.modules      import load_modules
+from bobbit.modules.mail import send_mail_messages, discard_mail_messages
 
 class Bobbit():
 
@@ -20,6 +21,7 @@ class Bobbit():
         self.timers      = []
         self.history     = History()
         self.users       = self.load_users() or {}
+        self.mailbox     = {}
 
         self.http_client = None
         self.client      = None
@@ -59,6 +61,9 @@ class Bobbit():
 
             # Update user last seen
             self.update_user_seen(message.nick, message.timestamp)
+
+            # Deliver any mail to message sender
+            await self.send_mail(message, message.nick)
 
     async def process_message(self, message):
         ''' Process a single message '''
@@ -108,6 +113,14 @@ class Bobbit():
             self.users[user] = {'last_seen': timestamp}
         else:
             self.users[user]['last_seen'] = timestamp
+
+    async def send_mail(self, message, user):
+        logging.debug('Sending all mail in %s\'s mailbox', user)
+        if user not in self.mailbox:
+            return
+        else:
+            await self.outgoing.put(send_mail_messages(self, message, user))
+            discard_mail_messages(self, user)
 
     async def _checkpoint_users(self):
         while True:
