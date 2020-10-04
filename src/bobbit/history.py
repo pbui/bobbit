@@ -22,7 +22,7 @@ class History():
         if pattern:
             pattern = re.compile(pattern)
 
-        messages = self.history[channel]
+        messages = self.history.get(channel, collections.deque())
         if reverse:
             messages = reversed(messages)
 
