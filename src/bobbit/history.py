@@ -24,7 +24,7 @@ class History():
 
         messages = self.history.get(channel, collections.deque())
         if reverse:
-            messages.reverse()
+            messages = list(reversed(messages))
 
         count = 0
         limit = limit or len(messages)
