@@ -28,7 +28,7 @@ SPORTS_ALIAS  = {
 async def command(bot, message, sport, team=None):
     sport    = SPORTS_ALIAS.get(sport, sport)
     url      = ESPN_TEMPLATE.format(sport=sport)
-    response = 'No results'
+    response = ['No results'] # list for use in comprehension in return
 
     async with bot.http_client.get(url) as result:
         try:
@@ -42,12 +42,12 @@ async def command(bot, message, sport, team=None):
             if team:
                 team = team.title()
                 response = [x for x in response if team in x]
-            # return last 5 results
-            response = 'No results' if not response else '\n'.join(response[-5:])
+            if not response:
+                response = ['No results']
         except (IndexError, ValueError) as e:
             bot.logger.warn(e)
 
-    return message.with_body(response)
+    return [message.with_body(x) for x in response[-5:]]
 
 # Register
 
