@@ -6,14 +6,14 @@ RUN	    apk update && \
 		    py3-feedparser \
 		    py3-tornado \
 		    py3-yaml \
-			py3-pip \
-			gcc \
-			linux-headers \
-			musl-dev \
-			python3-dev \
+			  py3-pip \
+			  gcc \
+			  linux-headers \
+			  musl-dev \
+			  python3-dev \
 		    figlet
 
-ADD	    https://github.com/pbui/bobbit/archive/bobbit-0.2.x.tar.gz /tmp
+ADD	  https://github.com/pbui/bobbit/archive/bobbit-0.2.x.tar.gz /tmp
 RUN 	tar xvzf /tmp/bobbit-* -C / && mv /bobbit* /bobbit
 RUN		pip3 install -r /bobbit/requirements.txt
 
