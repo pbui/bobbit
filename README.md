@@ -76,3 +76,32 @@ actual IRC or Slack network.
 [PyYAML]:   http://pyyaml.org/
 [aiohttp]:  https://docs.aiohttp.org/en/stable/
 [asyncio]:  https://docs.python.org/3/library/asyncio.html
+
+
+### Docker
+
+You can also start application using docker:
+
+Building container
+
+```
+docker build --no-cache -t 'bobbit' .
+```
+
+Running:
+
+```
+docker run -it bobbit
+```
+
+You can pass args to application directly, also you can mount your config file using docker volumes, for example:
+
+```
+docker run -v /my-config-dir:/tmp/my-config-dir bobbit --config-dir /tmp/config-dir
+```
+
+And change default user with using --env argument, for example:
+
+```
+docker run -e USER=MYFANCYUSER bobbit --config-dir /tmp/config-dir
+```

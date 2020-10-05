@@ -6,8 +6,16 @@ RUN	    apk update && \
 		    py3-feedparser \
 		    py3-tornado \
 		    py3-yaml \
+			py3-pip \
+			gcc \
+			linux-headers \
+			musl-dev \
+			python3-dev \
 		    figlet
 
-RUN	    wget -O - https://github.com/pbui/bobbit/archive/master.tar.gz | tar xzvf -
+ADD	    https://github.com/pbui/bobbit/archive/bobbit-0.2.x.tar.gz /tmp
+RUN 	tar xvzf /tmp/bobbit-* -C / && mv /bobbit* /bobbit
+RUN		pip3 install -r /bobbit/requirements.txt
 
-ENTRYPOINT  ["/bobbit-master/bobbit.sh", "--config-dir=/var/lib/bobbit", "--log-path=/var/lib/bobbit/log"]
+ENV 	USER=sample-user
+ENTRYPOINT  ["/bobbit/bin/bobbit"]
