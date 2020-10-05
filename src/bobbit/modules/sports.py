@@ -5,11 +5,14 @@ import re
 NAME    = 'sports'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = '^!(?P<sport>nba|nfl|mlb|wnba|nhl|cfb)$'
-USAGE   = '''Usage: ![nhl|nba|wnba|mlb|nfl|cfb]
-Given a search query, this returns the first result from Google
+PATTERN = '^!(?P<sport>nba|nfl|mlb|wnba|nhl|cfb) ?(?P<team>.*)?$'
+USAGE   = '''Usage: ![nhl|nba|wnba|mlb|nfl|cfb] <team_name>
+Given a search query, this returns the scores from ESPN for the given sport or team
 Example:
     > !nba
+    76ers 114 Celtics 75
+    Wizards 99 Warriors 88
+    > !nba 76ers
     76ers 114 Celtics 75
 '''
 
@@ -22,7 +25,7 @@ SPORTS_ALIAS  = {
 
 # Command
 
-async def command(bot, message, sport):
+async def command(bot, message, sport, team=None):
     sport    = SPORTS_ALIAS.get(sport, sport)
     url      = ESPN_TEMPLATE.format(sport=sport)
     response = 'No results'
@@ -35,7 +38,12 @@ async def command(bot, message, sport):
                         .replace('&', '\n')
             pattern  = re.compile(r"{}_s_left\d+=(.*)".format(sport))
             response = [match for match in re.findall(pattern, text) if ' ' in match]
-            response = 'No results' if not response else ' '.join(response)
+            # filter results
+            if team:
+                team = team.title()
+                response = [x for x in response if team in x]
+            # return last 5 results
+            response = 'No results' if not response else '\n'.join(response[-5:])
         except (IndexError, ValueError) as e:
             bot.logger.warn(e)
 
