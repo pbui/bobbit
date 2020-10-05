@@ -13,9 +13,9 @@ RUN		apk update && \
 			python3-dev \
 			figlet
 
-ADD	  https://github.com/pbui/bobbit/archive/bobbit-0.2.x.tar.gz /tmp
+ADD		https://github.com/pbui/bobbit/archive/bobbit-0.2.x.tar.gz /tmp
 RUN 	tar xvzf /tmp/bobbit-* -C / && mv /bobbit* /bobbit
 RUN		pip3 install -r /bobbit/requirements.txt
 
-ENV 	USER=sample-user
+ENV		USER=sample-user
 ENTRYPOINT  ["/bobbit/bin/bobbit"]
