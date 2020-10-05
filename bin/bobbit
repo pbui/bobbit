@@ -1,5 +1,8 @@
 #!/bin/sh
 
-export PYTHONPATH=$(readlink -f $(dirname $0)/../src):$PYTHONPATH
+python_realpath() {
+    python3 -c "import os; print(os.path.realpath(\"$@\"))"
+}
 
+export PYTHONPATH=$(python_realpath $(dirname $0)/../src):$PYTHONPATH
 exec python3 -m bobbit $@
