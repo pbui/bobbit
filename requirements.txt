@@ -1,7 +1,7 @@
 aiohttp
 PyYAML
 
-feedparser  # bobbit.modules.feeds
+feedparser          # bobbit.modules.feeds
 
-icalendar   # bobbit.modules.events
-dateutil    # bobbit.modules.events
+icalendar           # bobbit.modules.events
+python-dateutil     # bobbit.modules.events

@@ -22,9 +22,9 @@ class History():
         if pattern:
             pattern = re.compile(pattern)
 
-        messages = self.history[channel]
+        messages = self.history.get(channel, collections.deque())
         if reverse:
-            messages = reversed(messages)
+            messages = list(reversed(messages))
 
         count = 0
         limit = limit or len(messages)
