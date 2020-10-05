@@ -1,7 +1,5 @@
 # tell.py
 
-import logging
-
 # Metadata
 NAME    = 'tell'
 PATTERN = r''
