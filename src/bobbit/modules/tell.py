@@ -21,7 +21,8 @@ async def tell(bot, message):
         MAILBOX[target].append(message.nick + ": " + ' '.join(body))
 
     if message.nick in MAILBOX:
-        to_tell = [message.copy(body=f'Tell from {msg}', channel=None, notice=True) for msg in MAILBOX[message.nick]]
+        message.channel = None # Make Message a PM/Notice
+        to_tell = [message.copy(body=f'Message from {msg}', notice=True) for msg in MAILBOX[message.nick]]
         del MAILBOX[message.nick]
         return to_tell
 
