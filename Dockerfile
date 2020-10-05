@@ -1,13 +1,10 @@
-FROM	    alpine:latest
+FROM python:3
 MAINTAINER  Peter Bui <pbui@yld.bx612.space>
 
-RUN	    apk update && \
-	    apk add python3 \
-		    py3-feedparser \
-		    py3-tornado \
-		    py3-yaml \
-		    figlet
+RUN   apt update; apt -y install figlet
+ADD   https://github.com/pbui/bobbit/archive/bobbit-0.2.x.tar.gz /tmp
+RUN   tar xvzf /tmp/bobbit-* -C / && mv /bobbit* /bobbit
+RUN   pip3 install -r /bobbit/requirements.txt
 
-RUN	    wget -O - https://github.com/pbui/bobbit/archive/master.tar.gz | tar xzvf -
-
-ENTRYPOINT  ["/bobbit-master/bobbit.sh", "--config-dir=/var/lib/bobbit", "--log-path=/var/lib/bobbit/log"]
+ENV   USER=sample-user
+ENTRYPOINT  ["/bobbit/bin/bobbit"]
