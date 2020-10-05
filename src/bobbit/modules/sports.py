@@ -40,8 +40,7 @@ async def command(bot, message, sport, team=None):
             response = [match for match in re.findall(pattern, text) if ' ' in match]
             # filter results
             if team:
-                team = team.title()
-                response = [x for x in response if team in x]
+                response = [x for x in response if team.title() in x]
             if not response:
                 response = ['No results']
         except (IndexError, ValueError) as e:
