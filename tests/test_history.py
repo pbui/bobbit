@@ -74,6 +74,7 @@ class HistoryInsertTestCase(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(chan1[0], msg3)
         self.assertEqual(chan1[4], msg7)
 
+
 class HistorySearchTestCase(unittest.IsolatedAsyncioTestCase):
     TEST_CHANNEL1 = "foo"
     TEST_CHANNEL2 = "fu"
@@ -132,3 +133,7 @@ class HistorySearchTestCase(unittest.IsolatedAsyncioTestCase):
         
         self.assertEqual(len(matches), 1)
         self.assertEqual(matches[0].body, "baz")
+
+
+if __name__ == '__main__':
+    unittest.main()
