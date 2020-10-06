@@ -13,14 +13,11 @@ class Message():
         self.timestamp   = timestamp or time.time()
 
     def copy(self, body=None, nick=None, channel=None, notice=None, highlighted=None, timestamp=None):
-        notice_truthy = notice
-        highlighted_truthy = highlighted
-
         if notice is None:
-            notice_truthy = self.notice
+            notice = self.notice
 
         if highlighted is None:
-            highlighted_truthy = self.highlighted
+            highlighted = self.highlighted
 
         return Message(
             body        = body        or self.body,
