@@ -23,11 +23,11 @@ class History():
             pattern = re.compile(pattern)
 
         messages = self.history.get(channel, collections.deque())
+        limit    = limit or len(messages)
         if reverse:
-            messages = list(reversed(messages))
+            messages = reversed(messages)
 
         count = 0
-        limit = limit or len(messages)
         for message in messages:
             if count == limit:
                 break
