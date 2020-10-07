@@ -17,7 +17,7 @@ class Message():
             body        = body        or self.body,
             nick        = nick        or self.nick,
             channel     = channel     or self.channel,
-            notice      = notice if notice is not None else self.notice,
+            notice      = notice      if notice is not None      else self.notice,
             highlighted = highlighted if highlighted is not None else self.highlighted,
             timestamp   = timestamp   or self.timestamp,
         )
