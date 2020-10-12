@@ -52,10 +52,13 @@ def load_modules(bot, modules_dir=None):
         if module_name.endswith('__'):
             continue
 
-        module, module_commands, module_timers = load_module(bot, module_name)
-        modules.append(module)
-        commands.extend(module_commands)
-        timers.extend(module_timers)
+        try:
+            module, module_commands, module_timers = load_module(bot, module_name)
+            modules.append(module)
+            commands.extend(module_commands)
+            timers.extend(module_timers)
+        except (ImportError, ModuleNotFoundError) as e:
+            logging.warning('Failed to load module %s: %s', module_name, e)
 
     return modules, commands, timers
 
