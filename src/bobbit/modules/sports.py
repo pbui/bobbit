@@ -1,3 +1,4 @@
+import logging
 import re
 
 # Metadata
@@ -31,7 +32,7 @@ async def command(bot, message, sport, team=None):
 
     async with bot.http_client.get(url) as result:
         try:
-            body     = await result.text('UTF-8')
+            body     = await result.text()
             text     = body.replace('%20', ' ')\
                            .replace('^', '')\
                            .replace('&', '\n')
@@ -44,7 +45,7 @@ async def command(bot, message, sport, team=None):
             if not response:
                 response = ['No results']
         except (IndexError, ValueError) as e:
-            bot.logger.warn(e)
+            logging.warn(e)
 
     return [message.with_body(x) for x in response[-5:]]
 
