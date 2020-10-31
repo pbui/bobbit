@@ -95,7 +95,7 @@ async def forecast(bot, message, zipcode=None):
     text     = data['data']['text']
 
     return message.with_body(bot.client.format_text(
-        '{bold}Forecast for {bold}{location}{bold}: {bold}Today{bold}: {today} {bold}Tonight{bold}: {tonight}',
+        '{bold}Forecast{bold} for {bold}{location}{bold}: {bold}Today{bold}: {today} {bold}Tonight{bold}: {tonight}',
         location = location,
         today    = text[0].strip(),
         tonight  = text[1].strip(),
