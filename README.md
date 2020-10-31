@@ -36,10 +36,9 @@ The following modules also require configuration files (in `config-dir`):
   - I wish that I could be like the cool kids \\ 'Cause all the cool kids, they seem to fit in
   ```
 
-- weather: requires `weather.yaml`. Here's an example:
+- weather: optionally reads `weather.yaml`. Here's an example:
 
   ```
-  appid:      <api-key>
   default:    <zipcode>
   ```
 
