@@ -14,11 +14,13 @@ from bobbit.utils   import shorten_url, strip_html
 NAME     = 'tweets'
 ENABLE   = True
 TYPE     = 'timer'
+PATTERN  = r'.*twitter.com/[^\s]+/status/(?P<status_id>[0-9]+).*'
 TEMPLATE = 'From {color}{green}{user}{color} twitter: {bold}{status}{bold} @ {color}{blue}{link}{color}'
 
 # Constants
 
 TWITTER_USER_TIMELINE_URL = 'https://api.twitter.com/1.1/statuses/user_timeline.json'
+TWITTER_STATUSES_SHOW_URL = 'https://api.twitter.com/1.1/statuses/show.json'
 TWITTER_OAUTH2_TOKEN_URL  = 'https://api.twitter.com/oauth2/token'
 
 # Utility
@@ -91,7 +93,45 @@ async def process_feed(http_client, feed, cache, access_token):
             'link'      : 'https://twitter.com/{}/status/{}'.format(user, status['id']),
         }
 
-# Timer
+async def get_status(http_client, status_id, access_token):
+    url     = TWITTER_STATUSES_SHOW_URL
+    headers = {
+        'Authorization' : 'Bearer ' + access_token,
+    }
+    params = {
+        'id' : status_id,
+    }
+
+    async with http_client.get(url, headers=headers, params=params) as response:
+        return await response.json()
+
+# Tweets Title Command
+
+async def tweets_title(bot, message, status_id=None):
+    # Read configuration
+    config           = bot.config.load_module_config('tweets')
+    templates        = config.get('templates', {})
+    default_template = templates.get('default', TEMPLATE)
+
+    # Get access token
+    access_token = await get_access_token(
+        bot.http_client,
+        config['consumer_key'],
+        config['consumer_secret'],
+    )
+
+    status = await get_status(bot.http_client, status_id, access_token)
+    return message.with_body(bot.client.format_text(
+        default_template,
+        user   = status['user']['screen_name'],
+        status = status['text'],
+        link   = await shorten_url(
+            bot.http_client,
+            f'https://twitter.com/i/web/status/{status_id}'
+        )
+    ))
+
+# Tweets Timer
 
 async def tweets_timer(bot):
     logging.info('Tweets timer starting...')
@@ -158,8 +198,15 @@ def register(bot):
     if not config:
         return []
 
-    return (
-        ('timer', timeout, tweets_timer),
-    )
+    callbacks = [
+        ('timer'  , timeout, tweets_timer),
+    ]
+
+    if not config.get('disable_title', False):
+        callbacks.append((
+            'command', PATTERN, tweets_title
+        ))
+
+    return callbacks
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
