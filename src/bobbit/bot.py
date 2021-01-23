@@ -3,13 +3,13 @@
 import asyncio
 import logging
 
-import aiohttp
 import yaml
 
-from bobbit.config   import Configuration
-from bobbit.history  import History
-from bobbit.message  import Message
-from bobbit.modules  import load_modules
+from bobbit.config      import Configuration
+from bobbit.history     import History
+from bobbit.http_client import HTTPClient
+from bobbit.message     import Message
+from bobbit.modules     import load_modules
 
 class Bobbit():
 
@@ -123,13 +123,10 @@ class Bobbit():
         # Load modules
         self.reload()
 
-        # Start aiohttp client session
-        self.http_client = aiohttp.ClientSession(headers={
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
-            'Connection': 'keep-alive',
-        })
+        # Start HTTP Client
+        self.http_client = HTTPClient()
 
-        # Start Client
+        # Start Protocol Client
         self.client = self.config.client(
             nick     = self.config.nick,
             password = self.config.password,
