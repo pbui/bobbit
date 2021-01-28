@@ -124,7 +124,7 @@ async def tweets_title(bot, message, status_id=None):
     return message.with_body(bot.client.format_text(
         default_template,
         user   = status['user']['screen_name'],
-        status = status['text'],
+        status = status['text'].replace('\n', ' '),
         link   = await shorten_url(
             bot.http_client,
             f'https://twitter.com/i/web/status/{status_id}'
