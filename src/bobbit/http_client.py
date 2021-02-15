@@ -14,5 +14,5 @@ class HTTPClient(aiohttp.ClientSession):
 
     def get(self, *args, **kwargs):
         ''' https://github.com/aio-libs/aiohttp/issues/3203 '''
-        kwargs['timeout'] = aiohttp.ClientTimeout(total=None, sock_connect=5, sock_read=5)
+        kwargs['timeout'] = aiohttp.ClientTimeout(total=None, sock_connect=10, sock_read=10)
         return super().get(*args, **kwargs)
