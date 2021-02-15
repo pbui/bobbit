@@ -123,10 +123,9 @@ class IRCClient(BaseClient):
     async def recv_message(self):
         message = None
         while not message:
-            # Wait for non-empty line
-            line = None
-            while not line:
-                line = (await self.reader.readline()).decode().rstrip()
+            line = (await self.reader.readline()).decode().rstrip()
+            if not line:
+                raise ConnectionResetError
 
             logging.debug('Received line: %s', line)
 

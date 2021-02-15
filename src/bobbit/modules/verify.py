@@ -3,6 +3,7 @@
 import base64
 import hashlib
 import random
+import time
 
 # Metadata
 
@@ -52,18 +53,18 @@ async def verify(bot, message, netid, passcode):
         return
 
     if passcode == base64.b64encode((netid + '\n').encode()).decode():
-        '''
-        message  = rot13('{}={}'.format(netid, int(time.time()))).encode()
+        body     = rot13('{}={}'.format(netid, int(time.time()))).encode()
         response = '{} {}! Please tell the ORACLE the following MESSAGE: {}'.format(
             random.choice(GREETINGS).title(),
             netid,
-            base64.b64encode(message).decode(),
+            base64.b64encode(body).decode(),
         )
         '''
         response = bot.client.format_text(
             '{color}{green}Verify{color}: {}',
             random.choice(SUCCESSES)
         )
+        '''
     else:
         response = bot.client.format_text(
             '{color}{red}Verify{color}: {}',
