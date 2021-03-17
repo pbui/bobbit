@@ -18,9 +18,9 @@ Example:
 # Command
 
 async def bodule(bot, message, phrase):
-    phrase = phrase.rstrip().split()
+    phrase   = phrase.rstrip().split()
     response = ''
-    vowels = {'a', 'e', 'i', 'o', 'u'}
+    vowels   = {'a', 'e', 'i', 'o', 'u'}
 
     to_replace = None
     if phrase[0].startswith('-'):
