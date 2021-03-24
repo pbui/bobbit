@@ -21,23 +21,21 @@ async def bodule(bot, message, phrase):
     phrase   = phrase.rstrip().split()
     response = ''
     vowels   = {'a', 'e', 'i', 'o', 'u'}
+    special  = {}
 
-    to_replace = None
     if phrase[0].startswith('-'):
-        to_replace = phrase.pop(0)[1:]
+        special = set(list(phrase.pop(0)[1:]))
+        vowels  = vowels & special
 
     for word in phrase:
-        if to_replace and word.lower().startswith(to_replace):
-            response += '🅱' + word[len(to_replace):] + ' '
-            continue
-        elif to_replace:
-            response += word + ' '
-            continue
+        curr = word[0].lower()
 
-        if word[0].lower() in vowels:
+        if curr in vowels:
             response += '🅱' + word
-        else:
+        elif curr in special or not special:
             response += '🅱' + word[1:]
+        else:
+            response += word
 
         response += ' '
 
