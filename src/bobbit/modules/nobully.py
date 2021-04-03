@@ -2,10 +2,10 @@
 
 # Metadata
 
-NAME = 'nobully'
-ENABLE = True
-PATTERN = r'^!nobully (?P<nick>)$'
-USAGE = '''Usage: !nobully <nick>
+NAME    = 'nobully'
+ENABLE  = True
+PATTERN = r'^!nobully (?P<nick>[^\s]+)'
+USAGE   = '''Usage: !nobully <nick>
 This informs the user identified by nick that they should no longer bully other (innocent) users.
 '''
 
@@ -18,7 +18,6 @@ NOBULLY_URL = 'https://www.stop-irc-bullying.info/'
 async def nobully(bot, message, nick):
     if nick not in bot.users:
         return message.with_body(f'Unknown nick: {nick}')
-    # tell the targeted user to stop bullying other users
     else:
         return message.with_body(f'{message.nick} thinks that you should stop bullying other users, {nick}. Please refer to {NOBULLY_URL} for more information.')
 
