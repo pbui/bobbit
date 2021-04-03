@@ -16,8 +16,6 @@ This bullies the user identified by nick.
 # feel free to add to these...
 BULLY_PHRASES = [
     '\'s day has been ruined by your message,',
-    ' thinks that your message is the worst thing that they have ever seen and wishes that you have never even thought of it,',
-    ' thinks that your brain may be even smoother than that of your average r/WSBer,',
     ' wants to return to monke, but not if you\'re coming, too,',
     ' thinks you were probably the pilot of Ever Given when it clogged the Suez Canal,'
 ]
