@@ -144,10 +144,11 @@ class IRCClient(BaseClient):
     def format_message(message):
         target  = message.channel if message.channel else message.nick
         command = 'NOTICE' if message.notice else 'PRIVMSG'
+        body    = message.body[:450] # XXX: Truncate due to 512 byte IRC limit.  Should workaround in the future
         if message.highlighted:
-            return f'{command} {target} :\x02{message.nick}\x02: {message.body}'
+            return f'{command} {target} :\x02{message.nick}\x02: {body}'
         else:
-            return f'{command} {target} :{message.body}'
+            return f'{command} {target} :{body}'
 
     @staticmethod
     def format_text(text, *args, **kwargs):
