@@ -6,7 +6,7 @@ NAME    = 'ree'
 ENABLE  = True
 PATTERN = r'(^!|^|^.*\s)[Rr][Ee]{2,}(\s|$)'
 USAGE   = '''Usage: !ree
-This reports a leaderboard of users' "ree"s 
+This reports a leaderboard of users' "ree"s
 and (eventually, not yet implemented) a timedelta since the most recent "ree"
 Example:
     > !ree
@@ -20,25 +20,19 @@ Example:
 # Command
 
 async def ree(bot, message):
-    user        = bot.users.get(message.nick, {})
-    msg         = []
-    leaderboard = []
-
-    # present leaderboard and timedelta
+    # Present leaderboard and timedelta
     if message.body.startswith('!'):
-        msg.append(message.with_body('Ree-derboard:'))
-        for nick, user in bot.users.items():
-            if 'rees' in user:
-                leaderboard.append((nick, user['rees']))
-        msg += [message.with_body(f'\t{x[1]} - {x[0]}') for x in sorted(leaderboard, key=lambda x: x[1], reverse=True)]
-        return msg
+        user        = bot.users.get(message.nick, {})
+        leaderboard = [(nick, user['rees']) for nick, user in bot.users.items() if 'rees' in user]
+        return \
+            [message.with_body('Ree-derboard:')] + \
+            [message.with_body(f'\t{x[1]} - {x[0]}') for x in sorted(leaderboard, key=lambda x: x[1], reverse=True)]
 
-    # record a "ree" for sender
+    # Record a "ree" for sender
     if message.nick not in bot.users:
         bot.users[message.nick] = {}
     bot.users[message.nick]['rees'] = bot.users[message.nick].get('rees', 0) + 1
-    return message.with_body('Your "ree" has been recorded')
-
+    return
 
 # Register
 
