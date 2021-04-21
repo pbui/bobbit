@@ -26,7 +26,7 @@ async def ree(bot, message):
         leaderboard = [(nick, user['rees']) for nick, user in bot.users.items() if 'rees' in user]
         return \
             [message.with_body('Ree-derboard:')] + \
-            [message.with_body(f'\t{x[1]} - {x[0]}') for x in sorted(leaderboard, key=lambda x: x[1], reverse=True)]
+            [message.with_body(f'\t{x[1]} - {x[0]}') for x in sorted(leaderboard, key=lambda x: x[1], reverse=True)[:5]]
 
     # Record a "ree" for sender
     if message.nick not in bot.users:
