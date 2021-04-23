@@ -19,6 +19,8 @@ async def help(bot, message, module_name=None):
         for module in bot.modules:
             if module.NAME == module_name:
                 responses = module.USAGE.splitlines()
+    if responses not in locals():
+        responses = sorted([m.NAME for m in bot.modules if m.NAME.startswith(module_name)])
     return [message.copy(body=r, notice=True) for r in responses]
 
 # Register
