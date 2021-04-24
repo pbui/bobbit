@@ -1,6 +1,7 @@
 # rainbow.py
 
 import itertools
+import random
 
 # Metadata
 
@@ -36,6 +37,12 @@ COLORS = (
 async def rainbow(bot, message, phrase):
     colors   = itertools.cycle(COLORS)
     response = ''
+
+    # Cycle through colors a random amount to offset
+    for _ in range(random.randrange(len(COLORS))):
+        next(colors)
+
+    # Colorize non-space letters
     for letter in phrase:
         if not letter.isspace():
             response += '{color}{' + next(colors) + '}' + letter + '{color}'
