@@ -22,7 +22,7 @@ Example:
 
 # Constants
 
-WHITES = [
+WHITE_CARDS = [
     "Figgy pudding",
     "Hot Pockets\u00ae",
     "The Trail of Tears",
@@ -584,7 +584,7 @@ WHITES = [
     "Zeus\"s sexual appetites"
 ]
 
-BLACKS = [
+BLACK_CARDS = [
     "TSA guildlines now prohibit {} on airplanes",
     "Next on ESPN2, the world series of {}",
     "What\u2019s Teach for America using to inspire inner city students to succeed? {}",
@@ -697,11 +697,11 @@ async def humanity(bot, message, phrase):
         return message.with_body(replaced)
 
     else:
-        return message.with_body(f'{choice(BLACKS).format(phrase)}')
+        return message.with_body(f'{choice(BLACK_CARDS).format(phrase)}')
 
 # Helper function
 def blankfiller(matchobj):
-    return choice(WHITES)
+    return choice(WHITE_CARDS)
 
 # Register
 
