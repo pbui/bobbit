@@ -49,8 +49,12 @@ def lookup_r(key, data=None):
     data   = data or lookup_data()  # Use given directory or use global dictionary
     result = data.get(key, None)
     args   = '__default__'
+
     if not result:
-        key, args = key.split(' ', 1)
+        try:
+            key, args = key.split(' ', 1)
+        except ValueError:
+            key, args = key, ''
         result    = data.get(key, None)
 
     # Result is a string, so recursive if it is an alias, otherwise return all
@@ -64,14 +68,14 @@ def lookup_r(key, data=None):
         return result.split('\n')
 
     # Result is a list, so either turn all of it or pick one at random.
-    elif isinstance(result, list):
+    if isinstance(result, list):
         if args.split()[-1] == '-a':
             return result
         return [random.choice(result)]
 
     # Result is a dictionary, so recurse on the remaining arguments with this
     # dictionary or the default entry.
-    elif isinstance(result, dict):
+    if isinstance(result, dict):
         return lookup_r(args, result) or lookup_r('__default__', result)
 
     # Nothing matches, so return None.
@@ -84,7 +88,8 @@ async def lookup(bot, message, query=None):
         responses = lookup_r(query.strip().lower())
         if responses:
             return [message.with_body(r) for r in responses]
-    except (IOError, ValueError):
+    except (IOError, ValueError) as e:
+        logging.warn(e)
         return None
 
 # Register
