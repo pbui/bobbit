@@ -122,7 +122,7 @@ class Bobbit():
     def remove_user_channel(self, nick, channel):
         logging.debug('Removing channel for %s: %s', nick, channel)
         try:
-            self.users[nick]['channels'].remove(nick)
+            self.users[nick]['channels'].remove(channel)
         except (KeyError, ValueError):
             pass
 
