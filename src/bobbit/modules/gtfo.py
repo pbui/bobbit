@@ -24,17 +24,23 @@ async def gtfo(bot, message, action, nicks):
     if message.nick != '@IRC@':
         return
 
-    # Update last_seen for users not in bot.users when joining a room or when
-    # they join a room
     if action in ('NAMES', 'JOIN'):
+        # Update last_seen and channel for users when bot joins a room or when
+        # a user joins a room
         for nick in nicks.split():
             if nick[0] in ('@', '+', '%', '~'):
                 nick = nick[1:]
 
+            # Only update last_seen if this is the first time seeing the user
             if nick not in bot.users:
                 bot.update_user_seen(nick, message.timestamp)
 
+            # Always update channel
             bot.update_user_channel(nick, message.channel)
+    elif action in ('KICK', 'PART'):
+        # Remove users from channel on part or kick
+        for nick in nicks.split():
+            bot.remove_user_channel(nick, message.channel)
 
 async def kick(bot):
     for nick, user in bot.users.items():
@@ -54,8 +60,6 @@ async def kick(bot):
             await bot.client.send_message(
                 f'KICK {channel} {nick} :You have been idle for > {days:0.2f} days'
             )
-            # XXX: Remove once we support PART and KICK events
-            user['channels'].remove(channel)
 
 # Register
 
