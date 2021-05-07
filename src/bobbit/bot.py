@@ -119,6 +119,13 @@ class Bobbit():
         elif channel not in self.users[nick]['channels']:
             self.users[nick]['channels'].append(channel)
 
+    def remove_user_channel(self, nick, channel):
+        logging.debug('Removing channel for %s: %s', nick, channel)
+        try:
+            self.users[nick]['channels'].remove(nick)
+        except (KeyError, ValueError):
+            pass
+
     async def _checkpoint_users(self):
         while True:
             await asyncio.sleep(5*60)
