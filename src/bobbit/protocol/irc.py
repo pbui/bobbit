@@ -111,7 +111,7 @@ class IRCClient(BaseClient):
         for channel in self.channels:
             await self.send_message(f'JOIN {channel}')
 
-        await self.send_message(f'MODE {self.nick} +b')
+        await self.send_message(f'MODE {self.nick} +B')
 
     # Client methods
 
