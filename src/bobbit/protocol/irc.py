@@ -16,6 +16,8 @@ CHANMSG_RE    = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+(?P<channel>#+[-\w]
 PRIVMSG_RE    = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+[^#][^:]+:(?P<body>[^\n\r]+)')
 ERROR_RE      = re.compile(r'^ERROR :(?P<reason>.*?):.*')
 MOTD_RE       = re.compile(r':(?P<server>.*?)\s+(?:376|422)')
+NAMES_RE      = re.compile(r':.*\s+(?:353)\s+[^\s]+\s+=\s+(?P<channel>#+[-\w]+)\s+:(?P<nicks>[^\n\r]+)')
+JOIN_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?JOIN\s+(?P<channel>#+[-\w]+)')
 REGISTERED_RE = re.compile(r':NickServ!.*NOTICE.*:.*(identified|logged in|accepted).*')
 
 # IRC Client
@@ -53,6 +55,8 @@ class IRCClient(BaseClient):
             (PING_RE      , self._handle_ping),
             (ERROR_RE     , self._handle_error),
             (MOTD_RE      , self._handle_motd),
+            (NAMES_RE     , self._handle_names),
+            (JOIN_RE      , self._handle_join),
             (REGISTERED_RE, self._handle_registration),
         ]
 
@@ -73,6 +77,12 @@ class IRCClient(BaseClient):
     async def _handle_ping(self, payload):
         logging.debug('Handling Ping: %s', payload)
         await self.send_message(f'PONG {payload}')
+
+    async def _handle_names(self, channel, nicks):
+        return Message('@NAMES@ ' + nicks, '@IRC@', channel)
+
+    async def _handle_join(self, channel, nick):
+        return Message('@JOIN@ ' + nick, '@IRC@', channel)
 
     async def _handle_motd(self, server):
         logging.debug('Handling MOTD')
