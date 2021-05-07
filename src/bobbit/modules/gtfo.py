@@ -60,6 +60,7 @@ async def kick(bot):
             await bot.client.send_message(
                 f'KICK {channel} {nick} :You have been idle for > {days:0.2f} days'
             )
+            bot.remove_user_channel(nick, channel)
 
 # Register
 
