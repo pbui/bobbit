@@ -57,8 +57,9 @@ class Bobbit():
             # Add message to history
             self.history.insert(message)
 
-            # Update user last seen
+            # Update user last seen and channel
             self.update_user_seen(message.nick, message.timestamp)
+            self.update_user_channel(message.nick, message.channel)
 
     async def process_message(self, message):
         ''' Process a single message '''
@@ -102,12 +103,21 @@ class Bobbit():
             logging.info('Saving users to %s', users_path)
             yaml.safe_dump(self.users, stream, default_flow_style=False)
 
-    def update_user_seen(self, user, timestamp):
-        logging.debug('Updating last_seen for %s: %s', user, timestamp)
-        if user not in self.users:
-            self.users[user] = {'last_seen': timestamp}
+    def update_user_seen(self, nick, timestamp):
+        logging.debug('Updating last_seen for %s: %s', nick, timestamp)
+        if nick not in self.users:
+            self.users[nick] = {'last_seen': timestamp}
         else:
-            self.users[user]['last_seen'] = timestamp
+            self.users[nick]['last_seen'] = timestamp
+
+    def update_user_channel(self, nick, channel):
+        logging.debug('Updating channel for %s: %s', nick, channel)
+        if nick not in self.users:
+            self.users[nick] = {'channels': [channel]}
+        elif 'channels' not in self.users[nick]:
+            self.users[nick]['channels'] = [channel]
+        elif channel not in self.users[nick]['channels']:
+            self.users[nick]['channels'].append(channel)
 
     async def _checkpoint_users(self):
         while True:
