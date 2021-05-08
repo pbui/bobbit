@@ -31,8 +31,9 @@ async def gtfo(bot, message, action, nicks):
             if nick[0] in ('@', '+', '%', '~'):
                 nick = nick[1:]
 
-            # Only update last_seen if this is the first time seeing the user
-            if nick not in bot.users:
+            # Update last_seen if this is the first time seeing the user or if
+            # this is a JOIN action
+            if nick not in bot.users or action == 'JOIN':
                 bot.update_user_seen(nick, message.timestamp)
 
             # Always update channel
