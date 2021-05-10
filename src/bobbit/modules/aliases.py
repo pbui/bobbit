@@ -36,10 +36,13 @@ ALIASES = {}
 # Command
 
 async def aliases(bot, message, alias=None, arguments=None):
-    try:
-        body = '{} {}'.format(ALIASES[alias], arguments or '').rstrip()
-    except KeyError:
+    if alias not in ALIASES:
         return
+
+    if '{arguments}' in ALIASES[alias]:
+        body = ALIASES[alias].format(arguments=arguments)
+    else:
+        body = '{} {}'.format(ALIASES[alias], arguments or '').rstrip()
 
     async for response in bot.process_message(message.with_body(body)):
         return response
