@@ -1,5 +1,6 @@
 ''' bobbit.bot '''
 
+import atexit
 import asyncio
 import logging
 
@@ -24,6 +25,8 @@ class Bobbit():
         self.http_client = None
         self.client      = None
         self.outgoing    = None
+
+        atexit.register(self.save_users)
 
     # Message processing
 
