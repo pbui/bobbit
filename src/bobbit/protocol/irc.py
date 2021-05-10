@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import re
+import textwrap
 
 from bobbit.message       import Message
 from bobbit.protocol.base import BaseClient
@@ -21,6 +22,8 @@ JOIN_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?JOIN\s+(?P<channel>#+[-\w]+)'
 PART_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?PART\s+(?P<channel>#+[-\w]+)')
 KICK_RE       = re.compile(r':.*!\S+\s+?KICK\s+(?P<channel>#+[-\w]+)\s+(?P<nick>[^\s]+)')
 REGISTERED_RE = re.compile(r':NickServ!.*NOTICE.*:.*(identified|logged in|accepted).*')
+
+MESSAGE_LENGTH_MAX = 512 - len(CRNL)
 
 # IRC Client
 
@@ -136,9 +139,16 @@ class IRCClient(BaseClient):
         if isinstance(message, Message):
             message = self.format_message(message)
 
-        self.writer.write(message.encode() + CRNL)
-        logging.debug('Sent message: %s', message)
-        await self.writer.drain()
+        if len(message) > MESSAGE_LENGTH_MAX:
+            command, message = message.split(' :', 1)
+            messages = [f'{command} :{m}' for m in textwrap.wrap(message, MESSAGE_LENGTH_MAX - len(command) - 2)]
+        else:
+            messages = [message]
+
+        for message in messages:
+            self.writer.write(message.encode() + CRNL)
+            logging.debug('Sent message: %s', message)
+            await self.writer.drain()
 
     async def recv_message(self):
         message = None
@@ -164,7 +174,7 @@ class IRCClient(BaseClient):
     def format_message(message):
         target  = message.channel if message.channel else message.nick
         command = 'NOTICE' if message.notice else 'PRIVMSG'
-        body    = message.body[:450] # XXX: Truncate due to 512 byte IRC limit.  Should workaround in the future
+        body    = message.body
         if message.highlighted:
             return f'{command} {target} :\x02{message.nick}\x02: {body}'
         else:
