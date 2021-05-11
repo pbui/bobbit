@@ -20,6 +20,7 @@ MOTD_RE       = re.compile(r':(?P<server>.*?)\s+(?:376|422)')
 NAMES_RE      = re.compile(r':.*\s+(?:353)\s+[^\s]+\s+=\s+(?P<channel>#+[-\w]+)\s+:(?P<nicks>[^\n\r]+)')
 JOIN_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?JOIN\s+(?P<channel>#+[-\w]+)')
 PART_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?PART\s+(?P<channel>#+[-\w]+)')
+QUIT_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?QUIT\s+:')
 KICK_RE       = re.compile(r':.*!\S+\s+?KICK\s+(?P<channel>#+[-\w]+)\s+(?P<nick>[^\s]+)')
 REGISTERED_RE = re.compile(r':NickServ!.*NOTICE.*:.*(identified|logged in|accepted).*')
 
@@ -63,6 +64,7 @@ class IRCClient(BaseClient):
             (NAMES_RE     , self._handle_names),
             (JOIN_RE      , self._handle_join),
             (PART_RE      , self._handle_part),
+            (QUIT_RE      , self._handle_quit),
             (KICK_RE      , self._handle_kick),
             (REGISTERED_RE, self._handle_registration),
         ]
@@ -96,6 +98,9 @@ class IRCClient(BaseClient):
 
     async def _handle_part(self, channel, nick):
         return Message('@PART@ ' + nick, '@IRC@', channel)
+
+    async def _handle_quit(self, nick):
+        return Message('@QUIT@ ' + nick, '@IRC@', None)
 
     async def _handle_motd(self, server):
         logging.debug('Handling MOTD')
