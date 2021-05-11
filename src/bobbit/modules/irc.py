@@ -1,5 +1,7 @@
 # irc.py
 
+import logging
+
 # Metadata
 
 NAME    = 'irc'
@@ -41,7 +43,8 @@ async def irc(bot, message, action, nicks):
                 bot.remove_user_channel(nick, channel)
     elif action == 'NICK':
         # Handle NICK change
-        old_nick, new_nick  = nicks.split()
+        old_nick, new_nick = nicks.split()
+        logging.debug('Renaming %s to %s', old_nick, new_nick)
         if old_nick in bot.users:
             bot.users[new_nick] = bot.users.pop(old_nick)
         else:
