@@ -22,7 +22,7 @@ JOIN_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?JOIN\s+(?P<channel>#+[-\w]+)'
 PART_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?PART\s+(?P<channel>#+[-\w]+)')
 QUIT_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?QUIT\s+:')
 KICK_RE       = re.compile(r':.*!\S+\s+?KICK\s+(?P<channel>#+[-\w]+)\s+(?P<nick>[^\s]+)')
-NICK_RE       = re.compile(r':(?P<old_nick>.*?)!\S+\s+?NICK\s+(?P<new_nick>[^\s])')
+NICK_RE       = re.compile(r':(?P<old_nick>.*?)!\S+\s+?NICK\s+(?P<new_nick>[^\s]+)')
 REGISTERED_RE = re.compile(r':NickServ!.*NOTICE.*:.*(identified|logged in|accepted).*')
 
 MESSAGE_LENGTH_MAX = 512 - len(CRNL)
