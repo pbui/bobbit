@@ -90,19 +90,19 @@ class IRCClient(BaseClient):
         await self.send_message(f'PONG {payload}')
 
     async def _handle_names(self, channel, nicks):
-        return Message('@NAMES@ ' + nicks, '@IRC@', channel)
+        return Message(f'@NAMES@ {nicks}', '@IRC@', channel)
 
     async def _handle_join(self, channel, nick):
-        return Message('@JOIN@ ' + nick, '@IRC@', channel)
+        return Message(f'@JOIN@ {nick}', '@IRC@', channel)
 
     async def _handle_kick(self, channel, nick):
-        return Message('@KICK@ ' + nick, '@IRC@', channel)
+        return Message(f'@KICK@ {nick}', '@IRC@', channel)
 
     async def _handle_part(self, channel, nick):
-        return Message('@PART@ ' + nick, '@IRC@', channel)
+        return Message(f'@PART@ {nick}', '@IRC@', channel)
 
     async def _handle_quit(self, nick):
-        return Message('@QUIT@ ' + nick, '@IRC@', None)
+        return Message(f'@QUIT@ {nick}', '@IRC@', None)
 
     async def _handle_nick(self, old_nick, new_nick):
         return Message(f'@NICK@ {old_nick} {new_nick}', '@IRC@', None)
