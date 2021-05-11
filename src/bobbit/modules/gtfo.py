@@ -42,6 +42,10 @@ async def gtfo(bot, message, action, nicks):
         # Remove users from channel on part or kick
         for nick in nicks.split():
             bot.remove_user_channel(nick, message.channel)
+    elif action == 'QUIT':
+        for nick in nicks.split():
+            for channel in bot.users.get(nick, {}).get('channels', []):
+                bot.remove_user_channel(nick, channel)
 
 async def kick(bot):
     for nick, user in bot.users.items():
