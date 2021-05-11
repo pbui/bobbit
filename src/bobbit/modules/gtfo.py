@@ -20,33 +20,6 @@ KICK_TIMEOUT = 5*60                 # Check every 5 minutes
 
 # Command
 
-async def gtfo(bot, message, action, nicks):
-    if message.nick != '@IRC@':
-        return
-
-    if action in ('NAMES', 'JOIN'):
-        # Update last_seen and channel for users when bot joins a room or when
-        # a user joins a room
-        for nick in nicks.split():
-            if nick[0] in ('@', '+', '%', '~'):
-                nick = nick[1:]
-
-            # Update last_seen if this is the first time seeing the user or if
-            # this is a JOIN action
-            if nick not in bot.users or action == 'JOIN':
-                bot.update_user_seen(nick, message.timestamp)
-
-            # Always update channel
-            bot.update_user_channel(nick, message.channel)
-    elif action in ('KICK', 'PART'):
-        # Remove users from channel on part or kick
-        for nick in nicks.split():
-            bot.remove_user_channel(nick, message.channel)
-    elif action == 'QUIT':
-        for nick in nicks.split():
-            for channel in bot.users.get(nick, {}).get('channels', []):
-                bot.remove_user_channel(nick, channel)
-
 async def kick(bot):
     for nick, user in bot.users.items():
         if nick.startswith('@') or nick == bot.client.nick:
@@ -81,8 +54,7 @@ def register(bot):
         return []
 
     return (
-        ('command', PATTERN, gtfo),
-        ('timer'  , KICK_TIMEOUT, kick),
+        ('timer', KICK_TIMEOUT, kick),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
