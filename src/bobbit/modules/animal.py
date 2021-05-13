@@ -8,7 +8,7 @@ import re
 
 NAME = 'animal'
 ENABLE = True
-PATTERN = '^![Aa]nimal (-a)? (.*)'
+PATTERN = r'^![Aa]nimal+(?P<phrase>.*)$'
 USAGE = '''Usage: !animal [options] 
 Print a random ascii animal
     -a [animal] print a specific animal
@@ -80,7 +80,7 @@ async def animal(bot,message,phrase=None):
     selection = None
     badSelect = False
 
-    if(phrase.find('-a') >= 0):
+    if(phrase and phrase.find('-a') >= 0):
         selection = phrase[phrase.find('-a'):]
         selection = selection.split()[-1].strip()
 
@@ -91,7 +91,7 @@ async def animal(bot,message,phrase=None):
     pic = getArt(selection)
     pic = pic.replace(r'\\n', r'\\\\n')
 
-    return message_with_body(pic)
+    return message.with_body(pic)
 
 
 
