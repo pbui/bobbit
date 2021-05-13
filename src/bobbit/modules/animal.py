@@ -1,7 +1,7 @@
 # animal.py
 
 import logging
-#from bobbit.message import Message
+from bobbit.message import Message
 import random
 import requests
 import re
@@ -75,7 +75,7 @@ def getArt(selection = None):
 
 
 
-def animal(bot,message,phrase=None):
+async def animal(bot,message,phrase=None):
     #get animal selection if there is one
     selection = None
     badSelect = False
