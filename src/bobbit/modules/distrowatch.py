@@ -1,7 +1,5 @@
 # distrowatch.py
 
-from textwrap import wrap
-
 import re
 import random
 
@@ -21,7 +19,6 @@ Example:
 # Constants
 
 DW_URL      = 'https://distrowatch.com/dwres.php'
-DW_MAX_LEN  = 280
 DW_RE       = r'\n(.*)<br /><br /><br /><form name=like method=get>'
 
 # Command
@@ -38,8 +35,7 @@ async def command(bot, message, distro):
         quotes   = [strip_html(q) for q in re.findall(DW_RE, text)]
         response = random.choice(quotes)
 
-        # Send multiple messages to get the whole review
-        return [message.with_body(x.strip()) for x in wrap(response, width=DW_MAX_LEN)]
+        return message.with_body(response)
 
 # Register
 

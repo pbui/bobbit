@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import re
+import textwrap
 
 from bobbit.message       import Message
 from bobbit.protocol.base import BaseClient
@@ -16,7 +17,15 @@ CHANMSG_RE    = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+(?P<channel>#+[-\w]
 PRIVMSG_RE    = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+[^#][^:]+:(?P<body>[^\n\r]+)')
 ERROR_RE      = re.compile(r'^ERROR :(?P<reason>.*?):.*')
 MOTD_RE       = re.compile(r':(?P<server>.*?)\s+(?:376|422)')
+NAMES_RE      = re.compile(r':.*\s+(?:353)\s+[^\s]+\s+=\s+(?P<channel>#+[-\w]+)\s+:(?P<nicks>[^\n\r]+)')
+JOIN_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?JOIN\s+(?P<channel>#+[-\w]+)')
+PART_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?PART\s+(?P<channel>#+[-\w]+)')
+QUIT_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?QUIT\s+:')
+KICK_RE       = re.compile(r':.*!\S+\s+?KICK\s+(?P<channel>#+[-\w]+)\s+(?P<nick>[^\s]+)')
+NICK_RE       = re.compile(r':(?P<old_nick>.*?)!\S+\s+?NICK\s+(?P<new_nick>[^\s]+)')
 REGISTERED_RE = re.compile(r':NickServ!.*NOTICE.*:.*(identified|logged in|accepted).*')
+
+MESSAGE_LENGTH_MAX = 512 - len(CRNL)
 
 # IRC Client
 
@@ -53,6 +62,12 @@ class IRCClient(BaseClient):
             (PING_RE      , self._handle_ping),
             (ERROR_RE     , self._handle_error),
             (MOTD_RE      , self._handle_motd),
+            (NAMES_RE     , self._handle_names),
+            (JOIN_RE      , self._handle_join),
+            (PART_RE      , self._handle_part),
+            (QUIT_RE      , self._handle_quit),
+            (KICK_RE      , self._handle_kick),
+            (NICK_RE      , self._handle_nick),
             (REGISTERED_RE, self._handle_registration),
         ]
 
@@ -74,6 +89,24 @@ class IRCClient(BaseClient):
         logging.debug('Handling Ping: %s', payload)
         await self.send_message(f'PONG {payload}')
 
+    async def _handle_names(self, channel, nicks):
+        return Message(f'@NAMES@ {nicks}', '@IRC@', channel)
+
+    async def _handle_join(self, channel, nick):
+        return Message(f'@JOIN@ {nick}', '@IRC@', channel)
+
+    async def _handle_kick(self, channel, nick):
+        return Message(f'@KICK@ {nick}', '@IRC@', channel)
+
+    async def _handle_part(self, channel, nick):
+        return Message(f'@PART@ {nick}', '@IRC@', channel)
+
+    async def _handle_quit(self, nick):
+        return Message(f'@QUIT@ {nick}', '@IRC@', None)
+
+    async def _handle_nick(self, old_nick, new_nick):
+        return Message(f'@NICK@ {old_nick} {new_nick}', '@IRC@', None)
+
     async def _handle_motd(self, server):
         logging.debug('Handling MOTD')
 
@@ -91,7 +124,7 @@ class IRCClient(BaseClient):
         for channel in self.channels:
             await self.send_message(f'JOIN {channel}')
 
-        await self.send_message(f'MODE {self.nick} +b')
+        await self.send_message(f'MODE {self.nick} +B')
 
     # Client methods
 
@@ -116,9 +149,16 @@ class IRCClient(BaseClient):
         if isinstance(message, Message):
             message = self.format_message(message)
 
-        self.writer.write(message.encode() + CRNL)
-        logging.debug('Sent message: %s', message)
-        await self.writer.drain()
+        if len(message) > MESSAGE_LENGTH_MAX:
+            command, message = message.split(' :', 1)
+            messages = [f'{command} :{m}' for m in textwrap.wrap(message, MESSAGE_LENGTH_MAX - len(command) - 2)]
+        else:
+            messages = [message]
+
+        for message in messages:
+            self.writer.write(message.encode() + CRNL)
+            logging.debug('Sent message: %s', message)
+            await self.writer.drain()
 
     async def recv_message(self):
         message = None
@@ -144,7 +184,7 @@ class IRCClient(BaseClient):
     def format_message(message):
         target  = message.channel if message.channel else message.nick
         command = 'NOTICE' if message.notice else 'PRIVMSG'
-        body    = message.body[:450] # XXX: Truncate due to 512 byte IRC limit.  Should workaround in the future
+        body    = message.body
         if message.highlighted:
             return f'{command} {target} :\x02{message.nick}\x02: {body}'
         else:

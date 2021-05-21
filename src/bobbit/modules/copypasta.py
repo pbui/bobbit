@@ -23,7 +23,7 @@ WARNING: can be pretty offcolor. Use at your own discretion
 
 PASTA_SAUCE   = 'https://www.reddit.com/r/copypasta/.json'
 PASTA_MIN_LEN = 0
-PASTA_MAX_LEN = 280 # NOTE: Tweet-length
+PASTA_MAX_LEN = 512 # NOTE: Tweet-length
 
 # Command
 
