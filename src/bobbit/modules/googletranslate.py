@@ -95,6 +95,14 @@ async def googletranslate(bot, message, query, source='auto', target='en'):
     source = match_code(options['-s'], 'auto')
     target = match_code(options['-t'], 'en')
 
+    if query in bot.users:
+        try:
+            history = bot.history.search(message.channel, nick=query, limit=1, reverse=True)
+            query = list(history)[0].body
+        except IndexError:
+            pass
+
+    query = query.rstrip()
     complete_url = GT_URL + f'{source}&tl={target}&dt=t&q={query}'
 
     async with bot.http_client.get(complete_url) as response:
