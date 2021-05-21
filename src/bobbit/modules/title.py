@@ -19,12 +19,14 @@ Example:
 
 # Constants
 
-BLACKLIST = []
+BLACKLIST        = []
+AVOID_EXTENSIONS = ('.gif', '.jpg', '.mkv', '.mov', '.mp4', '.png')
 
 # Command
 
 async def title(bot, message, url=None):
-    if message.channel in BLACKLIST:
+    if message.channel in BLACKLIST or \
+        any(url.lower().endswith(extension) for extension in AVOID_EXTENSIONS):
         return
 
     async with bot.http_client.get(url) as response:

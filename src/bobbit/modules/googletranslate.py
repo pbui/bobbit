@@ -82,16 +82,16 @@ LANGUAGE_CODES = {
 def match_code(lang, default):
     if lang in LANGUAGE_CODES:
         return lang
-    else:
-        lang = lang.lower()
-        for code, name in LANGUAGE_CODES.items():
-            if lang in name:
-                return code
+
+    lang = lang.lower()
+    for code, name in LANGUAGE_CODES.items():
+        if lang in name:
+            return code
 
     return default
 
 async def googletranslate(bot, message, query, source='auto', target='en'):
-    options, query = parse_options({'-s': source, '-t': target}, query) 
+    options, query = parse_options({'-s': source, '-t': target}, query)
     source = match_code(options['-s'], 'auto')
     target = match_code(options['-t'], 'en')
 
