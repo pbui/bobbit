@@ -13,14 +13,30 @@ Displays a crying lenny face :,(
 
 # Lenny Faces from Gonzobot
 
-CRI = [
-    'ಥʖ̯ಥ'
+CRYING = [
+    ' ಥʖ̯ಥ ',
+    ' (ಥ _ʖಥ) ',
+    ' (TдT) ',
+    ' (ಥ﹏ಥ) ',
+    '（πーπ）',
+    ' (Ｔ▽Ｔ) ',
+    '（ｉДｉ）',
+    ' ╰(ɵ̥̥ ˑ̫ ɵ̥̥ ╰) ',
+    ' (≖͞_≖̥) ',
+    ' ͡ಥ ͜ʖ ͡ಥ ',
+    ' ( •́ ʖ̯ •̩̥̀ ) ',
+    '（；へ：）',
+    ':\'(',
+    ' ;_; ',
+    ' =\'( ',
+    ' T^T ',
+    ' ;-; '
 ]
 
 # Command
 
 async def cri(bot, message, text=None):
-    response = random.choice(CRI)
+    response = random.choice(CRYING)
     if text:
         response += ' ' + text
     return message.with_body(response)
