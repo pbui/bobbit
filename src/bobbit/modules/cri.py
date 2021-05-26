@@ -1,4 +1,4 @@
-# lenny.py
+# cri.py
 
 import random
 
@@ -10,8 +10,6 @@ PATTERN = r'^![Cc]ri\s*(?P<text>.*)$'
 USAGE = '''Usage: ![Cc]ri
 Displays a crying lenny face :,(
 '''
-
-# Lenny Faces from Gonzobot
 
 CRYING = [
     ' ಥʖ̯ಥ ',
