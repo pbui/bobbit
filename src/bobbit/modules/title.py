@@ -9,7 +9,7 @@ from bobbit.utils import strip_html
 
 NAME    = 'title'
 ENABLE  = True
-PATTERN = r'.*(?P<url>http[^\s]+$).*'
+PATTERN = r'.*(?P<url>http[^\s]+).*'
 USAGE   = '''Usage: <url>
 Looks up title of URL.
 Example:
