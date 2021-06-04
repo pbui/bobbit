@@ -36,6 +36,7 @@ class Bobbit():
             await self.client.send_message(message)
             self.outgoing.task_done()
             logging.debug('Sent message: %s', message)
+            self.update_user_seen(self.client.nick, message.timestamp)
 
     async def _recv_messages(self):
         while True:
