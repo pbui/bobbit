@@ -4,7 +4,7 @@
 
 NAME = 'crypto'
 ENABLE = True
-PATTERN = '^!crypto (?P<symbol>).*$'
+PATTERN = '^!crypto (?P<symbol>.*)$'
 USAGE = '''Usage: !crypto <symbol>
 Given a crypto symbol, this returns the pricing information.
 Example:
