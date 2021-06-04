@@ -37,13 +37,11 @@ async def crypto(bot, message, symbol=None):
             response = bot.client.format_text(
                 "{bold}Symbol{bold}: {symbol}, "
                 "{color}{magenta}Price{color}: {price:0.2f}, "
-                "{color}{blue}24-hour Volume{color}: {volume:0.2f}, "
                 "{color}{green}1-hour{color}: {hour_percent:0.2f}%, "
                 "{color}{red}24-hour{color}: {day_percent:0.2f}%, "
                 "{color}{cyan}7-day{color}: {week_percent:0.2f}%",
                 symbol = symbol.upper(),
                 price = quote['price'],
-                volume = quote['volume_24h'],
                 hour_percent = quote['percent_change_1h'],
                 day_percent = quote['percent_change_24h'],
                 week_percent = quote['percent_change_7d'],
