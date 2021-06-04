@@ -4,7 +4,7 @@
 
 NAME = 'crypto'
 ENABLE = True
-PATTERN = '^!crypto (?P<symbol>.*$'
+PATTERN = '^!crypto (?P<symbol>).*$'
 USAGE = '''Usage: !crypto <symbol>
 Given a crypto symbol, this returns the pricing information.
 Example:
@@ -38,9 +38,9 @@ async def crypto(bot, message, symbol=None):
                 "{bold}Symbol{bold}: {symbol}, "
                 "{color}{magenta}Price{color}: {price}, "
                 "{color}{blue}24-hour Volume{color}: {volume:0.2f}, "
-                "{color}{green}1-hour %{color}: {hour_percent:0.2f}, "
-                "{color}{red}24-hour %{color}: {day_percent:0.2f}, "
-                "{color}{cyan}7-day %{color}: {week_percent:0.2f}",
+                "{color}{green}1-hour{color}: {hour_percent:0.2f}%, "
+                "{color}{red}24-hour{color}: {day_percent:0.2f}%, "
+                "{color}{cyan}7-day{color}: {week_percent:0.2f}%",
                 symbol = symbol.upper(),
                 price = quote['price'],
                 volume = quote['volume_24h'],
