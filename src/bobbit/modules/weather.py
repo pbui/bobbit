@@ -65,7 +65,7 @@ def get_location(data):
     location = data['location']['areaDescription']
     for prefix in re.findall(r'(\d+ Miles [ENSW]+)', location):
         location = location.replace(prefix, '')
-    return location.strip()
+    return location.strip()[:-3] + ", " + location.strip()[-2:]
 
 # Commands
 
