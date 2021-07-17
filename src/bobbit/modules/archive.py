@@ -1,15 +1,20 @@
 # archive.py
 
-import logging
 import re
+
+from bobbit.utils import shorten_url
 
 # Metadata
 
 NAME    = 'archive'
-ENABLE  = False # NOTE: blocked by website
-PATTERN = '^!archive (?P<url>[^\s]*)$'
+ENABLE  = True
+PATTERN = r'^!archive\s*(?P<url>[^\s]*)$'
 USAGE   = '''Usage: !archive <url>
-Given a url, return link to archive.is snapshot.
+Given a URL, return link to archive.is snapshot of the URL.
+
+If not URL is specified, it will search the channel's history for the previous
+URL.
+
 Example:
     > !archive https://waifupaste.moe
     https://yld.me/l1X
@@ -17,21 +22,19 @@ Example:
 
 # Constants
 
-ARCHIVE_URL = 'http://archive.vn/search/'
-ARCHIVE_RE  = 'href="(http://archive.vn/[^":/*.]+)">'
+ARCHIVE_URL = 'https://archive.is/newest/{url}'
 
 # Command
 
-async def archive(bot, message, url):
-    async with bot.http_client.get(ARCHIVE_URL, params={'q': url}) as response:
-        try:
-            text     = await response.text()
-            response = re.findall(ARCHIVE_RE, text)[0][0]
-        except (IndexError, ValueError) as e:
-            logging.warning(e)
-            response = 'No results'
+async def archive(bot, message, url=''):
+    if not url:
+        for m in bot.history.search(message.channel, pattern='http[s]*://', limit=1, reverse= True):
+            url = re.findall(r'(http[s]*://[^\s<>]+)', m.body)[0]
 
-        return message.with_body(response)
+    url       = ARCHIVE_URL.format(url=url)
+    short_url = await shorten_url(bot.http_client, url)
+    response  = bot.client.format_text('{bold}Archive{bold}: {url}', url=short_url)
+    return message.with_body(response)
 
 # Register
 
