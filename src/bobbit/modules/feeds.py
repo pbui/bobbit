@@ -67,9 +67,15 @@ async def process_feed(http_client, feed, cache):
         # If date published is too old, then mark and skip recording
         timestamp = entry.get('updated_parsed', entry.get('published_parsed', None))
         timestamp = time.mktime(timestamp) if timestamp else time.time()
-        if time.time() - timestamp > 24*60*60:
+        time_diff = time.time() - timestamp
+        if time_diff > 24*60*60: # One day
             logging.debug('Skipping %s (too old)', link)
             cache[key] = str(time.time())
+            continue
+
+        # If date published is in the future, then skip for now
+        if time_diff < 0:
+            logging.debug('Skipping %s (in the future)', link)
             continue
 
         # Record entry with a key of 1.0 and then add to list of items
