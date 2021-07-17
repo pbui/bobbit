@@ -8,7 +8,7 @@ from bobbit.utils import shorten_url
 
 NAME    = 'yldme'
 ENABLE  = True
-PATTERN = '^!yldme (?P<url>[^\s]*)$'
+PATTERN = r'^!yldme\s*(?P<url>[^\s]*)$'
 USAGE   = '''Usage: !yldme <url>
 Given a url, return a shortened version.
 Example:
@@ -18,13 +18,14 @@ Example:
 
 # Command
 
-async def yldme(bot, message, url):
-    if url == 'last':
+async def yldme(bot, message, url=''):
+    if not url:
         for m in bot.history.search(message.channel, pattern='http[s]*://', limit=1, reverse=True):
-            url = re.findall('(http[s]*://[^\s<>]+)', m.body)[0]
+            url = re.findall(r'(http[s]*://[^\s<>]+)', m.body)[0]
 
-    response = await shorten_url(bot.http_client, url)
-    if response != url:
+    short_url = await shorten_url(bot.http_client, url)
+    if short_url != url:
+        response = bot.client.format_text('{bold}YldMe{bold}: {url}', url=short_url)
         return message.with_body(response)
 
 # Register
