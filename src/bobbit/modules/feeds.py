@@ -73,8 +73,8 @@ async def process_feed(http_client, feed, cache):
             cache[key] = str(time.time())
             continue
 
-        # If date published is in the future, then skip for now
-        if time_diff < 0:
+        # If date published is in the future (half a day), then skip for now
+        if time_diff < -12*60*60:
             logging.debug('Skipping %s (in the future)', link)
             continue
 
