@@ -10,7 +10,7 @@ from bobbit.message       import Message
 class LocalClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
-        pass
+        self.nick = kwargs.get('nick', 'bobbit')
 
     async def connect(self):
         pass
