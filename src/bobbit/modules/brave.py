@@ -21,7 +21,7 @@ Example:
 # Constants
 
 BRAVE_URL = 'https://search.brave.com/search'
-BRAVE_RE  = r"data='(.*score.*)'"
+BRAVE_RE  = r'data="(.*score.*)"'
 
 # Command
 
