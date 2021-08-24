@@ -20,6 +20,7 @@ SLACK_CHANNEL_RX = r'<#[0-9A-Z]+\|([^>]+)>'
 class SlackClient(BaseClient):
 
     def __init__(self, *args, **kwargs):
+        self.nick        = kwargs['nick']
         self.token       = kwargs['password']
         self.url         = None
         self.counter     = itertools.count()
