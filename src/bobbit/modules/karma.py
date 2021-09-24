@@ -4,14 +4,14 @@
 
 NAME    = 'karma'
 ENABLE  = True
-PATTERN = r'(?P<nick>[^\s]+)(?P<modifier>[+-]{2})'
+PATTERN = r'(?P<nick>[^\s]+)(?P<modifier>[+-]{2})$'
 USAGE   = '''Usage: nick++ or nick--
 This adds or removes karma from specified nick (or word).
 Example:
-    > ZOMG AndroidKitKat++
+    > AndroidKitKat++
     AndroidKitKat now has 69 karma.
 
-    > Hmm sussy--
+    > sussy--
     sussy now has -420 karma
 '''
 
