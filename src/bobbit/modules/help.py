@@ -15,19 +15,18 @@ module.
 async def help(bot, message, module_name=None):
     responses = []
 
+    # Lookup specific help message
     if module_name and module_name != 'all':
         for module in bot.modules:
             if module.NAME == module_name:
                 responses = module.USAGE.splitlines()
-                return [message.copy(body=r, notice=True) for r in responses]
-    else:
-        responses = sorted([m.NAME for m in bot.modules])
+                return [message.copy(body=r) for r in responses]
 
     # Suggest responses if none match
     if not responses:
-        responses = sorted([m.NAME for m in bot.modules if module_name in m.NAME])
+        responses = sorted([m.NAME for m in bot.modules if module_name in m.NAME or module_name == 'all'])
 
-    return message.with_body(", ".join(responses))
+    return message.with_body(', '.join(responses))
 
 # Register
 
