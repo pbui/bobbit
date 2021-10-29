@@ -17,7 +17,9 @@ Examples:
     > !metar ksbn 202110271235  # South Bend 2021-10-27 at 12:35
 '''
 
-PATTERN = r'^!metar (?P<ids>(".+")|([^\s]+)) (?P<date>(".+")|([^\s]+))$'
+# Thanks for the regex help, pbui
+PATTERN = r'^!metar\s*(?P<ids>[a-zA-Z]+)*\s*(?P<date>[0-9]+)*$'
+
 
 # Constants
 
