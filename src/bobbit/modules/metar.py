@@ -8,7 +8,7 @@ import re
 NAME    = 'metar'
 ENABLE  = True
 USAGE   = '''Usage: !metar <id> <date>
-Given a station ID, give the METeorological Aerodrome Report. 
+Given a station ID, produce the METeorological Aerodrome Report. 
 Date is in format yyyymmddhhnn
 
 Examples:
@@ -17,7 +17,7 @@ Examples:
     > !metar ksbn 202110271235  # South Bend 2021-10-27 at 12:35
 '''
 
-PATTERN = r'^!metar (?P<sid>(".+")|([^\s]+)) (?P<date>(".+")|([^\s]+))$'
+PATTERN = r'^!metar (?P<ids>(".+")|([^\s]+)) (?P<date>(".+")|([^\s]+))$'
 
 # Constants
 
@@ -28,11 +28,11 @@ EXTRACT = r'<code>(.*)</code>'
 
 # Functions
 
-async def get_metar_data(bot, sid, date):
+async def get_metar_data(bot, ids, date):
     url = METAR_URL_BASE
 
-    if sid:
-        url = url + f'ids={sid}&'
+    if ids:
+        url = url + f'ids={ids}&'
     else:
         url = url + f'ids={DEFAULT_ID}&'
 
@@ -44,8 +44,8 @@ async def get_metar_data(bot, sid, date):
     async with bot.http_client.get(url) as response:
         return await response.text()
 
-async def metar(bot, message, sid=None, date=None):
-    data    = await get_metar_data(bot, sid, date)
+async def metar(bot, message, ids=None, date=None):
+    data    = await get_metar_data(bot, ids, date)
 
     metar = re.findall(EXTRACT, data)
 
