@@ -18,16 +18,15 @@ Examples:
     > !taf ksbn 202110271235    # South Bend 2021-10-27 at 12:35
 '''
 
-# Thanks for the regex help, pbui
 METAR_PATTERN = r'^!metar\s*(?P<ids>[a-zA-Z]+)*\s*(?P<date>[0-9]+)*$'
-TAF_PATTERN = r'^!taf\s*(?P<ids>[a-zA-Z]+)*\s*(?P<date>[0-9]+)*$'
+TAF_PATTERN   = r'^!taf\s*(?P<ids>[a-zA-Z]+)*\s*(?P<date>[0-9]+)*$'
 
 # Constants
 
-DEFAULT_ID = 'ksbn'
+DEFAULT_ID     = 'ksbn'
 METAR_URL_BASE = 'https://aviationweather.gov/metar/data?'
-METAR_URL_EXT = 'format=raw&hours=0&taf=off&layout=off'
-EXTRACT = r'<code>(.*)</code>'
+METAR_URL_EXT  = 'format=raw&hours=0&taf=off&layout=off'
+EXTRACT        = r'<code>(.*)</code>'
 
 # Functions
 
@@ -51,8 +50,7 @@ async def get_metar_data(bot, ids, date, taf=False):
         return await response.text()
 
 async def metar(bot, message, ids=None, date=None):
-    data    = await get_metar_data(bot, ids, date, False)
-
+    data  = await get_metar_data(bot, ids, date, False)
     metar = re.findall(EXTRACT, data)
 
     if '<strong>No METAR found' in data or not metar:
