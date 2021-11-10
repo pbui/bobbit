@@ -42,10 +42,11 @@ async def aliases(bot, message, alias=None, arguments=None):
     if '{arguments}' in ALIASES[alias]:
         body = ALIASES[alias].format(arguments=arguments)
     else:
-        body = '{} {}'.format(ALIASES[alias], arguments or '').rstrip()
+        body = '{} {}'.format(ALIASES[alias], arguments or '')
 
-    async for response in bot.process_message(message.with_body(body)):
-        return response
+    async for response in bot.process_message(message.with_body(body.strip())):
+        if response:
+            return response
 
 # Register
 
