@@ -1,5 +1,6 @@
 import logging
 import re
+import urllib
 
 # Metadata
 
@@ -37,7 +38,7 @@ async def command(bot, message, sport, team=None):
                            .replace('^', '')\
                            .replace('&', '\n')
             pattern  = re.compile(r"{}_s_left\d+=(.*)".format(sport))
-            response = [match for match in re.findall(pattern, text) if ' ' in match]
+            response = [urllib.parse.unquote(match) for match in re.findall(pattern, text) if ' ' in match]
 
             if team:
                 response = [x for x in response if team.title() in x]
