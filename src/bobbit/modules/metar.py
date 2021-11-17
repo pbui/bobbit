@@ -66,7 +66,8 @@ async def taf(bot, message, ids=None, date=None):
     if '<strong>No METAR found' in data or len(metar) < 2:
         return message.with_body('No results')
 
-    taf = re.sub('<br/>&nbsp;&nbsp;', '\n    ', metar[1])
+    
+    taf = re.sub('<br/>&nbsp;&nbsp;', '| ', metar[1])
     return message.with_body(taf)
 
 # Register
