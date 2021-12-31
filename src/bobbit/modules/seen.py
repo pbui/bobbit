@@ -5,7 +5,7 @@ import time
 # Metadata
 
 NAME    = 'seen'
-PATTERN = r'^!seen\s*(?P<nick>[^\s]*)$'
+PATTERN = r'^!seen\s+(?P<nick>[^\s]*)$'
 ENABLE  = True
 USAGE   = '''Usage: !seen <nick>
 This reports the last time a user was seen (ie. last time they sent a
