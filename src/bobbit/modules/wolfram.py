@@ -27,10 +27,16 @@ async def wolfram(bot, message, query=None):
     }
     async with bot.http_client.get(WOLFRAM_ALPHA_URL, params=params) as response:
         try:
-            response = bot.client.format_text(
-                '{color}{green}Wolfram Alpha{color}: {bold}{answer}{bold}',
-                answer = await response.text()
-            )
+            if response.status == 200:
+                response = bot.client.format_text(
+                    '{color}{green}Wolfram Alpha{color}: {bold}{answer}{bold}',
+                    answer = await response.text()
+                )
+            else:
+                response = bot.client.format_text(
+                    '{color}{red}Wolfram Alpha{color}: {bold}{status} Error{bold}',
+                    status = response.status
+                )
         except (IndexError, ValueError) as e:
             logging.warning(e)
             response = 'No results'
