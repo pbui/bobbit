@@ -67,7 +67,7 @@ async def verify(bot, message, netid, passcode):
         '''
     else:
         response = bot.client.format_text(
-            '{color}{red}Verify{color}: {}',
+            '{color}{red}Verification Failure{color}: {}',
             random.choice(FAILURES)
         )
 
