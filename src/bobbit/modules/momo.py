@@ -1,21 +1,21 @@
-# appa.py
+# momo.py
 
 from bobbit.message import Message
 
 # Metadata
 
-NAME    = 'appa'
+NAME    = 'momo'
 ENABLE  = True
 PATTERN = r'^\[(?P<world>[^\]]+)\] <(?P<player>[^>]+)> (?P<phrase>.*)'
 USAGE   = '''Usage: [world] <player> phrase 
-Intercepts messages from Appa Minecraft bot and processes as normal IRC
+Intercepts messages from momo Minecraft bot and processes as normal IRC
 messages.
 '''
 
 # Command
 
-async def appa(bot, message, world, player, phrase=None):
-    if message.nick != 'appa':
+async def momo(bot, message, world, player, phrase=None):
+    if message.nick != 'momo':
         return
 
     message   = message.copy(body=phrase, nick=player)
@@ -31,7 +31,7 @@ async def appa(bot, message, world, player, phrase=None):
 
 def register(bot):
     return (
-        ('command', PATTERN, appa),
+        ('command', PATTERN, momo),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
