@@ -1,5 +1,7 @@
 # reddit.py
 
+import re
+
 from bobbit.utils import shorten_url
 
 # Metadata
@@ -13,6 +15,8 @@ query.
 Example:
     > !reddit linuxmasterrace
 '''
+
+TITLE_PATTERN = r'(?P<url>[^\s]*reddit.com/[^\s]+)'
 
 # Constants
 
@@ -54,11 +58,28 @@ async def reddit(bot, message, subreddit, query=''):
 
         return message.with_body(response)
 
+# Title Command
+
+async def reddit_title(bot, message, url):
+    async with bot.http_client.get(url) as response:
+        try:
+            text  = await response.text()
+            title = re.findall(r'"title":"([^"]+)"}}}', text)[0]
+
+            title, subreddit = title.rsplit(' : ', 1)
+            return message.with_body(bot.client.format_text(
+                '{color}{green}r/{}{color}: {bold}{}{bold}',
+                subreddit, title
+            ))
+        except IndexError:
+            pass
+
 # Register
 
 def register(bot):
     return (
-        ('command', PATTERN, reddit),
+        ('command', PATTERN      , reddit),
+        ('command', TITLE_PATTERN, reddit_title),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
