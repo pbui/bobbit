@@ -19,14 +19,16 @@ Example:
 
 # Constants
 
-BLACKLIST        = []
-AVOID_EXTENSIONS = ('.gif', '.jpg', '.mkv', '.mov', '.mp4', '.png')
+CHANNEL_BLACKLIST = []
+DOMAIN_BLACKLIST  = ['reddit.com', 'twitter.com']
+AVOID_EXTENSIONS  = ('.gif', '.jpg', '.mkv', '.mov', '.mp4', '.png')
 
 # Command
 
 async def title(bot, message, url=None):
-    if message.channel in BLACKLIST or \
-        any(url.lower().endswith(extension) for extension in AVOID_EXTENSIONS):
+    if message.channel in CHANNEL_BLACKLIST or \
+        any(url.lower().endswith(extension) for extension in AVOID_EXTENSIONS) or \
+        any(domain in url for domain in DOMAIN_BLACKLIST):
         return
 
     async with bot.http_client.get(url) as response:
@@ -45,10 +47,10 @@ async def title(bot, message, url=None):
 # Register
 
 def register(bot):
-    global BLACKLIST
+    global CHANNEL_BLACKLIST
 
-    config    = bot.config.load_module_config('title')
-    BLACKLIST = config.get('blacklist', BLACKLIST)
+    config = bot.config.load_module_config('title')
+    CHANNEL_BLACKLIST = config.get('blacklist', BLACKLIST)
 
     if config.get('disabled', False):
         return []
