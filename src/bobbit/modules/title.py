@@ -50,7 +50,7 @@ def register(bot):
     global CHANNEL_BLACKLIST
 
     config = bot.config.load_module_config('title')
-    CHANNEL_BLACKLIST = config.get('blacklist', BLACKLIST)
+    CHANNEL_BLACKLIST = config.get('blacklist', CHANNEL_BLACKLIST)
 
     if config.get('disabled', False):
         return []
