@@ -16,7 +16,7 @@ Example:
     > !reddit linuxmasterrace
 '''
 
-TITLE_PATTERN = r'(?P<url>[^\s]*reddit.com/[^\s]+)'
+TITLE_PATTERN = r'.*(?P<url>http[^\s]+reddit.com/[^\s]+).*'
 
 # Constants
 
