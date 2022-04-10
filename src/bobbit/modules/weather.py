@@ -12,6 +12,8 @@ configuration directory and expects the following values:
 import logging
 import re
 
+import aiohttp.client_exceptions
+
 # Metadata
 
 NAME    = 'weather'
@@ -59,7 +61,11 @@ async def retrieve_weather_data(bot, zipcode):
             return {}
 
     async with bot.http_client.get(json_url) as response:
-        return await response.json()
+        try:
+            return await response.json()
+        except aiohttp.client_exceptions.ContentTypeError:
+            logging.warning('Unable to get weather data: %s', response.text)
+            return {}
 
 def get_location(data):
     location = data['location']['areaDescription']
