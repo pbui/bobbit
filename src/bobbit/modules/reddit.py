@@ -1,5 +1,6 @@
 # reddit.py
 
+import logging
 import re
 
 from bobbit.utils import shorten_url
@@ -71,8 +72,8 @@ async def reddit_title(bot, message, url):
                 '{color}{green}r/{}{color}: {bold}{}{bold}',
                 subreddit, title
             ))
-        except IndexError:
-            pass
+        except IndexError as e:
+            logging.warn(e)
 
 # Register
 
