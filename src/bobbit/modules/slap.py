@@ -17,7 +17,7 @@ Example:
 # Constants
 
 RESPONSES = (
-    "slaps {target} around a bit with a large troutn",
+    "slaps {target} around a bit with a large trout",
     "gives {target} a clout round the head with a fresh copy of WeeChat",
     "slaps {target} with a large smelly trout",
     "breaks out the slapping rod and looks sternly at {target}",
