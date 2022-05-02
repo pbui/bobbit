@@ -3,6 +3,7 @@
 import atexit
 import asyncio
 import logging
+import os
 
 import yaml
 
@@ -104,10 +105,17 @@ class Bobbit():
             return {}
 
     def save_users(self):
-        users_path = self.config.get_config_path('users.yaml')
-        with open(users_path, 'w') as stream:
-            logging.info('Saving users to %s', users_path)
+        users_old_path = self.config.get_config_path('users.yaml')
+        users_new_path = self.config.get_config_path('users.yaml.new')
+        with open(users_new_path, 'w') as stream:
+            logging.info('Saving users to %s', users_new_path)
             yaml.safe_dump(self.users, stream, default_flow_style=False)
+
+        try:
+            os.replace(users_new_path, users_old_path)
+        except OSError:
+            logging.warning('Unable to rename %s: %s', users_new_path, e)
+            os.unlink(users_new_path)
 
     def update_user_seen(self, nick, timestamp):
         logging.debug('Updating last_seen for %s: %s', nick, timestamp)
