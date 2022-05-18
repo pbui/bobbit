@@ -87,8 +87,8 @@ async def weather(bot, message, zipcode=None):
     return message.with_body(bot.client.format_text(
         '{bold}Weather{bold} for {bold}{location}{bold}: {temp}°F, {weather}',
         location = location,
-        temp     = current['Temp'],
-        weather  = current['Weather'],
+        temp     = current['Temp'].strip(),
+        weather  = current['Weather'].strip(),
     ))
 
 async def forecast(bot, message, zipcode=None):
