@@ -24,10 +24,11 @@ async def grab(bot, message, nick):
     options, nick = parse_options({'-l': False, '-r': False, '-a': False}, nick)
     last_grab     = options['-l']
     random_grab   = options['-r']
+    all_grabs     = options['-a']
     user          = bot.users.get(nick, {})
 
     # Display Last or Random Grab
-    if last_grab or random_grab:
+    if last_grab or random_grab or all_grabs:
         if nick not in bot.users:
             return message.copy(body=f'Unknown nick: {nick}')
 
@@ -36,6 +37,10 @@ async def grab(bot, message, nick):
 
         if last_grab:
             grabbed = user['grabs'][-1]
+        elif all_grabs:
+            return [
+                message.with_body(grab) for grab in user['grabs']
+            ]
         else:
             grabbed = random.choice(user['grabs'])
 
