@@ -21,29 +21,34 @@ Example:
 # Command
 
 async def karma(bot, message, op, target):
+    # strip target (in case of extra whitespace, etc.)
+    target = target.strip()
+
     # Process display operation
     if op == '-d':
 
-        if target in bot.users and bot.users[target]['karma']: # target is a nick and has karma
+        # target is a nick and has karma
+        if target in bot.users and bot.users[target]['karma']: 
             karma = bot.users[target]['karma']
-            return message.with_body(
-                bot.client.format_text(
-                    '{bold}' + ('\'' + target + '\'') + '{bold} has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}.'
-                )
-            )
-        elif target in bot.users['@karma@'] and bot.users['@karma@'][target]: # target is not a nick and has karma (see comment below for explanation of @karma@)
-            karma = bot.users[target]['karma']
-            return message.with_body(
-                bot.client.format_text(
-                    '{bold}' + ('\'' + target + '\'') + '{bold} has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}.'
-                )
-            )
+
+        # target is not a nick and has karma (see comment below for explanation of @karma@)
+        elif target in bot.users['@karma@'] and bot.users['@karma@'][target]: 
+            karma = bot.users[target]['@karma@'][target]
+
         else: # target has no karma
             return message.with_body(
                 bot.client.format_text(
                     '{bold}' + ('\'' + target + '\'') + '{bold} has no karma.'
                 )
             )
+
+        # return karma if target has any
+        return message.with_body(
+                bot.client.format_text(
+                    '{bold}' + ('\'' + target + '\'') + '{bold} has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}.'
+                )
+            )
+            
     else: # Process add and subtract karma operations
 
         # Prevent users from modifying their own karma
