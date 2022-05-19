@@ -5,17 +5,18 @@
 NAME    = 'karma'
 ENABLE  = True
 PATTERN = r'^!karma\s+(?P<op>-d|-a|-s)\s+(?P<target>(?:\w+\s?){1,5})$' # captures '!karma <-d | -a | -s> <1-5 words>'
-USAGE   = '''Usage: nick++ or nick--
-This adds or removes karma from specified nick (or word).
+USAGE   = '''Usage: !karma [-d | -a | -s] <nick | word/phrase>
+This displays, adds, or subtracts karma for the specified nick or word/phrase. Phrases may be up to 5 words.
 Example:
-    > AndroidKitKat++
-    AndroidKitKat now has 69 karma.
+    > !karma -d lug
+    'lug' now has 420 karma.
 
-    > sussy--
-    sussy now has -420 karma
+    > !karma -a AndroidKitKat
+    'AndroidKitKat' now has 69 karma.
+
+    > !karma -s wow systems really sucks
+    'wow systems really sucks' now has -69420 karma.
 '''
-
-# TODO: add !karma <nick|word> to display current karma
 
 # Command
 
@@ -27,20 +28,20 @@ async def karma(bot, message, op, target):
             karma = bot.users[target]['karma']
             return message.with_body(
                 bot.client.format_text(
-                    '{bold}' + ('\'' + target + '\'') + '{bold} has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}'
+                    '{bold}' + ('\'' + target + '\'') + '{bold} has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}.'
                 )
             )
         elif target in bot.users['@karma@'] and bot.users['@karma@'][target]: # target is not a nick and has karma (see comment below for explanation of @karma@)
             karma = bot.users[target]['karma']
             return message.with_body(
                 bot.client.format_text(
-                    '{bold}' + ('\'' + target + '\'') + '{bold} has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}'
+                    '{bold}' + ('\'' + target + '\'') + '{bold} has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}.'
                 )
             )
         else: # target has no karma
             return message.with_body(
                 bot.client.format_text(
-                    '{bold}' + ('\'' + target + '\'') + '{bold} has no karma'
+                    '{bold}' + ('\'' + target + '\'') + '{bold} has no karma.'
                 )
             )
     else: # Process add and subtract karma operations
@@ -65,7 +66,7 @@ async def karma(bot, message, op, target):
 
         return message.with_body(
             bot.client.format_text(
-                '{bold}' + ('\'' + target + '\'') + '{bold} now has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}'
+                '{bold}' + ('\'' + target + '\'') + '{bold} now has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}.'
             )
         )
 
