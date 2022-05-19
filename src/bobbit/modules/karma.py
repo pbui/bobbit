@@ -4,7 +4,7 @@
 
 NAME    = 'karma'
 ENABLE  = True
-PATTERN = r'^!karma\s+(?P<op>-d|-a|-s)\s+(?P<target>(?:\w+\s?){1,5})$|(?P<shortop>[^\s]+)(?P<shorttarget>[+-]{2})$' # captures '!karma <-d | -a | -s> <1-5 words>' and '<word/nick><++/-->'
+PATTERN = r'^!karma\s+(?P<op>-d|-a|-s)\s+(?P<target>(?:\w+\s?){1,5})$|(?P<shorttarget>[^\s]+)(?P<shortop>[+-]{2})$' # captures '!karma <-d | -a | -s> <1-5 words>' and '<word/nick><++/-->'
 USAGE   = '''Usage: <nick/word><++/--> OR !karma [-d | -a | -s] <nick | word/phrase>
 This displays, adds, or subtracts karma for the specified nick or word/phrase. Phrases may be up to 5 words.
 Example:
