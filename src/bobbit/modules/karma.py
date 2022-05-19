@@ -4,7 +4,7 @@
 
 NAME    = 'karma'
 ENABLE  = True
-PATTERN = r'(?P<nick>[^\s]+)(?P<modifier>[+-]{2})$'
+PATTERN = r'^!karma\s+(?P<op>-d|-a|-s)\s+(?P<target>(?:\w+\s?){1,5})$' # captures '!karma <-d | -a | -s> <1-5 words>'
 USAGE   = '''Usage: nick++ or nick--
 This adds or removes karma from specified nick (or word).
 Example:
@@ -19,29 +19,55 @@ Example:
 
 # Command
 
-async def karma(bot, message, nick, modifier):
-    # Prevent users from modifying their own karma
-    if nick == message.nick:
-        return
+async def karma(bot, message, op, target):
+    # Process display operation
+    if op == '-d':
 
-    # Compute karma
-    dkarma = 1 if modifier == '++' else -1
+        if target in bot.users and bot.users[target]['karma']: # target is a nick and has karma
+            karma = bot.users[target]['karma']
+            return message.with_body(
+                bot.client.format_text(
+                    '{bold}' + ('\'' + target + '\'') + '{bold} has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}'
+                )
+            )
+        elif target in bot.users['@karma@'] and bot.users['@karma@'][target]: # target is not a nick and has karma (see comment below for explanation of @karma@)
+            karma = bot.users[target]['karma']
+            return message.with_body(
+                bot.client.format_text(
+                    '{bold}' + ('\'' + target + '\'') + '{bold} has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}'
+                )
+            )
+        else: # target has no karma
+            return message.with_body(
+                bot.client.format_text(
+                    '{bold}' + ('\'' + target + '\'') + '{bold} has no karma'
+                )
+            )
+    else: # Process add and subtract karma operations
 
-    if nick in bot.users:   # Nick
-        karma = bot.users[nick]['karma'] = bot.users[nick].get('karma', 0) + dkarma
-    else:                   # Word (hack using @karam@ user)
-        user  = '@karma@'
+        # Prevent users from modifying their own karma
+        # Or the karma of a phrase mentioning them
+        if message.nick in target:
+            return
 
-        if user not in bot.users:
-            bot.users[user] = {}
+        # Compute karma
+        dkarma = 1 if op == '-a' else -1
 
-        karma = bot.users[user][nick] = bot.users[user].get(nick, 0) + dkarma
+        if target in bot.users:   # Nick
+            karma = bot.users[target]['karma'] = bot.users[target].get('karma', 0) + dkarma
+        else:                   # Word/Phrase (hack using @karam@ user) <- pnutz left this here like it's not a dirty hack
+            user  = '@karma@'   # to elaborate, this is the dummy karma user, which has an extra dict of (word : karma) mappings
 
-    return message.with_body(
-        bot.client.format_text(
-            '{bold}' + nick + '{bold} now has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}'
+            if user not in bot.users:
+                bot.users[user] = {}
+
+            karma = bot.users[user][target] = bot.users[user].get(target, 0) + dkarma
+
+        return message.with_body(
+            bot.client.format_text(
+                '{bold}' + ('\'' + target + '\'') + '{bold} now has {color}' + ('{green}' if karma >= 0 else '{red}') + str(karma) + ' karma {color}'
+            )
         )
-    )
 
 # Register
 
