@@ -4,10 +4,16 @@
 
 NAME    = 'karma'
 ENABLE  = True
-PATTERN = r'^!karma\s+(?P<op>-d|-a|-s)\s+(?P<target>(?:\w+\s?){1,5})$' # captures '!karma <-d | -a | -s> <1-5 words>'
-USAGE   = '''Usage: !karma [-d | -a | -s] <nick | word/phrase>
+PATTERN = r'^!karma\s+(?P<op>-d|-a|-s)\s+(?P<target>(?:\w+\s?){1,5})$|(?P<shortop>[^\s]+)(?P<shorttarget>[+-]{2})$' # captures '!karma <-d | -a | -s> <1-5 words>' and '<word/nick><++/-->'
+USAGE   = '''Usage: <nick/word><++/--> OR !karma [-d | -a | -s] <nick | word/phrase>
 This displays, adds, or subtracts karma for the specified nick or word/phrase. Phrases may be up to 5 words.
 Example:
+    > macos++
+    macos now has 1 karma.
+
+    > sussy--
+    sussy now has -13 karma.
+
     > !karma -d lug
     'lug' now has 420 karma.
 
@@ -20,7 +26,19 @@ Example:
 
 # Command
 
-async def karma(bot, message, op, target):
+async def karma(bot, message, op, target, shortop, shorttarget):
+    # Process short op and target
+    if shortop and shorttarget:
+
+        # convert short to long opt
+        if shortop == '++':
+            op = '-a'
+        else:
+            op = '-s'
+
+        # move target
+        target = shorttarget
+
     # strip target (in case of extra whitespace, etc.)
     target = target.strip()
 
