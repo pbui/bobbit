@@ -56,6 +56,7 @@ TAUNTS = {
     '37' : 'Build a wonder.',
     '38' : 'Give me your extra resources.',
     '42' : 'What age are you in?',
+    '69' : 'Nice!',
 }
 
 # Command
