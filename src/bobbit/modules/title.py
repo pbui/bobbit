@@ -1,5 +1,6 @@
 # title.py
 
+import logging
 import html
 import re
 
@@ -23,7 +24,7 @@ CHANNEL_BLACKLIST = []
 DOMAIN_BLACKLIST  = ['reddit.com', 'twitter.com']
 AVOID_EXTENSIONS  = ('.gif', '.jpg', '.mkv', '.mov', '.mp4', '.png')
 
-# Command
+# Generic Command
 
 async def title(bot, message, url=None):
     if message.channel in CHANNEL_BLACKLIST or \
@@ -44,6 +45,24 @@ async def title(bot, message, url=None):
 
         return message.with_body(response)
 
+# Reddit Command
+
+REDDIT_PATTERN = r'.*(?P<url>http[^\s]+reddit.com/[^\s]+).*'
+
+async def reddit_title(bot, message, url):
+    async with bot.http_client.get(url) as response:
+        try:
+            text  = await response.text()
+            title = re.findall(r'"title":"([^"]+)"}}}', text)[0]
+
+            title, subreddit = title.rsplit(' : ', 1)
+            return message.with_body(bot.client.format_text(
+                '{color}{green}r/{}{color}: {bold}{}{bold}',
+                subreddit, title
+            ))
+        except IndexError as e:
+            logging.warn(e)
+
 # Register
 
 def register(bot):
@@ -56,7 +75,8 @@ def register(bot):
         return []
 
     return (
-        ('command', PATTERN, title),
+        ('command', PATTERN       , title),
+        ('command', REDDIT_PATTERN, reddit_title),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
