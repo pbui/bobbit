@@ -33,7 +33,7 @@ Examples:
 # Constants
 
 LOCATIONS = {
-    '#lug': 'Notre Dame, IN', # Notre Dame, IN
+    '#lug': '46556', # Notre Dame, IN
 }
 DEFAULT_LOCATION = LOCATIONS['#lug']
 WTTR_URL         = 'https://wttr.in/'
