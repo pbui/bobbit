@@ -6,14 +6,14 @@ import random
 
 NAME    = 'roll'
 ENABLE  = True
-PATTERN = r'^!roll\s*(?P<num>\d*)?d(?P<size>\d+)$'
-USAGE   = '''Usage: !roll <number of dice>d<size of dice>
+PATTERN = r'^!roll\s*(?P<num>\d*)?d(?P<size>\d+)(?P<const>[-+]\d+)?$'
+USAGE   = '''Usage: !roll <number of dice>d<size of dice>[+-]<constant>
 Rolls some dice.
 '''
 
 # Command
 
-async def roll(bot, message, size, num):
+async def roll(bot, message, size, num, const):
     # size must be a number > 0
     try:
         size = int(size)
@@ -29,10 +29,23 @@ async def roll(bot, message, size, num):
     except ValueError as e:
         num = 1
 
+    output = f"Rolling {num}d{size}"
     rolls = [random.randint(1, size) for d in range(num)]
-    output = f"Rolling {num}d{size}: {sum(rolls)}"
+    total = sum(rolls)
+
+    if const:
+        sign = const[0]
+        const = int(const[1:])
+        if sign == '-':
+            total -= const
+        if sign == '+':
+            total += const
+        output += f"{sign}{const}"
+
+    output += f": \x02{total}\x02"
+    
     if num > 1:
-        output += f", from [{' + '.join(str(r) for r in rolls}]"
+        output += f", from [{', '.join(str(r) for r in rolls)}]"
     return message.with_body(output)
 
 # Register
