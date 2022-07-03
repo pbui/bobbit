@@ -27,6 +27,7 @@ AVOID_EXTENSIONS  = ('.gif', '.jpg', '.mkv', '.mov', '.mp4', '.png')
 # Generic Command
 
 async def title(bot, message, url=None):
+    url = url.rstrip('\x01')
     if message.channel in CHANNEL_BLACKLIST or \
         any(url.lower().endswith(extension) for extension in AVOID_EXTENSIONS) or \
         any(domain in url for domain in DOMAIN_BLACKLIST):
