@@ -72,7 +72,7 @@ async def process_feed(http_client, feed, cache, access_token):
     logging.debug('Processing %s timeline...', user)
     for status in statuses:
         # Skip if status does not contain pattern
-        status_text = strip_html(status['text'])
+        status_text = status.get('full_text', status.get('text', '')).replace('\n', ' ')
         if pattern and pattern not in status_text:
             logging.debug("Skipping status from %s (doesn't match pattern)", user)
             continue
@@ -99,7 +99,8 @@ async def get_status(http_client, status_id, access_token):
         'Authorization' : 'Bearer ' + access_token,
     }
     params = {
-        'id' : status_id,
+        'id'         : status_id,
+        'tweet_mode' : 'extended',
     }
 
     async with http_client.get(url, headers=headers, params=params) as response:
@@ -121,10 +122,11 @@ async def tweets_title(bot, message, status_id=None):
     )
 
     status = await get_status(bot.http_client, status_id, access_token)
+    text   = status.get('full_text', status.get('text', '')).replace('\n', ' ')
     return message.with_body(bot.client.format_text(
         default_template,
         user   = status['user']['screen_name'],
-        status = status['text'].replace('\n', ' '),
+        status = text,
         link   = await shorten_url(
             bot.http_client,
             f'https://twitter.com/i/web/status/{status_id}'
