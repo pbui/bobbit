@@ -78,7 +78,7 @@ async def process_feed(http_client, feed, cache, access_token):
             continue
 
         # Skip if status is in cache
-        status_key = '{}/{}'.format(user.lower(), status['id'])
+        status_key = f'{user.lower()}/{status["id"]}'
         if status_key in cache:
             logging.debug('Skipping status from %s (in cache)', user)
             continue
@@ -90,7 +90,7 @@ async def process_feed(http_client, feed, cache, access_token):
             'channels'  : channels,
             'status_key': status_key,
             'status_id' : status['id'],
-            'link'      : 'https://twitter.com/{}/status/{}'.format(user, status['id']),
+            'link'      : f'https://twitter.com/{user}/status/{status["id"]}'
         }
 
 async def get_status(http_client, status_id, access_token):
