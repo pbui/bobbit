@@ -7,7 +7,7 @@ import logging
 import time
 
 from bobbit.message import Message
-from bobbit.utils   import shorten_url, strip_html
+from bobbit.utils   import shorten_url
 
 # Metadata
 
