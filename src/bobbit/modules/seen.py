@@ -2,6 +2,8 @@
 
 import time
 
+from bobbit.utils import elapsed_time
+
 # Metadata
 
 NAME    = 'seen'
@@ -11,24 +13,6 @@ USAGE   = '''Usage: !seen <nick>
 This reports the last time a user was seen (ie. last time they sent a
 message).
 '''
-
-# Functions
-
-def elapsed_time(s):
-    elapsed = time.time() - s
-    units   = (
-        ('seconds', 60),
-        ('minutes', 60),
-        ('hours'  , 24),
-        ('days'   , 7),
-        ('weeks'  , 52),
-    )
-    for unit, step in units:
-        if elapsed < step:
-            break
-        elapsed /= step
-
-    return '{:0.2f} {} ago'.format(elapsed, unit)
 
 # Command
 
@@ -45,8 +29,9 @@ async def seen(bot, message, nick):
     else:
         users = [nick for nick in bot.users if 'last_seen' in bot.users[nick] and message.channel in bot.users[nick].get('channels', [])]
         nicks = sorted(users, key=lambda nick: bot.users[nick]['last_seen'])[:5]
+        ctime = time.time()
         return [
-            message.with_body(f'{nick} was last seen {elapsed_time(bot.users[nick]["last_seen"])}') for nick in nicks
+            message.with_body(f'{nick} was last seen {elapsed_time(ctime, bot.users[nick]["last_seen"])} ago') for nick in nicks
         ]
 
 # Register
