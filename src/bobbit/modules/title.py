@@ -35,7 +35,7 @@ async def title(bot, message, url=None):
 
     async with bot.http_client.get(url) as response:
         try:
-            text       = (await response.text()).replace('\n', ' ')
+            text       = (await response.text()).replace('\r', '').replace('\n', ' ')
             html_title = re.findall(r'<title[^>]*>([^<]+)</title>', text)[0]
             response   = bot.client.format_text(
                 '{color}{green}Title{color}: {bold}{title}{bold}',
