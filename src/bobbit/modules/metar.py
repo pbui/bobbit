@@ -1,6 +1,5 @@
 # metar.py
 
-import logging
 import re
 
 # Metadata
@@ -30,7 +29,7 @@ EXTRACT        = r'<code>(.*)</code>'
 
 # Functions
 
-async def get_metar_data(bot, ids, date, taf=False):
+async def get_metar_data(bot, ids, date, include_taf=False):
     url = METAR_URL_BASE
 
     if ids:
@@ -40,7 +39,7 @@ async def get_metar_data(bot, ids, date, taf=False):
 
     url = url + METAR_URL_EXT
 
-    if taf:
+    if include_taf:
         url = url + '&taf=on'
 
     if date:
@@ -50,25 +49,23 @@ async def get_metar_data(bot, ids, date, taf=False):
         return await response.text()
 
 async def metar(bot, message, ids=None, date=None):
-    data  = await get_metar_data(bot, ids, date, False)
-    metar = re.findall(EXTRACT, data)
+    raw_data   = await get_metar_data(bot, ids, date, False)
+    metar_data = re.findall(EXTRACT, raw_data)
 
-    if '<strong>No METAR found' in data or not metar:
+    if '<strong>No METAR found' in raw_data or not metar_data:
         return message.with_body('No results')
 
-    return message.with_body(metar[0])
+    return message.with_body(metar_data[0])
 
 async def taf(bot, message, ids=None, date=None):
-    data    = await get_metar_data(bot, ids, date, True)
+    raw_data   = await get_metar_data(bot, ids, date, True)
+    metar_data = re.findall(EXTRACT, raw_data)
 
-    metar = re.findall(EXTRACT, data)
-
-    if '<strong>No METAR found' in data or len(metar) < 2:
+    if '<strong>No METAR found' in raw_data or len(metar_data) < 2:
         return message.with_body('No results')
 
-    
-    taf = re.sub('<br/>&nbsp;&nbsp;', '| ', metar[1])
-    return message.with_body(taf)
+    body = re.sub('<br/>&nbsp;&nbsp;', '| ', metar_data[1])
+    return message.with_body(body)
 
 # Register
 

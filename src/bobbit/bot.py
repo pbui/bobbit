@@ -113,7 +113,7 @@ class Bobbit():
 
         try:
             os.replace(users_new_path, users_old_path)
-        except OSError:
+        except OSError as e:
             logging.warning('Unable to rename %s: %s', users_new_path, e)
             os.unlink(users_new_path)
 

@@ -11,9 +11,6 @@ configuration directory and expects the following values:
 
 import logging
 import json
-import re
-
-import aiohttp.client_exceptions
 
 # Metadata
 

@@ -86,7 +86,7 @@ async def ducks(bot, message, command):
         response = f'{nick} has banged {kills} ducks and befriended {saves} ducks.'
         return message.with_body(response)
 
-    elif command == 'bang' or command == 'bef':
+    if command in ('bang', 'bef'):
         # Check that channel has ducks
         if channel not in Ducks:
             return message.copy(body=f"No ducks are scheduled to visit {channel}.")
