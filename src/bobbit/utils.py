@@ -13,6 +13,22 @@ async def shorten_url(http_client, url):
         except AttributeError:
             return url
 
+def elapsed_time(current, previous):
+    elapsed = current - previous
+    units   = (
+        ('seconds', 60),
+        ('minutes', 60),
+        ('hours'  , 24),
+        ('days'   , 7),
+        ('weeks'  , 52),
+    )
+    for unit, step in units:
+        if elapsed < step:
+            break
+        elapsed /= step
+
+    return '{:0.2f} {}'.format(elapsed, unit)
+
 def parse_options(options, arguments):
     while arguments.startswith('-'):
         try:

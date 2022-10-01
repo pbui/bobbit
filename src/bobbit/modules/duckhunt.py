@@ -16,6 +16,7 @@ import random
 import time
 
 from bobbit.message import Message
+from bobbit.utils   import elapsed_time
 
 # Metadata
 
@@ -114,7 +115,8 @@ async def ducks(bot, message, command):
         })
 
         # Report action
-        response = f'{nick} {action} a duck in {elapsed:0.2f} seconds!'
+        elapsed  = elapsed_time(current_time, Ducks[channel])
+        response = f'{nick} {action} a duck in {elapsed}!'
 
         # Reset ducks (0 is not active), set new future release time
         Ducks[channel] = 0
