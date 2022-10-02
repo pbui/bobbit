@@ -44,11 +44,17 @@ SAVE_MISSES = (
     "The duck said no, maybe bribe it with some pizza? Ducks love pizza don't they?",
     "Who knew ducks could be so picky?"
 )
+COOLDOWN_AMOUNT = 7.0
+COOLDOWN_MESSAGE = f" You can try again in {COOLDOWN_AMOUNT}seconds."
 
 # Globals
 
 Times = {   # Time thresholds on when to release the next duck
     '#lug': 0
+}
+
+Cooldowns = {
+    '#lug': {}
 }
 
 Ducks = {   # Release times of active ducks
@@ -92,12 +98,19 @@ async def ducks(bot, message, command):
             return message.copy(body=f"No ducks are scheduled to visit {channel}.")
         if not Ducks[channel]:
             return message.copy(body=f"There are currently no ducks in {channel}.")
+        
+        # Check the cooldown
+        if Cooldowns[channel].get(nick, 0) > current_time:
+            return message.copy(body=f"You are still on cooldown. You can try again in {Cooldowns[channel][nick] - current_time} seconds.")
+
 
         # Check time (anti-bot) and random chance of missing
         elapsed = current_time - Ducks[channel]
         if elapsed < 1.0 or random.randint(1, 10) > 6:
+            # Give them a timeout.
+            Cooldowns[channel][nick] = current_time + COOLDOWN_AMOUNT
             return message.with_body(
-                random.choice(KILL_MISSES) if command == 'bang' else random.choice(SAVE_MISSES))
+                random.choice(KILL_MISSES) + COOLDOWN_MESSAGE if command == 'bang' else random.choice(SAVE_MISSES) + COOLDOWN_MESSAGE)
 
         # Update user stats
         kills = bot.users[nick].get('ducks', {}).get('kills', 0)
