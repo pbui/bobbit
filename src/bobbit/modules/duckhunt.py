@@ -36,7 +36,7 @@ KILL_MISSES = (
     'WHOOSH! You missed the duck completely!',
     'Your gun jammed!',
     'Better luck next time.',
-    'WTF!? Who are you Dick Cheney?'
+    'WTF!? Who are you, Dick Cheney?'
 )
 SAVE_MISSES = (
     "The duck didn't want to be friends, maybe next time.",
