@@ -110,9 +110,9 @@ async def ducks(bot, message, command):
             # Give them a timeout.
             Cooldowns[channel][nick] = current_time + COOLDOWN_AMOUNT
             return message.with_body(' '.join([
-                random.choice(KILL_MISSES) if command == 'bang' else random.choic(SAVE_MISSES)),
+                random.choice(KILL_MISSES) if command == 'bang' else random.choic(SAVE_MISSES),
                 COOLDOWN_MESSAGE
-            ])
+            ]))
 
         # Update user stats
         kills = bot.users[nick].get('ducks', {}).get('kills', 0)
