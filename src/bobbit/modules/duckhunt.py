@@ -4,7 +4,7 @@
 
 Todo:
 [ ] Add colors
-[ ] Implement gun jamming / reloading
+[X] Implement gun jamming / reloading
 [ ] Add more messages
 [ ] Make kill/save commands configurable
 [ ] Make channels configurable
@@ -45,7 +45,7 @@ SAVE_MISSES = (
     "Who knew ducks could be so picky?"
 )
 COOLDOWN_AMOUNT = 7.0
-COOLDOWN_MESSAGE = f" You can try again in {COOLDOWN_AMOUNT}seconds."
+COOLDOWN_MESSAGE = f" You can try again in {COOLDOWN_AMOUNT} seconds."
 
 # Globals
 
@@ -101,7 +101,7 @@ async def ducks(bot, message, command):
         
         # Check the cooldown
         if Cooldowns[channel].get(nick, 0) > current_time:
-            return message.copy(body=f"You are still on cooldown. You can try again in {Cooldowns[channel][nick] - current_time} seconds.")
+            return message.copy(body=f"You are still on cooldown. You can try again in {Cooldowns[channel][nick] - current_time:.2f} seconds.", notice=True)
 
 
         # Check time (anti-bot) and random chance of missing
