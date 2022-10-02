@@ -7,7 +7,7 @@ Todo:
 [X] Implement gun jamming / reloading
 [ ] Add more messages
 [ ] Make kill/save commands configurable
-[ ] Make channels configurable
+[x] Make channels configurable
 [ ] Fix plural
 [ ] Add more anti-cheating measures
 '''
@@ -49,17 +49,9 @@ COOLDOWN_MESSAGE = f'You can try again in {COOLDOWN_AMOUNT} seconds.'
 
 # Globals
 
-Times = {   # Time thresholds on when to release the next duck
-    '#lug': 0
-}
-
-Cooldowns = {
-    '#lug': {}
-}
-
-Ducks = {   # Release times of active ducks
-    '#lug': 0
-}
+Ducks     = {}  # Release times of active ducks
+Times     = {}  # Time thresholds on when to release the next duck
+Cooldowns = {}  # Per-channel cooldowns for users who miss
 
 # Functions
 
@@ -98,7 +90,7 @@ async def ducks(bot, message, command):
             return message.copy(body=f"No ducks are scheduled to visit {channel}.")
         if not Ducks[channel]:
             return message.copy(body=f"There are currently no ducks in {channel}.")
-        
+
         # Check the cooldown
         if Cooldowns.get(channel, {}).get(nick, 0) > current_time:
             return message.copy(body=f"You are still on cooldown. You can try again in {elapsed_time(Cooldowns[channel][nick], current_time)}.", notice=True)
@@ -158,9 +150,24 @@ async def release(bot):
 # Register
 
 def register(bot):
+    config = bot.config.load_module_config('duckhunt')
+
+    # Check if disabled
+    if config.get('disabled', False):
+        return []
+
+    # Add channels specified by configuration
+    for channel in config.get('channels', []):
+        Times[channel]     = 0
+        Ducks[channel]     = 0
+        Cooldowns[channel] = {}
+
+    # How often to check for release (30 seconds is default)
+    release_timeout = config.get('release_timeout', 30)
+
     return (
         ('command', PATTERN, ducks),
-        ('timer'  , 30, release),  # TODO
+        ('timer'  , release_timeout, release),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
