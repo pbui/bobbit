@@ -87,14 +87,17 @@ async def ducks(bot, message, command):
     if command in ('bang', 'bef'):
         # Check that channel has ducks
         if channel not in Ducks:
-            return message.copy(body=f"No ducks are scheduled to visit {channel}.")
+            return message.copy(body=f'No ducks are scheduled to visit {channel}.')
         if not Ducks[channel]:
-            return message.copy(body=f"There are currently no ducks in {channel}.")
+            return message.copy(body=f'There are currently no ducks in {channel}.')
 
         # Check the cooldown
         if Cooldowns.get(channel, {}).get(nick, 0) > current_time:
-            return message.copy(body=f"You are still on cooldown. You can try again in {elapsed_time(Cooldowns[channel][nick], current_time)}.", notice=True)
-
+            return Message(
+                body    = f'You are still on cooldown. You can try again in {elapsed_time(Cooldowns[channel][nick], current_time)}.',
+                nick    = nick,
+                channel = None,
+                notice  = True)
 
         # Check time (anti-bot) and random chance of missing
         elapsed = current_time - Ducks[channel]
