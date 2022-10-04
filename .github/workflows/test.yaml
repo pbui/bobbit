@@ -1,0 +1,25 @@
+name: tests
+on:
+  push:
+    branches: [ bobbit-0.2.x ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [ bobbit-0.2.x ]
+
+
+jobs:
+  build:
+    name: run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Installs dependencies
+        run: |
+          python3 -m pip install -r requirements.txt
+      
+      - name: Runs tests
+        run: |
+          python3 -m unittest 
