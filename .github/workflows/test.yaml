@@ -20,6 +20,12 @@ jobs:
         run: |
           python3 -m pip install -r requirements.txt
       
+      - name: Install and run Pylint
+        run: |
+          python3 -m pip install pylint 
+          # Only will fail for actual errors
+          python3 -m pylint src/ -d "W,C,R"
+
       - name: Runs tests
         run: |
           python3 -m unittest 
