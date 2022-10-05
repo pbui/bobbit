@@ -1,5 +1,7 @@
 # Bobbit
 
+[![codecov](https://codecov.io/gh/noyoshi/bobbit-ng/branch/bobbit-0.2.x/graph/badge.svg?token=86oI4k2IBZ)](https://codecov.io/gh/noyoshi/bobbit-ng)
+
 **bobbit** is a simple and modular *asynchronous* IRC / Slack bot written in
 [Python].  The current version uses [asyncio] as its core networking and event
 processing backend.
