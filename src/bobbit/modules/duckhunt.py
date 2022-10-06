@@ -22,7 +22,7 @@ from bobbit.utils   import elapsed_time
 
 NAME    = 'duckhunt'
 ENABLE  = True
-PATTERN = r'^!(?P<command>(ducks|bang|bef))$'
+PATTERN = r'^[\.!](?P<command>(ducks|bang|bef))$'
 USAGE   = '''Usage: ![ducks|bang|bef]
 '''
 
