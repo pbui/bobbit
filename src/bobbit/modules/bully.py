@@ -24,6 +24,7 @@ BULLY_PHRASES = [
     '\'s faith in society has plummeted since meeting you,',
     ' think you\'re about as good as the dining hall food,',
     ' gives eMoTiOnAL dAmAgE to',
+    ' has a confession to make. You\'re ugly,',
     ' thinks you were probably the pilot of Ever Given when it clogged the Suez Canal,'
 ]
 
