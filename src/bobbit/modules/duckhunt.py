@@ -22,7 +22,7 @@ from bobbit.utils   import elapsed_time
 
 NAME    = 'duckhunt'
 ENABLE  = True
-PATTERN = r'^[\.!](?P<command>(ducks|bang|bef))$'
+PATTERN = r'^[\.!](?P<command>(ducks|bang|bef))\s*(?P<other>[^\s]*)$'
 USAGE   = '''Usage: ![ducks|bang|bef]
 '''
 
@@ -64,7 +64,7 @@ def make_duck():
 
 # Command
 
-async def ducks(bot, message, command):
+async def ducks(bot, message, command, other=None):
     nick         = message.nick
     channel      = message.channel
     current_time = time.time()
@@ -74,6 +74,9 @@ async def ducks(bot, message, command):
         bot.users[nick] = {}
 
     if command == 'ducks':
+        if other:
+            nick = other
+
         # Check if user has interacted with ducks
         if 'ducks' not in bot.users[nick]:
             return message.copy(body=f"{nick} hasn't interacted with any ducks!")
