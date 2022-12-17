@@ -48,7 +48,7 @@ async def command(bot, message, sport, team=None):
         except (IndexError, ValueError) as e:
             logging.warn(e)
 
-    return [message.with_body(x) for x in response[-5:]]
+    return [message.with_body(x) for x in response[:5]]
 
 # Register
 
