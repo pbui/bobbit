@@ -6,9 +6,9 @@ import random
 
 NAME    = 'insult'
 ENABLE  = True
-PATTERN = r'^!insult\s*$'
-USAGE   = '''Usage: !insult
-This prints out the number of days until Christmas.
+PATTERN = r'^!insult ?(?P<nick>[^\s]*)'
+USAGE   = '''Usage: !insult [nick]
+Hurls insults. Optionally insults a specific user
 '''
 
 
@@ -440,13 +440,20 @@ INSULTS = [
 
 # Command
 
-async def insult(bot, message):
+async def insult(bot, message, nick=None):
+    
     # choose 5-8 insults
     insults = []
-    for _ in range(random.randint(5,8)):
+    for _ in range(random.randint(6,9)):
         insults.append(random.choice(INSULTS))
+    
+    insult = " + ".join(insults)
+    
+    # add a nick
+    if nick:
+        insult = nick + ": " + insult
         
-    return message.with_body(" + ".join(insults))
+    return message.with_body(insult)
 
 # Register
 
