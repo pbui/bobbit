@@ -452,7 +452,7 @@ async def insult(bot, message, nick=None):
     return message.copy(
         body        = insult,
         nick        = nick if nick else message.nick,
-        highlighted = nick is not None,
+        highlighted = nick,
     )
 
 # Register
