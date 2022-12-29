@@ -6,7 +6,7 @@ import random
 
 NAME    = 'insult'
 ENABLE  = True
-PATTERN = r'^!insult ?(?P<nick>[^\s]*)'
+PATTERN = r'^!insult ?(?P<nick>.*)'
 USAGE   = '''Usage: !insult [nick]
 Hurls insults. Optionally insults a specific user
 '''
