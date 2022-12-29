@@ -17,8 +17,18 @@ async def xmas(bot, message):
 
     now = datetime.datetime.now()
     delta = datetime.datetime(year=now.year+1, month=12, day=25) - datetime.datetime(year=now.year, month=now.month, day=now.day)
-    daysleft = delta.days % 365
-    return message.with_body(f'{daysleft} days until Christmas')
+
+    # Handle leap year
+    if int(now.year+1) % 4 == 0:
+        daysleft = delta.days % 366
+    else:
+        daysleft = delta.days % 365
+
+    # Return response based on number of days left
+    if daysleft > 0:
+        return message.with_body(f'{daysleft} ' + ('day' if daysleft == 1 else 'days') + ' until Christmas')
+    else:
+        return message.with_body('0 days left! Merry Christmas!')
 
 # Register
 
