@@ -442,11 +442,7 @@ INSULTS = [
 
 async def insult(bot, message, nick=None):
     # Choose 5-8 insults
-    insults = []
-    for _ in range(random.randint(6, 9)):
-        insults.append(random.choice(INSULTS))
-
-    insult = ' + '.join(insults)
+    insult = ' + '.join(random.sample(INSULTS, random.randint(6, 9)))
 
     # Construct Message
     return message.copy(
