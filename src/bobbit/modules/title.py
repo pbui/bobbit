@@ -55,11 +55,11 @@ async def reddit_title(bot, message, url):
     async with bot.http_client.get(url) as response:
         try:
             text       = await response.text()
-            post_title = re.findall(r'"title":"([^"]+)"}}}', text)[0]
+            post_title = re.findall(r'<meta property="og:title" content="([^"]+)"/>', text)[0]
 
-            post_title, subreddit = post_title.rsplit(' : ', 1)
+            subreddit, post_title = post_title.rsplit(' - ', 1)
             return message.with_body(bot.client.format_text(
-                '{color}{green}r/{}{color}: {bold}{}{bold}',
+                '{color}{green}{}{color}: {bold}{}{bold}',
                 subreddit, post_title
             ))
         except IndexError as e:
