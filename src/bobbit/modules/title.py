@@ -57,7 +57,7 @@ async def reddit_title(bot, message, url):
             text       = await response.text()
             post_title = re.findall(r'<meta property="og:title" content="([^"]+)"/>', text)[0]
 
-            subreddit, post_title = post_title.rsplit(' - ', 1)
+            subreddit, post_title = post_title.split(' - ', 1)
             return message.with_body(bot.client.format_text(
                 '{color}{green}{}{color}: {bold}{}{bold}',
                 subreddit, post_title
