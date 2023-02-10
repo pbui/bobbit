@@ -13,20 +13,19 @@ module.
 # Command
 
 async def help(bot, message, module_name=None):
-    responses = []
+    all_modules = {m.NAME: m for m in bot.modules}
 
+    if module_name == 'all' or not module_name:
+        return message.with_body(', '.join(sorted(all_modules)))
+    
     # Lookup specific help message
-    if module_name and module_name != 'all':
-        for module in bot.modules:
-            if module.NAME == module_name:
-                responses = module.USAGE.splitlines()
-                return [message.copy(body=r) for r in responses]
+    if module_name in all_modules:
+        responses = all_modules[module_name].USAGE.splitlines()
+        return [message.copy(body=r) for r in responses]
 
-    # Suggest responses if none match
-    if not responses:
-        responses = sorted([m.NAME for m in bot.modules if module_name in m.NAME or module_name == 'all'])
-
-    return message.with_body(', '.join(responses))
+    # If module_name not found, alert user and return command list
+    responses = [f'\"{module_name}\" not found. Try these: ',', '.join(sorted(all_modules))]
+    return [message.copy(body=r) for r in responses]
 
 # Register
 
