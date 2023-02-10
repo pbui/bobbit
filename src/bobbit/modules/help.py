@@ -26,7 +26,11 @@ async def help(bot, message, module_name=None):
     if not responses:
         responses = sorted([m.NAME for m in bot.modules if module_name in m.NAME or module_name == 'all'])
 
-    return message.with_body(', '.join(responses))
+    # Return all modules if module_name not found anywhere
+    if not responses:
+        responses = sorted([m.NAME for m in bot.modules])
+
+    return message.with_body(f"\"{module_name}\" not found. Try these: " + ', '.join(responses))
 
 # Register
 
