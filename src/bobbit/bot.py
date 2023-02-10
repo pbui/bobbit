@@ -71,17 +71,19 @@ class Bobbit():
     async def process_message(self, message):
         ''' Process a single message '''
         # do not respond to messages from self
-        if (self.client.nick != message.nick):
-            for pattern, command in self.commands:
-                arguments = pattern.match(message.body)
-                if not arguments:
-                    continue
+        if (self.client.nick == message.nick):
+            return
 
-                logging.debug('Found match: %s', command)
-                try:
-                    yield await command(self, message, **arguments.groupdict())
-                except Exception as e:
-                    logging.exception(e)
+        for pattern, command in self.commands:
+            arguments = pattern.match(message.body)
+            if not arguments:
+                continue
+
+            logging.debug('Found match: %s', command)
+            try:
+                yield await command(self, message, **arguments.groupdict())
+            except Exception as e:
+                logging.exception(e)
 
     # Controls
 
