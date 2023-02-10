@@ -71,7 +71,7 @@ class Bobbit():
     async def process_message(self, message):
         ''' Process a single message '''
         # do not respond to messages from self
-        if (self.client.nick == message.nick):
+        if self.client.nick == message.nick:
             return
 
         for pattern, command in self.commands:
