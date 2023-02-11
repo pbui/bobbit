@@ -60,7 +60,7 @@ async def reddit_title(bot, message, url):
             subreddit, post_title = post_title.split(' - ', 1)
             return message.with_body(bot.client.format_text(
                 '{color}{green}{}{color}: {bold}{}{bold}',
-                subreddit, post_title
+                subreddit, html.unescape(post_title)
             ))
         except IndexError as e:
             logging.warn(e)
