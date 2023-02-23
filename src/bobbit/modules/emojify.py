@@ -44,27 +44,50 @@ COMMON_WORDS = set([
 
 # Command
 
-async def emojify(bot: bot.Bobbit, message: message.Message, phrase: str):
-    async with bot.http_client.get(EMOJI_TABLE_URL) as response:
-        if not response.ok:
-            return message.with_body('emojify: HTTP request failed :(')
-        emojis = json.loads(await response.text())
+async def fetch_emoji_table(client: http_client.HTTPClient, URL: str):
+    async with client.get(EMOJI_TABLE_URL) as response:      
+        return json.loads(await response.text())
+
+async def get_emoji_match(emoji_table: dict, word: str):    
+    word = word.strip().lower()
+
+    if word in COMMON_WORDS:
+        return None
+
+    if word not in emoji_table:
+        return None
+    
+    matches: dict = emoji_table[word]
+
+    options       = list(matches.keys())
+    weights       = map(float, matches.values())
+
+    return random.choices(options, weights, k=1)[0]
+
+async def emojify(bot: bot.Bobbit, msg: message.Message, phrase: str):   
+    if not phrase:
+        return [message.Message(
+                    body    = ln,
+                    nick    = bot.config.nick,
+                    channel = msg.channel
+                ) for ln in USAGE.split('\n') if ln.strip()]
+    
+    try:
+        emojis = await fetch_emoji_table(bot.http_client, EMOJI_TABLE_URL)
+    except http_client.aiohttp.ClientError:
+        return msg.with_body('emojify: couldn\'t fetch emoji table')
+    except json.JSONDecodeError:
+        return msg.with_body('emojify: couldn\'t parse emoji table')
 
     result = ''
 
     for word in phrase.split():
-        key = word.strip().lower()
-        if key in emojis and key not in COMMON_WORDS:
-            options    = list(emojis[key].keys())
-            weights    = map(float, emojis[key].values())
+        result += f'{word} '
 
-            emoji: str = random.choices(options, weights, k=1)[0]
+        if emoji := await get_emoji_match(emojis, word):
+             result += f'{emoji} '
 
-            result += f'{word} {emoji.strip()} '
-        else:
-            result += f'{word} '
-
-    return message.with_body(result)
+    return msg.with_body(result)
 
 # Register
 
