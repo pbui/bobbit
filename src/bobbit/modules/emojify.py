@@ -42,11 +42,7 @@ COMMON_WORDS = set([
   'and',
 ])
 
-# Command
-
-async def fetch_emoji_table(client: http_client.HTTPClient, URL: str):
-    async with client.get(EMOJI_TABLE_URL) as response:      
-        return json.loads(await response.text())
+# Command    
 
 async def get_emoji_match(emoji_table: dict, word: str):    
     word = word.strip().lower()
@@ -73,7 +69,8 @@ async def emojify(bot: bot.Bobbit, msg: message.Message, phrase: str):
                 ) for ln in USAGE.split('\n') if ln.strip()]
     
     try:
-        emojis = await fetch_emoji_table(bot.http_client, EMOJI_TABLE_URL)
+        async with bot.client.get(EMOJI_TABLE_URL) as response:      
+            emojis = json.loads(await response.text()) 
     except http_client.aiohttp.ClientError:
         return msg.with_body('emojify: couldn\'t fetch emoji table')
     except json.JSONDecodeError:
