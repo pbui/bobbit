@@ -1,4 +1,4 @@
-''' test bobbit.bot '''
+''' test emojify '''
 
 import unittest
 import sys
