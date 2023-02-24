@@ -82,7 +82,7 @@ def add_emojis(text: str, emoji_table):
         if emoji := get_emoji_match(emoji_table, word):
              result += f'{emoji} '
 
-    return result
+    return result.strip()
 
 def error_message(bot, channel, error_message):
     return message.Message(
@@ -140,7 +140,6 @@ async def emojify(bot: bot.Bobbit, msg: message.Message, flag: str, arg: str):
     except json.JSONDecodeError:
         return error_message(bot, msg.channel, 'emojify: couldn\'t parse emoji table')
 
-    
     return msg.with_body(add_emojis(text, emoji_table))
 
 # Register
