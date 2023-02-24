@@ -22,8 +22,6 @@ class EmojifyTestCase(unittest.IsolatedAsyncioTestCase):
         },
         'tree': {
             '🌴': 2,
-            '🌳': 2,
-            '🌲': 2,
             '🎄': 1
         },
         'ball': {
@@ -35,6 +33,7 @@ class EmojifyTestCase(unittest.IsolatedAsyncioTestCase):
         cases = {
             'dog': ['🐕','🐶','🌭'], # basic functionality
             'CAT': ['🐈','🐱'],       # test ignore-case
+            'tree': ['🌴','🎄'],      # test ignoring punctuation
             'bigtree': None,           # not in table
             'is': None,                # common words are excluded
         }

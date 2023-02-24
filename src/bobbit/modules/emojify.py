@@ -57,8 +57,8 @@ FLAGS = ['-p','-h']
 
 # Command    
 
-def get_emoji_match(emoji_table: dict, word: str):    
-    word = word.strip().lower()
+def get_emoji_match(emoji_table: dict, word: str):
+    word = ''.join(let for let in word.strip().lower() if let.isalpha())
 
     if word in COMMON_WORDS:
         return None
