@@ -25,7 +25,16 @@ BULLY_PHRASES = [
     ' think you\'re about as good as the dining hall food,',
     ' gives eMoTiOnAL dAmAgE to',
     ' has a confession to make. You\'re ugly,',
-    ' thinks you were probably the pilot of Ever Given when it clogged the Suez Canal,'
+    ' thinks you\'re so ugly that when your mom dropped you off at school she got a fine for littering, ',
+    ' thinks your brain is so tiny that you\'d have to stand on a penny to see over it, ',
+    ' thinks that you must have been born on a highway, since that\'s where most accidents happen, ',
+    ' heard that you\'re so dumb, you thought a quarterback was a refund, ',
+    ' would like to see things from your point of view, but can\'t seem to get their head that far up your butt, ',
+    ' thinks that your family tree must be a cactus because everyone on it is a prick, ',
+    ' thinks that if laughter is the best medicine, your face must be curing the world, ',
+    ' thinks that you\'re so ugly, you scared the crap out of the toilet, ',
+    ' isn\'t saying you\'re stupid, they\'re just saying you\'ve got bad luck when it comes to thinking, ',
+    ' heard you got a brain transplant and the brain rejected you, ',
 ]
 
 # Command
