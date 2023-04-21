@@ -104,7 +104,7 @@ async def ducks(bot, message, command, other=None):
 
         # Check time (anti-bot) and random chance of missing
         elapsed = current_time - Ducks[channel]
-        if elapsed < 1.0 or random.randint(1, 10) > 6:
+        if elapsed < 1.0 or random.random() > 0.85:
             # Give them a timeout.
             Cooldowns[channel][nick] = current_time + COOLDOWN_AMOUNT
             return message.with_body(' '.join([
