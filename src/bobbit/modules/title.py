@@ -53,18 +53,29 @@ REDDIT_PATTERN = r'.*(?P<url>http[^\s]+reddit.com/[^\s]+).*'
 
 async def reddit_title(bot, message, url):
     async with bot.http_client.get(url) as response:
-        try:
-            text       = await response.text()
-            post_title = re.findall(r'<meta property="og:title" content="([^"]+)"/>', text)[0]
+        text = await response.text()
 
+        try:
+            post_title = re.findall(r'<meta property="og:title" content="([^"]+)"', text)[0]
             subreddit, post_title = post_title.split(' - ', 1)
             return message.with_body(bot.client.format_text(
                 '{color}{green}{}{color}: {bold}{}{bold}',
                 subreddit, html.unescape(post_title)
             ))
-        except IndexError as e:
-            logging.warn(e)
-            return await title(bot, message, url, True)
+        except IndexError:
+            pass
+
+        try:
+            post_title = re.findall(r'shreddit-title title="([^"]+)"', text)[0]
+            post_title, subreddit = post_title.rsplit(' : ', 1)
+            return message.with_body(bot.client.format_text(
+                '{color}{green}{}{color}: {bold}{}{bold}',
+                subreddit, html.unescape(post_title)
+            ))
+        except IndexError:
+            pass
+
+        return await title(bot, message, url, True)
 
 # Register
 
