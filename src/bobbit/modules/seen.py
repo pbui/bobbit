@@ -29,7 +29,7 @@ async def seen(bot, message, nick):
             return message.with_body(f'{nick} has not been seen yet')
 
         return message.with_body(
-            f'{nick} was last seen {elapsed_time(current_time, last_seen)}'
+            f'{nick} was last seen {elapsed_time(current_time, last_seen)} ago'
         )
 
     # Handle all users
