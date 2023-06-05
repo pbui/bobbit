@@ -6,50 +6,17 @@ import datetime
 
 NAME    = 'xmas'
 ENABLE  = True
-PATTERN = r'^!(?P<day>(xmas|fall|spring|graduation))\s*$'
+PATTERN = r'^!xmas\s*$'
 USAGE   = '''Usage: !xmas
 This prints out the number of days until Christmas.
 '''
 
-# Constants
-
-DAYS = {
-    'xmas': (
-        'Christmas',
-        lambda now: \
-            datetime.datetime(year=now.year+1, month=12, day=25) - \
-            datetime.datetime(year=now.year, month=now.month, day=now.day),
-            'Merry Christmas'
-    ),
-    'fall': (
-        'Fall 2023',
-        lambda now: \
-            datetime.datetime(year=2023, month=8, day=22) - \
-            datetime.datetime(year=now.year, month=now.month, day=now.day),
-        'Good luck'
-    ),
-    'spring': (
-        'Spring 2024',
-        lambda now: \
-            datetime.datetime(year=2024, month=1, day=16) - \
-            datetime.datetime(year=now.year, month=now.month, day=now.day),
-        'Good luck'
-    ),
-    'graduation': (
-        'Graduation',
-        lambda now: \
-            datetime.datetime(year=2024, month=5, day=19) - \
-            datetime.datetime(year=now.year, month=now.month, day=now.day),
-        'Congratulations'
-    ),
-}
-
 # Command
 
-async def xmas(bot, message, day):
-    day_name, day_delta, day_message = DAYS[day]
+async def xmas(bot, message):
+
     now = datetime.datetime.now()
-    delta = day_delta(now)
+    delta = datetime.datetime(year=now.year+1, month=12, day=25) - datetime.datetime(year=now.year, month=now.month, day=now.day)
 
     # Handle leap year
     if int(now.year+1) % 4 == 0:
@@ -59,9 +26,9 @@ async def xmas(bot, message, day):
 
     # Return response based on number of days left
     if daysleft > 0:
-        return message.with_body(f'{daysleft} {"day" if daysleft == 1 else "days"} until {day_name}')
+        return message.with_body(f'{daysleft} ' + ('day' if daysleft == 1 else 'days') + ' until Christmas')
     else:
-        return message.with_body(f'0 days left! {day_message}!')
+        return message.with_body('0 days left! Merry Christmas!')
 
 # Register
 
