@@ -22,7 +22,10 @@ Example:
 
 CHANNEL_BLACKLIST = []
 DOMAIN_BLACKLIST  = ['reddit.com', 'twitter.com']
-AVOID_EXTENSIONS  = ('.gif', '.jpg', '.mkv', '.mov', '.mp4', '.png')
+AVOID_EXTENSIONS  = (
+    '.gif', '.jpg', '.mkv', '.mov', '.mp4', '.png', '.jpeg', '.heic',
+    '.gz' , '.xz' , '.bz2', '.tgz', '.deb',
+)
 
 # Generic Command
 
