@@ -69,7 +69,10 @@ async def reminders_command(bot, message, timespec, body):
 
         nick = body.split()[0]
         if nick in bot.users:               # XXX: can't use nick as first word in body
-            nick, body = body.split(' ', 1)
+            try:
+                nick, body = body.split(' ', 1)
+            except ValueError:              # XXX: one word body is confused as nick
+                nick = message.nick
         else:
             nick = message.nick
 
