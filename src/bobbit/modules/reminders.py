@@ -2,6 +2,7 @@
 
 ''' Reminder system '''
 
+import collections
 import dbm
 import json
 import time
@@ -39,7 +40,22 @@ def parse_timespec(timespec):
 
         @12:34
     '''
-    return float(timespec[:-1]) * UNITS.get(timespec[-1].lower(), 0)
+    tokens       = collections.deque(timespec.lower())
+    total_time   = 0
+    current_time = ''
+
+    while tokens:
+        token = tokens.popleft()
+        if token.isdigit() or token == '.':
+            current_time += token
+        else:
+            try:
+                total_time   += float(current_time) * UNITS.get(token, 0)
+                current_time  = ''
+            except ValueError:
+                return 0
+
+    return total_time
 
 # Command
 
