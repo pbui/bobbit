@@ -36,6 +36,10 @@ async def title(bot, message, url=None, override=False):
         any(domain in url for domain in DOMAIN_BLACKLIST)):
         return
 
+    async with bot.http_client.head(url, allow_redirects=True) as response:
+        if response.content_type != 'text/html':
+            return
+
     async with bot.http_client.get(url) as response:
         try:
             text       = (await response.text()).replace('\r', '').replace('\n', ' ')
