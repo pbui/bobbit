@@ -37,7 +37,9 @@ async def title(bot, message, url=None, override=False):
         return
 
     async with bot.http_client.get(url) as response:
-        if response.content_type != 'text/html':
+        # Skip non HTML content or content larger than 8MB
+        if response.content_type != 'text/html' or \
+           int(response.headers.get('Content-Length', 0)) > (1<<23):
             return
 
         try:
