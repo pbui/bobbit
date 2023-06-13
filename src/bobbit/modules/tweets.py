@@ -12,7 +12,7 @@ from bobbit.utils   import shorten_url
 # Metadata
 
 NAME     = 'tweets'
-ENABLE   = True
+ENABLE   = False
 TYPE     = 'timer'
 PATTERN  = r'.*twitter.com/[^\s]+/status/(?P<status_id>[0-9]+).*'
 TEMPLATE = 'From {color}{green}{user}{color} twitter: {bold}{status}{bold} @ {color}{blue}{link}{color}'
