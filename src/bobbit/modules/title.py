@@ -43,17 +43,30 @@ async def title(bot, message, url=None, override=False):
             return
 
         try:
-            text       = (await response.text()).replace('\r', '').replace('\n', ' ')
-            html_title = re.findall(r'<title[^>]*>([^<]+)</title>', text)[0]
-            response   = bot.client.format_text(
-                '{color}{green}Title{color}: {bold}{title}{bold}',
-                title = strip_html(html.unescape(html_title)).strip()
-            )
+            text = (await response.text()).replace('\r', '').replace('\n', ' ')
+            if not (response := mastodon_title(bot, url, text)):
+                html_title = re.findall(r'<title[^>]*>([^<]+)</title>', text)[0]
+                response   = bot.client.format_text(
+                    '{color}{green}Title{color}: {bold}{title}{bold}',
+                    title = strip_html(html.unescape(html_title)).strip()
+                )
         except (IndexError, ValueError) as e:
             logging.warn(e)
             return
 
         return message.with_body(response)
+
+def mastodon_title(bot, url, text):
+    try:
+        user   = re.findall(r'<meta content="([^"]+)" property="profile:username"', text)[0]
+        status = re.findall(r'<meta content="([^"]+)" property="og:description"', text)[0]
+        return bot.client.format_text(
+            '{color}{green}{user}{color}: {bold}{status}{bold}',
+            user    = user,
+            status  = html.unescape(status).strip(),
+        )
+    except IndexError:
+        return None
 
 # Reddit Command
 
