@@ -34,7 +34,7 @@ async def command(bot, message):
             pastas    = []
             for result in json_data['data']['children']:
                 data  = result['data']
-                pasta = data['selftext'].replace('\n', ' ')
+                pasta = data['selftext'].replace('\r', '').replace('\n', ' ')
 
                 # Ignore long posts b/c IRC
                 if PASTA_MIN_LEN < len(pasta) < PASTA_MAX_LEN:
