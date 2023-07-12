@@ -1,5 +1,6 @@
 # feeds.py
 
+import datetime
 import dbm.gnu
 import collections
 import logging
@@ -31,11 +32,20 @@ async def process_feed(http_client, feed, cache):
         if 'nonce' in feed_url:
             feed_url = feed_url.format(nonce=uuid.uuid4())
 
-        async with http_client.get(feed_url) as response:
+        # Set If-Modified-Since Header to be nice...
+        if feed_key in cache:   # A week before last entry
+            last_modified = datetime.datetime.fromtimestamp(float(cache[feed_key]) - 7*24*60*60)
+        else:                   # A month ago
+            last_modified = datetime.datetime.fromtimestamp(time.time() - 30*24*60*60)
+
+        headers = {'If-Modified-Since': last_modified.strftime('%a, %d %b %Y %X GMT')}
+        async with http_client.get(feed_url, headers=headers) as response:
             feed_content = await response.content.read()
     except aiohttp.client_exceptions.ClientPayloadError as e:
         logging.warning('Could not fetch %s: %s', feed_url, e)
         return
+
+    last_modified = time.time()
 
     logging.debug('Parsing %s (%s)', feed_title, feed_url)
     for entry in feedparser.parse(feed_content)['entries']:
@@ -93,8 +103,11 @@ async def process_feed(http_client, feed, cache):
             'timestamp' : timestamp,
         }
 
+        # Set last modified time to minimum of current time and entry timestamp
+        last_modified = min(last_modified, timestamp)
+
     # Mark feed in cache
-    cache[feed_key] = str(time.time())
+    cache[feed_key] = str(last_modified)
 
 # Timer
 
