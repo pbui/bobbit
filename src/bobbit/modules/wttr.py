@@ -71,9 +71,10 @@ async def wttr(bot, message, location=None):
             city = f'{area}, {country}'
 
         return message.with_body(bot.client.format_text(
-            '{bold}Weather{bold} for {bold}{city}{bold}: {temp}°F, {weather}',
+            '{bold}Weather{bold} for {bold}{city}{bold}: {temp}°F ({I}feels like {feels}°F{I}), {weather}',
             city     = city,
-            temp     = current['FeelsLikeF'].strip(),
+            temp     = current['temp_F'].strip(),
+            feels    = current['FeelsLikeF'].strip(),
             weather  = current['weatherDesc'][0]['value'].strip(),
         ))
     except (KeyError, IndexError):
