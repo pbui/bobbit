@@ -124,6 +124,8 @@ class SlackClient(BaseClient):
             'B'          : '*',
             'color'      : '',
             'C'          : '',
+            'italic'     : '_',
+            'I'          : '_',
             'black'      : '',
             'blue'       : '',
             'green'      : '',
