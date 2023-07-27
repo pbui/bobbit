@@ -28,16 +28,27 @@ BRAVE_RE  = r'data="(.*score.*)"'
 async def brave(bot, message, query=None):
     async with bot.http_client.get(BRAVE_URL, params={'q': query}) as response:
         try:
-            text     = await response.text()
-            data     = json.loads(html.unescape(re.findall(BRAVE_RE, text)[0]))['search']['web']['results'][0]
-            url      = await shorten_url(bot.http_client, data['url'])
-            title    = strip_html(html.unescape(data['title']))
-            response = bot.client.format_text(
-                '{color}{green}Brave{color}: ' +
-                '{bold}{title}{bold} @ {color}{blue}{url}{color}',
-                title = title,
-                url   = url
-            )
+            text = await response.text()
+
+            for result in re.findall(BRAVE_RE, text):
+                data = json.loads(html.unescape(result))
+
+                if 'search' in data:
+                    data = data['search']['web']['results'][0]
+                elif 'results' in data:
+                    data = data['results'][0]
+                else:
+                    continue
+
+                url      = await shorten_url(bot.http_client, data['url'])
+                title    = strip_html(html.unescape(data['title']))
+                response = bot.client.format_text(
+                    '{color}{green}Brave{color}: ' +
+                    '{bold}{title}{bold} @ {color}{blue}{url}{color}',
+                    title = title,
+                    url   = url
+                )
+                break
         except (IndexError, ValueError) as e:
             logging.warning(e)
             response = 'No results'
