@@ -51,7 +51,7 @@ async def karma(bot, message, op, target, shortop, shorttarget):
 
         # target is not a nick and has karma (see comment below for explanation of @karma@)
         elif target in bot.users['@karma@'] and bot.users['@karma@'][target]:
-            karma = bot.users[target]['@karma@'][target]
+            karma = bot.users['@karma@'][target]
 
         else: # target has no karma
             return message.with_body(
