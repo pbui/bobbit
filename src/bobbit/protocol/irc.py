@@ -197,6 +197,8 @@ class IRCClient(BaseClient):
             'B'          : '\x02',
             'color'      : '\x03',
             'C'          : '\x03',
+            'italic'     : '\x1D',
+            'I'          : '\x1D',
             'black'      : '01',
             'blue'       : '02',
             'green'      : '03',
