@@ -44,7 +44,10 @@ async def title(bot, message, url=None, override=False):
 
         try:
             text = (await response.text()).replace('\r', '').replace('\n', ' ')
-            if not (response := mastodon_title(bot, url, text)):
+            if not (
+                (response := await mastodon_title(bot, url, text)) or
+                (response := await photon_title(bot, url, text, message))
+            ):
                 html_title = re.findall(r'<title[^>]*>([^<]+)</title>', text)[0]
                 response   = bot.client.format_text(
                     '{color}{green}Title{color}: {bold}{title}{bold}',
@@ -56,7 +59,17 @@ async def title(bot, message, url=None, override=False):
 
         return message.with_body(response)
 
-def mastodon_title(bot, url, text):
+async def photon_title(bot, url, text, message):
+    if not ('photon' in url or 'alternative lemmy client' in text):
+        return None
+
+    try:
+        host, post = re.findall('post/([^/]+)/([0-9]+)', url)[0]
+        return (await title(bot, message, f'https://{host}/post/{post}')).body
+    except IndexError:
+        return None
+
+async def mastodon_title(bot, url, text):
     try:
         user   = re.findall(r'<meta content="([^"]+)" property="profile:username"', text)[0]
         status = re.findall(r'<meta content="([^"]+)" property="og:description"', text)[0]
