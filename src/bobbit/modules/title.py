@@ -60,7 +60,7 @@ async def title(bot, message, url=None, override=False):
         return message.with_body(response)
 
 async def photon_title(bot, url, text, message):
-    if not ('photon' in url or 'alternative lemmy client' in text):
+    if not re.search(r'<meta\s+name="description"\s+content="Photon:.*lemmy.*client"', text):
         return None
 
     try:
