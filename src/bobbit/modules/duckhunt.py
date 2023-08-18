@@ -49,9 +49,11 @@ COOLDOWN_MESSAGE = f'You can try again in {COOLDOWN_AMOUNT} seconds.'
 
 # Globals
 
-Ducks     = {}  # Release times of active ducks
-Times     = {}  # Time thresholds on when to release the next duck
-Cooldowns = {}  # Per-channel cooldowns for users who miss
+Ducks      = {}         # Release times of active ducks
+Times      = {}         # Time thresholds on when to release the next duck
+Cooldowns  = {}         # Per-channel cooldowns for users who miss
+ReleaseMin = 5*60       # Minimum amount of time before releasing a duck (5 minutes)
+ReleaseMax = 2*60*60    # Maximum amount of time before releasing a duck (2 hours)
 
 # Functions
 
@@ -133,7 +135,7 @@ async def ducks(bot, message, command, other=None):
 
         # Reset ducks (0 is not active), set new future release time
         Ducks[channel] = 0
-        Times[channel] = current_time + random.randint(5*60, 2*60*60)
+        Times[channel] = current_time + random.randint(ReleaseMin, ReleaseMax)
         return message.with_body(response)
 
 # Timer
@@ -156,6 +158,8 @@ async def release(bot):
 # Register
 
 def register(bot):
+    global ReleaseMin, ReleaseMax
+
     config = bot.config.load_module_config('duckhunt')
 
     # Check if disabled
@@ -170,6 +174,8 @@ def register(bot):
 
     # How often to check for release (30 seconds is default)
     release_timeout = config.get('release_timeout', 30)
+    ReleaseMin      = config.get('release_min'    , ReleaseMin)
+    ReleaseMax      = config.get('release_max'    , ReleaseMax)
 
     return (
         ('command', PATTERN, ducks),
