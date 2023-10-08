@@ -46,7 +46,8 @@ async def title(bot, message, url=None, override=False):
             text = (await response.text()).replace('\r', '').replace('\n', ' ')
             if not (
                 (response := await mastodon_title(bot, url, text)) or
-                (response := await photon_title(bot, url, text, message))
+                (response := await photon_title(bot, url, text, message)) or
+                (response := await youtube_title(bot, url, text))
             ):
                 html_title = re.findall(r'<title[^>]*>([^<]+)</title>', text)[0]
                 response   = bot.client.format_text(
@@ -79,6 +80,25 @@ async def mastodon_title(bot, url, text):
             status  = html.unescape(status).strip(),
         )
     except IndexError:
+        return None
+
+async def youtube_title(bot, url, text):
+    # check that this is a YouTube *video* URL specifically
+    if not re.search(r'http[^\s]+youtube.com/watch\?v=', url):
+        return None
+
+    try:
+        # finding channel name can't use regex search for HTML since YouTube sends a pile of JSON that's assembled client side
+        # current regex into the JSON may break if YouTube allows " characters in channel names
+        channel_name    = re.findall(r',"author":"([^"]*)",', text)[0]
+        video_name      = re.findall(r'<title[^>]*>([^<]+) - YouTube[\s]*</title>', text)[0] # get title, removing "- YouTube" from the end
+        return bot.client.format_text(
+            '{color}{green}Video{color}: {bold}{video_name}{bold} {color}{green}Channel{color}: {bold}{channel_name}{bold}',
+            video_name = video_name.strip(),
+            channel_name = channel_name.strip()
+        )
+    except IndexError:
+        logging.warning('Unable to find channel name for %s, YouTube formatting may have changed', url)
         return None
 
 # Reddit Command
