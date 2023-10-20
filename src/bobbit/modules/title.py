@@ -84,7 +84,10 @@ async def mastodon_title(bot, url, text):
 
 async def youtube_title(bot, url, text):
     # check that this is a YouTube *video* URL specifically
-    if not re.search(r'http[^\s]+youtube.com/watch\?v=', url):
+    if not any([
+        re.search(r'http[^\s]+youtube.com/watch\?v=', url),
+        re.search(r'http[^\s]+youtu.be/', url),
+    ]):
         return None
 
     try:
