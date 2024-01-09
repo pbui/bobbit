@@ -53,8 +53,8 @@ async def process_feed(http_client, feed, cache):
 
     logging.debug('Parsing %s (%s)', feed_title, feed_url)
     for entry in feedparser.parse(feed_content)['entries']:
-        link   = entry.get('link', '')
-        title  = strip_html(entry.get('title', ''))
+        link   = entry.get('link', '')      # Use description if no title (mastodon)
+        title  = strip_html(entry.get('title', entry.get('description', '')))
         key    = link.encode('ascii','ignore')
 
         # Workaround long authorship in The Conversation, FiveThirtyEight
