@@ -39,6 +39,10 @@ async def process_feed(http_client, feed, cache):
             last_modified = datetime.datetime.fromtimestamp(time.time() - 30*24*60*60)
 
         headers = {'If-Modified-Since': last_modified.strftime('%a, %d %b %Y %X GMT')}
+
+        if 'github.com' in feed_url:
+            headers['Accept'] = 'application/atom+xml'
+
         async with http_client.get(feed_url, headers=headers) as response:
             feed_content = await response.content.read()
     except aiohttp.client_exceptions.ClientPayloadError as e:
