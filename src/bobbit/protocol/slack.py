@@ -31,26 +31,36 @@ class SlackClient(BaseClient):
     # Slack methods
 
     async def get_channel(self, channel):
-        if channel not in self.channels:
-            url    = f'{SLACK_API_DOMAIN}/api/conversations.list'
-            params = {
-                'limit'           : 1000,
-                'types'           : 'public_channel,private_channel',
-                'exclude_archived': 'true',
-                'exclude_members' : 'true',
-                'token'           : self.token,
-            }
-            async with self.http_client.get(url, params=params) as response:
-                data = await response.json()
+        logging.debug('Looking up channel: %s', channel)
 
-            if data['ok']:
-                for c in data['channels']:
-                    self.channels['#' + c['name']] = c['id']
+        if not channel in self.channels:
+            next_cursor = None
+            while next_cursor is None or next_cursor:
+                url    = f'{SLACK_API_DOMAIN}/api/conversations.list'
+                params = {
+                    'limit'           : 200,
+                    'types'           : 'public_channel,private_channel',
+                    'exclude_archived': 'true',
+                    'exclude_members' : 'true',
+                    'token'           : self.token,
+                }
+                if next_cursor:
+                    params['cursor'] = next_cursor
 
-        try:
-            return self.channels[channel]
-        except KeyError:
-            return channel
+                async with self.http_client.get(url, params=params) as response:
+                    data = await response.json()
+
+                if data['ok']:
+                    for c in data['channels']:
+                        logging.debug('conversations.list -> channel: %s', c)
+                        if c['is_channel']:
+                            self.channels['#' + c['name']] = c['id']
+                    next_cursor = data['response_metadata'].get('next_cursor', '')
+                else:
+                    next_cursor = ''
+
+        logging.debug('channels: %s', self.channels)
+        return self.channels.get(channel, channel)
 
     # Client methods
 
