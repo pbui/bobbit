@@ -61,7 +61,7 @@ async def title(bot, message, url=None, override=False):
         return message.with_body(response)
 
 async def photon_title(bot, url, text, message):
-    if not re.search(r'<meta\s+name="description"\s+content="Photon:.*lemmy.*client"', text):
+    if not re.search(r'<meta\s+name="keywords"\s+content="lemmy, client"', text):
         return None
 
     try:
@@ -147,7 +147,7 @@ def register(bot):
 
     return (
         ('command', PATTERN       , title),
-        ('command', REDDIT_PATTERN, reddit_title),
+        #('command', REDDIT_PATTERN, reddit_title),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
