@@ -149,9 +149,10 @@ class IRCClient(BaseClient):
         if isinstance(message, Message):
             message = self.format_message(message)
 
-        if len(message) > MESSAGE_LENGTH_MAX:
+        # NOTE: use str.encode() to determine length of message/command since IRC only cares about number of bytes
+        if len(message.encode()) > MESSAGE_LENGTH_MAX:
             command, message = message.split(' :', 1)
-            messages = [f'{command} :{m}' for m in textwrap.wrap(message, MESSAGE_LENGTH_MAX - len(command) - 2)]
+            messages = [f'{command} :{m}' for m in textwrap.wrap(message, MESSAGE_LENGTH_MAX - len(command.encode()) - 2)]
         else:
             messages = [message]
 
