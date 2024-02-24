@@ -49,7 +49,8 @@ async def title(bot, message, url=None, override=False):
                 (response := await photon_title(bot, url, text, message)) or
                 (response := await youtube_title(bot, url, text))
             ):
-                html_title = re.findall(r'<title[^>]*>([^<]+)</title>', text)[0]
+                # XXX: If there are multiple titles, take the longest one (ugly workaround)
+                html_title = sorted(re.findall(r'<title[^>]*>([^<]+)</title>', text), key=len)[-1]
                 response   = bot.client.format_text(
                     '{color}{green}Title{color}: {bold}{title}{bold}',
                     title = strip_html(html.unescape(html_title)).strip()
