@@ -1,78 +1,60 @@
 # metar.py
 
-import re
-
 # Metadata
 
-NAME    = 'metar'
-ENABLE  = True
-USAGE   = '''Usage: ![metar|taf] <id> <date>
+NAME = 'metar'
+ENABLE = True
+USAGE = '''Usage: ![metar|taf] <id>
 Given a station ID, produce the METeorological Aerodrome Report or the terminal
 aerodrome forecast.
-Date is in format yyyymmddhhnn
 
 Examples:
     > !metar                    # Default location
     > !taf kphx                 # Phoenix Sky Harbor
-    > !taf ksbn 202110271235    # South Bend 2021-10-27 at 12:35
 '''
 
 METAR_PATTERN = r'^!metar\s*(?P<ids>[a-zA-Z]+)*\s*(?P<date>[0-9]+)*$'
-TAF_PATTERN   = r'^!taf\s*(?P<ids>[a-zA-Z]+)*\s*(?P<date>[0-9]+)*$'
+TAF_PATTERN = r'^!taf\s*(?P<ids>[a-zA-Z]+)*\s*(?P<date>[0-9]+)*$'
 
-# Constants
+DEFAULT_ID = 'ksbn'
+METAR_URL_BASE = 'https://aviationweather.gov/cgi-bin/data/metar.php?'
+METAR_URL_EXT = '&hours=0&sep=true'
 
-DEFAULT_ID     = 'ksbn'
-METAR_URL_BASE = 'https://aviationweather.gov/metar/data?'
-METAR_URL_EXT  = 'format=raw&hours=0&taf=off&layout=off'
-EXTRACT        = r'<code>(.*)</code>'
 
-# Functions
-
-async def get_metar_data(bot, ids, date, include_taf=False):
+async def get_metar_data(bot, ids, include_taf=False):
     url = METAR_URL_BASE
-
-    if ids:
-        url = url + f'ids={ids}&'
-    else:
-        url = url + f'ids={DEFAULT_ID}&'
-
+    url = url + f'ids={ids}&' if ids else url + f'ids={DEFAULT_ID}&'
     url = url + METAR_URL_EXT
 
     if include_taf:
-        url = url + '&taf=on'
-
-    if date:
-        url = url + f'&date={date}'
+        url = url + '&taf=true'
 
     async with bot.http_client.get(url) as response:
         return await response.text()
 
-async def metar(bot, message, ids=None, date=None):
-    raw_data   = await get_metar_data(bot, ids, date, False)
-    metar_data = re.findall(EXTRACT, raw_data)
 
-    if '<strong>No METAR found' in raw_data or not metar_data:
+async def metar(bot, message, ids=None, include_taf=False):
+    text = await get_metar_data(bot, ids, include_taf)
+    text = text.strip()
+
+    if include_taf:
+        return text
+
+    if not text:
         return message.with_body('No results')
 
-    return message.with_body(metar_data[0])
+    return message.with_body(text)
 
-async def taf(bot, message, ids=None, date=None):
-    raw_data   = await get_metar_data(bot, ids, date, True)
-    metar_data = re.findall(EXTRACT, raw_data)
 
-    if '<strong>No METAR found' in raw_data or len(metar_data) < 2:
-        return message.with_body('No results')
+async def taf(bot, message, ids=None):
+    text = await metar(bot, message, ids, True)
+    text = 'No results' if not text else text[text.index('\n\n')+2:]
 
-    body = re.sub('<br/>&nbsp;&nbsp;', '| ', metar_data[1])
-    return message.with_body(body)
+    return message.with_body(text)
 
-# Register
 
 def register(bot):
     return (
         ('command', METAR_PATTERN, metar),
         ('command', TAF_PATTERN, taf)
     )
-
-# vim: set sts=4 sw=4 ts=8 expandtab ft=python:
