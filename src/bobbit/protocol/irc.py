@@ -25,7 +25,11 @@ KICK_RE       = re.compile(r':.*!\S+\s+?KICK\s+(?P<channel>#+[-\w]+)\s+(?P<nick>
 NICK_RE       = re.compile(r':(?P<old_nick>.*?)!\S+\s+?NICK\s+(?P<new_nick>[^\s]+)')
 REGISTERED_RE = re.compile(r':NickServ!.*NOTICE.*:.*(identified|logged in|accepted).*')
 
-MESSAGE_LENGTH_MAX = 512 - len(CRNL)
+# NOTE: IRC message length limit is 512 bytes, but that includes the sender's hostmask
+# since the hostmask can change during a session, the simplest way to ensure messages are under 512 bytes
+# is to set a conservative maximum like 400
+# so few bobbit messages are that long that it shouldn't cost too many extra messages being sent
+MESSAGE_LENGTH_MAX = 400
 
 # IRC Client
 
