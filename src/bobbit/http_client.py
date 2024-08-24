@@ -8,7 +8,7 @@ class HTTPClient(aiohttp.ClientSession):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, headers={
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:121.0) Gecko/20100101 Firefox/121.0',
+            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:129.0) Gecko/20100101 Firefox/129.0',
             'Connection': 'keep-alive',
         }, **kwargs)
 
