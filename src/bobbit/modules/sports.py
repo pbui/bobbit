@@ -6,8 +6,8 @@ import re
 NAME    = 'sports'
 ENABLE  = True
 TYPE    = 'command'
-PATTERN = '^!(?P<sport>nba|nfl|mlb|cfb) ?(?P<team>.*)?$'
-USAGE   = '''Usage: ![nba|mlb|nfl|cfb] <team_name>
+PATTERN = '^!(?P<sport>cfb|mlb|nba|nfl|nhl|wnba) ?(?P<team>.*)?$'
+USAGE   = '''Usage: ![cfb|mlb|nba|nfl|nhl|wnba] <team_name>
 Given a search query, this returns the scores from CBS Sports for the given
 sport or team.
 Example:
