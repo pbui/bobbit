@@ -1,4 +1,3 @@
-import itertools
 import logging
 import re
 
@@ -22,23 +21,52 @@ Example:
 # Constants
 
 URL_TEMPLATE = 'http://www.cbssports.com/{sport}/scoreboard'
+GAME_RX      = r'<div id="game-.*?</div></div></div>'
 TEAM_RX      = r'class="team-name-link">([^<]+)</a>.*?"total">([0-9]+)</td>'
+STATUS_RX    = r'<div class="game-status [^"]+"><div[^>]*>([^<]+)</div>'
 SPORTS_ALIAS = {
     'cfb': 'college-football',
 }
 
 # Functions
 
-def format_game(team_a, team_b):
-    name_a, score_a = team_a
-    name_b, score_b = team_b
+def parse_games(text):
+    for game_text in re.findall(GAME_RX, text):
+        teams  = re.findall(TEAM_RX, game_text)
+        status = re.findall(STATUS_RX, game_text)
 
-    if int(score_a) > int(score_b):
-        return f'{{bold}}{name_a:14}{{bold}} {{color}}{{green}}{score_a:>2}{{color}} - {name_b:14} {{color}}{{red}}{score_b:>2}{{color}}'
-    elif int(score_a) < int(score_b):
-        return f'{name_a:14} {{color}}{{red}}{score_a:>2}{{color}} - {{bold}}{name_b:14}{{bold}} {{color}}{{green}}{score_b:>2}{{color}}'
+        if not teams or not status:
+            continue
+
+        yield {
+            'team_a': teams[0][0], 'score_a': int(teams[0][1]),
+            'team_b': teams[1][0], 'score_b': int(teams[1][1]),
+            'status': status[0]
+        }
+
+def format_game(game):
+    team_a  = game['team_a']
+    team_b  = game['team_b']
+    score_a = game['score_a']
+    score_b = game['score_b']
+    status  = game['status']
+
+    if score_a > score_b:
+        text_a = f'{{bold}}{team_a:14}{{bold}} {{color}}{{green}}{score_a:>2}{{color}}'
+        text_b = f'{team_b:14} {{color}}{{red}}{score_b:>2}{{color}}'
+    elif score_a < score_b:
+        text_a = f'{team_a:14} {{color}}{{red}}{score_a:>2}{{color}}'
+        text_b = f'{{bold}}{team_b:14}{{bold}} {{color}}{{green}}{score_b:>2}{{color}}'
     else:
-        return f'{name_a:14} {{color}}{{yellow}}{score_a:>2}{{color}} - {name_b:14} {{color}}{{yellow}}{score_b:>2}{{color}}'
+        text_a = f'{team_a:14} {{color}}{{yellow}}{score_a:>2}{{color}}'
+        text_b = f'{team_b:14} {{color}}{{yellow}}{score_b:>2}{{color}}'
+
+    if status == 'final':
+        text_status = f'{{bold}}{status}{{bold}}'
+    else:
+        text_status = f'{{italic}}{status}{{italic}}'
+
+    return f'{text_a} - {text_b} ({text_status})'
 
 # Command
 
@@ -49,13 +77,12 @@ async def command(bot, message, sport, team=None):
     async with bot.http_client.get(url) as result:
         try:
             body  = await result.text()
-            teams = re.findall(TEAM_RX, body)
             games = [
-                bot.client.format_text(format_game(team_a, team_b))
-                for team_a, team_b in itertools.batched(teams, 2)
+                bot.client.format_text(format_game(game))
+                for game in parse_games(body)
                 if team is None
-                or team.lower() in team_a[0].lower()
-                or team.lower() in team_b[0].lower()
+                or team.lower() in game['team_a'].lower()
+                or team.lower() in game['team_b'].lower()
             ]
         except (IndexError, ValueError) as e:
             logging.warn(e)
