@@ -21,9 +21,9 @@ Example:
 
 # Constants
 
-URL_TEMPLATE = 'http://www.cbssports.com/{sport}/scoreboard'
+URL_TEMPLATE = 'https://www.cbssports.com/{sport}/scoreboard/'
 GAME_RX      = r'<div id="game-.*?</div></div></div>'
-TEAM_RX      = r'class="team-name-link">([^<]+)</a>.*?"total">([0-9]+)</td>'
+TEAM_RX      = r'class="team-name-link">([^<]+)</.*?"total">([0-9]+)</td>'
 STATUS_RX    = r'<div class="game-status [^"]+"><div[^>]*>([^<]+)</div>'
 SPORTS_ALIAS = {
     'cfb': 'college-football',
@@ -74,6 +74,7 @@ def format_game(game):
 async def command(bot, message, sport, team=None):
     sport = SPORTS_ALIAS.get(sport, sport)
     url   = URL_TEMPLATE.format(sport=sport)
+    games = []
 
     async with bot.http_client.get(url) as result:
         try:
