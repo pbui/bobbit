@@ -1,4 +1,5 @@
 import logging
+import html
 import re
 
 # Metadata
@@ -39,8 +40,8 @@ def parse_games(text):
             continue
 
         yield {
-            'team_a': teams[0][0], 'score_a': int(teams[0][1]),
-            'team_b': teams[1][0], 'score_b': int(teams[1][1]),
+            'team_a': html.unescape(teams[0][0]), 'score_a': int(teams[0][1]),
+            'team_b': html.unescape(teams[1][0]), 'score_b': int(teams[1][1]),
             'status': status[0]
         }
 
