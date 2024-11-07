@@ -119,15 +119,19 @@ async def youtube_title(bot, url, text):
 
 # Reddit Command
 
-REDDIT_PATTERN = r'.*(?P<url>https?://[^\s]+reddit.com/[^\s]+).*'
+REDDIT_PATTERN = r'.*(?P<url>https?://[^\s]*reddit.com/[^\s]+).*'
+REDLIB_HOST    = 'redlib.h4x0r.space'
 
 async def reddit_title(bot, message, url):
+    # XXX: Hack is to redirect to redlib instance
+    url = re.sub(r'://([^/]+)/', '://{}/'.format(REDLIB_HOST), url)
+
     async with bot.http_client.get(url) as response:
         text = await response.text()
 
         try:
             post_title = re.findall(r'<meta property="og:title" content="([^"]+)"', text)[0]
-            subreddit, post_title = post_title.split(' - ', 1)
+            post_title, subreddit = post_title.split(' - ', 1)
             return message.with_body(bot.client.format_text(
                 '{color}{green}{}{color}: {bold}{}{bold}',
                 subreddit, html.unescape(post_title)
@@ -160,7 +164,7 @@ def register(bot):
 
     return (
         ('command', PATTERN       , title),
-        #('command', REDDIT_PATTERN, reddit_title),
+        ('command', REDDIT_PATTERN, reddit_title),
     )
 
 # vim: set sts=4 sw=4 ts=8 expandtab ft=python:
