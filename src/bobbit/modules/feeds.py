@@ -1,10 +1,12 @@
 # feeds.py
 
+import asyncio
 import datetime
 import dbm.gnu
 import collections
 import logging
 import uuid
+import shlex
 import time
 
 import aiohttp
@@ -45,6 +47,11 @@ async def process_feed(http_client, feed, cache):
 
         async with http_client.get(feed_url, headers=headers) as response:
             feed_content = await response.content.read()
+            if response.status == 403 and b'Cloudflare' in feed_content:
+                logging.debug('Workaround Cloudflare with curl...')
+                command = shlex.split(f'curl -sL {feed_url}')
+                process = await asyncio.create_subprocess_exec(*command, stdout=asyncio.subprocess.PIPE)
+                feed_content, _ = await process.communicate()
     except aiohttp.client_exceptions.ClientPayloadError as e:
         logging.warning('Could not fetch %s: %s', feed_url, e)
         return
