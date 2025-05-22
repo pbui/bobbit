@@ -5,7 +5,7 @@ import html
 import json
 import re
 
-from bobbit.utils import strip_html
+from bobbit.utils import curl, strip_html
 
 # Metadata
 
@@ -43,8 +43,13 @@ async def title(bot, message, url=None, override=False):
            int(response.headers.get('Content-Length', 0)) > (1<<23):
             return
 
+        text = await response.text()
+        if response.status == 403 and 'Cloudflare' in text:
+            logging.debug('Workaround Cloudflare with curl...')
+            text = await curl(url)
+
         try:
-            text = (await response.text()).replace('\r', '').replace('\n', ' ')
+            text = text.replace('\r', '').replace('\n', ' ')
             if not (
                 (response := await mastodon_title(bot, url, text)) or
                 (response := await photon_title(bot, url, text, message)) or
