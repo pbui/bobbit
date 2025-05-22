@@ -86,7 +86,7 @@ async def process_feed(http_client, feed, cache):
         timestamp = entry.get('updated_parsed', entry.get('published_parsed', None))
         timestamp = time.mktime(timestamp) if timestamp else time.time()
         time_diff = time.time() - timestamp
-        if time_diff > 7*24*60*60: # One week 
+        if time_diff > 7*24*60*60: # One week
             logging.debug('Skipping %s (too old)', link)
             cache[key] = str(time.time())
             continue
