@@ -13,7 +13,7 @@ import aiohttp
 import feedparser
 
 from bobbit.message import Message
-from bobbit.utils   import shorten_url, strip_html
+from bobbit.utils   import curl, shorten_url, strip_html
 
 # Metadata
 
@@ -49,9 +49,7 @@ async def process_feed(http_client, feed, cache):
             feed_content = await response.content.read()
             if response.status == 403 and b'Cloudflare' in feed_content:
                 logging.debug('Workaround Cloudflare with curl...')
-                command = shlex.split(f'curl -sL {feed_url}')
-                process = await asyncio.create_subprocess_exec(*command, stdout=asyncio.subprocess.PIPE)
-                feed_content, _ = await process.communicate()
+                feed_content = await curl(feed_url)
     except aiohttp.client_exceptions.ClientPayloadError as e:
         logging.warning('Could not fetch %s: %s', feed_url, e)
         return
