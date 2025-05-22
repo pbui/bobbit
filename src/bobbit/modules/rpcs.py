@@ -58,12 +58,11 @@ async def execute(bot, message, command):
         RPC_TIMESTAMP = time.time()
         return message.with_body(random.choice(DENIALS))
 
-    command = shlex.split(command) if isinstance(command, str) else command
-    process = await asyncio.create_subprocess_exec(*command, stdout=asyncio.subprocess.PIPE)
-
+    command   = shlex.split(command) if isinstance(command, str) else command
+    process   = await asyncio.create_subprocess_exec(*command, stdout=asyncio.subprocess.PIPE)
     stdout, _ = await process.communicate()
-    await process.wait()
-    RPC_TIMESTAMP  = time.time()
+
+    RPC_TIMESTAMP = time.time()
     return stdout.decode().splitlines()
 
 async def rpc(bot, message, program=None, arguments=None):
