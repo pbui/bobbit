@@ -1,5 +1,6 @@
 ''' bobbit.utils '''
 
+import asyncio
 import re
 
 async def shorten_url(http_client, url):
@@ -12,6 +13,14 @@ async def shorten_url(http_client, url):
             return (await response.text()).strip()
         except AttributeError:
             return url
+
+async def curl(url):
+    command = ['curl', '-sL', url]
+    process = await asyncio.create_subprocess_exec(
+        *command,
+        stdout=asyncio.subprocess.PIPE
+    )
+    return (await process.communicate())[0].decode()
 
 def elapsed_time(current, previous):
     elapsed = current - previous
