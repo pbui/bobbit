@@ -101,9 +101,17 @@ async def process_feed(http_client, feed, cache):
             logging.debug('Skipping %s (in the future)', link)
             continue
 
-        # Record entry with a key of 1.0 and then add to list of items
+        # Record entry with a key of 1.0
         logging.debug('Recording %s', link)
         cache[key] = str(1.0)
+
+        # Set last modified time to minimum of current time and entry timestamp
+        last_modified = min(last_modified, timestamp)
+
+        # Generate entry only if not excluded
+        if any(exclusion in link for exclusion in feed.get('exclude', [])):
+            continue
+
         yield {
             'title'     : title,
             'author'    : author,
@@ -111,9 +119,6 @@ async def process_feed(http_client, feed, cache):
             'channels'  : feed_channels,
             'timestamp' : timestamp,
         }
-
-        # Set last modified time to minimum of current time and entry timestamp
-        last_modified = min(last_modified, timestamp)
 
     # Mark feed in cache
     cache[feed_key] = str(last_modified)
