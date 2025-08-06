@@ -110,6 +110,7 @@ async def process_feed(http_client, feed, cache):
 
         # Generate entry only if not excluded
         if any(exclusion in link for exclusion in feed.get('exclude', [])):
+            logging.debug('Excluding %s', link)
             continue
 
         yield {
