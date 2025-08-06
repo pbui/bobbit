@@ -5,6 +5,8 @@ import html
 import json
 import re
 
+import feedparser
+
 from bobbit.utils import curl, strip_html
 
 # Metadata
@@ -22,7 +24,7 @@ Example:
 # Constants
 
 CHANNEL_BLACKLIST = []
-DOMAIN_BLACKLIST  = ['reddit.com', 'twitter.com']
+DOMAIN_BLACKLIST  = ['reddit.com', 'twitter.com', 'axios.com']
 AVOID_EXTENSIONS  = (
     '.gif', '.jpg', '.mkv', '.mov', '.mp4', '.png', '.jpeg', '.heic',
     '.gz' , '.xz' , '.bz2', '.tgz', '.deb',
@@ -122,6 +124,21 @@ async def youtube_title(bot, url, text):
         logging.warning('Unable to find channel or video name for %s, YouTube formatting may have changed: %s', url, e)
         return None
 
+# Axios Command
+
+AXIOS_PATTERN = r'.*(?P<url>https?://[^\s]*axios.com/[^\s]+).*'
+AXIOS_RSS_URL = 'https://api.axios.com/feed/'
+
+async def axios_title(bot, message, url):
+    async with bot.http_client.get(AXIOS_RSS_URL) as response:
+        feed_content = await response.content.read()
+
+    for entry in feedparser.parse(feed_content)['entries']:
+        if entry.get('link') == url:
+            return entry.get('title')
+
+    return None
+
 # Reddit Command
 
 REDDIT_PATTERN = r'.*(?P<url>https?://[^\s]*reddit.com/[^\s]+).*'
@@ -169,6 +186,7 @@ def register(bot):
 
     return (
         ('command', PATTERN       , title),
+        ('command', AXIOS_PATTERN , axios_title),
         ('command', REDDIT_PATTERN, reddit_title),
     )
 
