@@ -135,7 +135,10 @@ async def axios_title(bot, message, url):
 
     for entry in feedparser.parse(feed_content)['entries']:
         if entry.get('link') == url:
-            return entry.get('title')
+            return bot.client.format_text(
+                '{color}{green}Title{color}: {bold}{title}{bold}',
+                title = entry.get('title')
+            )
 
     return None
 
