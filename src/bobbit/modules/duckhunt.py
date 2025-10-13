@@ -5,7 +5,7 @@
 Todo:
 [ ] Add colors
 [X] Implement gun jamming / reloading
-[ ] Add more messages
+[X] Add more messages
 [ ] Make kill/save commands configurable
 [x] Make channels configurable
 [ ] Fix plural
@@ -112,7 +112,7 @@ async def ducks(bot, message, command, other=None):
 
         # Check time (anti-bot) and random chance of missing
         elapsed = current_time - Ducks[channel]
-        if elapsed < 1.0 or random.random() > 0.85:
+        if elapsed < 1.0 or random.random() > 0.75:
             # Give them a timeout.
             Cooldowns[channel][nick] = current_time + COOLDOWN_AMOUNT
             return message.with_body(' '.join([
