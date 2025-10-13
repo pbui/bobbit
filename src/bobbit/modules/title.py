@@ -46,8 +46,9 @@ async def title(bot, message, url=None, override=False):
             return
 
         text = await response.text()
-        if response.status == 403 and 'Cloudflare' in text:
-            logging.debug('Workaround Cloudflare with curl...')
+        if (response.status == 403 and 'Cloudflare' in text) or \
+           (response.status == 429):
+            logging.debug('Workaround with curl...')
             text = await curl(url)
 
         try:
