@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import re
+import ssl
 import textwrap
 
 from bobbit.message       import Message
@@ -13,16 +14,16 @@ from bobbit.protocol.base import BaseClient
 CRNL = b'\r\n'
 
 PING_RE       = re.compile(r'^PING (?P<payload>.*)')
-CHANMSG_RE    = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+(?P<channel>#+[-\w]+)\s+:(?P<body>[^\n\r]+)')
-PRIVMSG_RE    = re.compile(r':(?P<nick>.*?)!\S+\s+?PRIVMSG\s+[^#][^:]+:(?P<body>[^\n\r]+)')
+CHANMSG_RE    = re.compile(r':(?P<nick>[^!]+)\S*\s+?PRIVMSG\s+(?P<channel>#+[-\w]+)\s+:(?P<body>[^\n\r]+)')
+PRIVMSG_RE    = re.compile(r':(?P<nick>[^!]+)\S*\s+?PRIVMSG\s+[^#][^:]+:(?P<body>[^\n\r]+)')
 ERROR_RE      = re.compile(r'^ERROR :(?P<reason>.*?):.*')
 MOTD_RE       = re.compile(r':(?P<server>.*?)\s+(?:376|422)')
 NAMES_RE      = re.compile(r':.*\s+(?:353)\s+[^\s]+\s+=\s+(?P<channel>#+[-\w]+)\s+:(?P<nicks>[^\n\r]+)')
-JOIN_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?JOIN\s+(?P<channel>#+[-\w]+)')
-PART_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?PART\s+(?P<channel>#+[-\w]+)')
-QUIT_RE       = re.compile(r':(?P<nick>.*?)!\S+\s+?QUIT\s+:')
+JOIN_RE       = re.compile(r':(?P<nick>[^!]+)\S*\s+?JOIN\s+(?P<channel>#+[-\w]+)')
+PART_RE       = re.compile(r':(?P<nick>[^!]+)\S*\s+?PART\s+(?P<channel>#+[-\w]+)')
+QUIT_RE       = re.compile(r':(?P<nick>[^!]+)\S*\s+?QUIT\s+:')
 KICK_RE       = re.compile(r':.*!\S+\s+?KICK\s+(?P<channel>#+[-\w]+)\s+(?P<nick>[^\s]+)')
-NICK_RE       = re.compile(r':(?P<old_nick>.*?)!\S+\s+?NICK\s+(?P<new_nick>[^\s]+)')
+NICK_RE       = re.compile(r':(?P<old_nick>[^!]+)\S*\s+?NICK\s+(?P<new_nick>[^\s]+)')
 REGISTERED_RE = re.compile(r':NickServ!.*NOTICE.*:.*(identified|logged in|accepted).*')
 
 MESSAGE_LENGTH_MAX = 512 - len(CRNL)
@@ -110,7 +111,8 @@ class IRCClient(BaseClient):
     async def _handle_motd(self, server):
         logging.debug('Handling MOTD')
 
-        if self.password.startswith('oauth:'):  # Note: Twitch doesn't do registration
+        # Note: Twitch and Slack don't do registration
+        if self.password.startswith('oauth:') or self.password.startswith('xoxp-'):
             await self._handle_registration()
         else:
             await self.send_message(Message(
@@ -130,17 +132,27 @@ class IRCClient(BaseClient):
 
     async def connect(self):
         ''' Connect to IRC server and register '''
+        if self.ssl:
+            ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+            # XXX: Should enable this by default
+            # XXX: But off for now as workaround for self-signed certs
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
+        else:
+            ssl_context = None
+
         self.reader, self.writer = await asyncio.open_connection(
-            self.host, self.port, ssl=self.ssl
+            self.host, self.port, ssl=ssl_context
         )
 
         logging.info('Connected to %s:%s', self.host, self.port)
 
         # TODO: Add for SASL
-        # NOTE: PASS works for freenode, snoonet, and soon ndlug
-        if self.password.startswith('oauth:'):  # Twitch
+        if self.password.startswith('oauth:') or self.password.startswith('xoxp'):
+            # NOTE: PASS works Twitch? Slack
             await self.send_message(f'PASS {self.password}')
         else:
+            # NOTE: PASS works for freenode, snoonet, and ndlug
             await self.send_message(f'PASS {self.nick}:{self.password}')
         await self.send_message(f'USER {self.nick} {self.host} bobbit :{self.nick}')
         await self.send_message(f'NICK {self.nick}')
