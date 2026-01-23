@@ -73,7 +73,10 @@ class SlackClient(BaseClient):
         async with self.http_client.get(url, params=params) as response:
             data = await response.json()
 
-        self.url = data['url']
+        try:
+            self.url = data['url']
+        except KeyError:
+            logging.error('Unable to retrieve websocket URL: %s', str(data))
 
         logging.info('Connecting to websocket: %s', self.url)
         self.ws  = await self.http_client.ws_connect(self.url)
