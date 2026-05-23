@@ -24,7 +24,7 @@ Example:
 # Constants
 
 CHANNEL_BLACKLIST = []
-DOMAIN_BLACKLIST  = ['reddit.com', 'twitter.com', 'axios.com']
+DOMAIN_BLACKLIST  = ['reddit.com', 'twitter.com', 't.co', 'x.com', 'axios.com']
 AVOID_EXTENSIONS  = (
     '.gif', '.jpg', '.mkv', '.mov', '.mp4', '.png', '.jpeg', '.heic',
     '.gz' , '.xz' , '.bz2', '.tgz', '.deb',
