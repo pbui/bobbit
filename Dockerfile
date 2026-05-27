@@ -14,8 +14,9 @@ RUN	    apt install --update -y \
 	    apt clean && \
 	    rm -rf /var/lib/apt/lists/*
 
-ADD	    https://github.com/pbui/bobbit/archive/bobbit-0.2.x.tar.gz /tmp
-RUN	    tar xvzf /tmp/bobbit-* -C / && mv /bobbit* /bobbit
+#ADD	    https://github.com/pbui/bobbit/archive/bobbit-0.2.x.tar.gz /tmp
+#RUN	    tar xvzf /tmp/bobbit-* -C / && mv /bobbit* /bobbit
+COPY	    . /bobbit
 
 ENTRYPOINT  ["/bobbit/bin/bobbit"]
 CMD	    ["--config-dir=/srv/bobbit"]
