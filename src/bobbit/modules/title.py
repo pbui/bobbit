@@ -8,6 +8,7 @@ import re
 import feedparser
 
 from bobbit.utils import curl, strip_html
+from urllib.parse import urlsplit
 
 # Metadata
 
@@ -24,7 +25,11 @@ Example:
 # Constants
 
 CHANNEL_BLACKLIST = []
-DOMAIN_BLACKLIST  = ['reddit.com', 'twitter.com', 't.co', 'x.com', 'axios.com']
+DOMAIN_BLACKLIST  = (
+    'old.reddit.com', 'reddit.com', 'www.reddit.com',
+    'twitter.com', 't.co', 'x.com',
+    'axios.com'
+)
 AVOID_EXTENSIONS  = (
     '.gif', '.jpg', '.mkv', '.mov', '.mp4', '.png', '.jpeg', '.heic',
     '.gz' , '.xz' , '.bz2', '.tgz', '.deb',
@@ -34,15 +39,19 @@ AVOID_EXTENSIONS  = (
 
 async def title(bot, message, url=None, override=False):
     url = url.rstrip('\x01')
-    if not override and (message.channel in CHANNEL_BLACKLIST or \
-        any(url.lower().endswith(extension) for extension in AVOID_EXTENSIONS) or \
-        any(domain in url for domain in DOMAIN_BLACKLIST)):
+    if not override and any((
+        message.channel in CHANNEL_BLACKLIST,
+        any(url.lower().endswith(extension) for extension in AVOID_EXTENSIONS),
+        urlsplit(url).hostname in DOMAIN_BLACKLIST
+    )):
+        logging.debug('Skipping - Blacklist...')
         return
 
     async with bot.http_client.get(url) as response:
         # Skip non HTML content or content larger than 8MB
         if response.content_type != 'text/html' or \
            int(response.headers.get('Content-Length', 0)) > (1<<23):
+            logging.debug('Skipping - Content...')
             return
 
         text = await response.text()
