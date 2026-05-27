@@ -4,6 +4,7 @@ MAINTAINER  Peter Bui <pbui@bx612.space>
 ENV	    DEBIAN_FRONTEND="noninteractive"
 
 RUN	    apt install --update -y \
+		curl \
 		python3 \
 		python3-aiohttp \
 		python3-dateutil \
