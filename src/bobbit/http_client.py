@@ -8,11 +8,11 @@ class HTTPClient(aiohttp.ClientSession):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, headers={
-            'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/60.5 Safari/605.1.15',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:151.0) Gecko/20100101 Firefox/151.0',
             'Connection': 'keep-alive',
         }, **kwargs)
 
     def get(self, *args, **kwargs):
         ''' https://github.com/aio-libs/aiohttp/issues/3203 '''
-        kwargs['timeout'] = aiohttp.ClientTimeout(total=None, sock_connect=10, sock_read=10)
+        kwargs['timeout'] = aiohttp.ClientTimeout(total=None, sock_connect=10, sock_read=15)
         return super().get(*args, **kwargs)
