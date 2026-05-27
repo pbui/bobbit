@@ -3,16 +3,22 @@
 import asyncio
 import re
 
-async def shorten_url(http_client, url):
+async def shorten_url(http_client, url, attempts=5):
     for b in  ('i.redd.it', ):
         if b in url:
             return url
 
-    async with http_client.post('https://yld.me/url', data=url.encode()) as response:
-        try:
-            return (await response.text()).strip()
-        except AttributeError:
-            return url
+    for _ in range(attempts):
+        async with http_client.post('https://yld.me/url', data=url.encode()) as response:
+            try:
+                result = (await response.text()).strip()
+            except AttributeError:
+                result = None
+
+            if result and result != '<html>':
+                return result
+
+    return url
 
 async def curl(url):
     command = ['curl', '-sL', url]
