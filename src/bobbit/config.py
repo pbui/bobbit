@@ -43,7 +43,7 @@ class Configuration():
         logger.info('Modules Path:            %s', self.modules_dir)
 
         self.nick     = config.get('nick'       , 'bobbit')
-        self.owners   = config.get('owners'     , [os.environ['USER']])
+        self.owners   = config.get('owners'     , [os.environ.get('USER', self.nick)])
         self.use_ssl  = config.get('ssl'        , False)
         self.colorize = config.get('colorize'   , True)
 
