@@ -1,10 +1,21 @@
-FROM python:3
-MAINTAINER  Peter Bui <pbui@yld.bx612.space>
+FROM	    debian:trixie-slim
+MAINTAINER  Peter Bui <pbui@bx612.space>
 
-RUN   apt update; apt -y install figlet
-ADD   https://github.com/pbui/bobbit/archive/bobbit-0.2.x.tar.gz /tmp
-RUN   tar xvzf /tmp/bobbit-* -C / && mv /bobbit* /bobbit
-RUN   pip3 install -r /bobbit/requirements.txt
+ENV	    DEBIAN_FRONTEND="noninteractive"
 
-ENV   USER=sample-user
+RUN	    apt install --update -y \
+		python3 \
+		python3-aiohttp \
+		python3-dateutil \
+		python3-feedparser \
+		python3-gdbm \
+		python3-icalendar \
+		python3-yaml && \
+	    apt clean && \
+	    rm -rf /var/lib/apt/lists/*
+
+ADD	    https://github.com/pbui/bobbit/archive/bobbit-0.2.x.tar.gz /tmp
+RUN	    tar xvzf /tmp/bobbit-* -C / && mv /bobbit* /bobbit
+
 ENTRYPOINT  ["/bobbit/bin/bobbit"]
+CMD	    ["--config-dir=/srv/bobbit"]
