@@ -1,4 +1,6 @@
-# Bobbit
+# Bobbit - Archived
+
+**MOVED TO https://code.h4x0r.space/pbui/bobbit**
 
 **bobbit** is a simple and modular *asynchronous* IRC / Slack bot written in
 [Python].  The current version uses [asyncio] as its core networking and event
