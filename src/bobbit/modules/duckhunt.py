@@ -5,7 +5,7 @@
 Todo:
 [ ] Add colors
 [X] Implement gun jamming / reloading
-[ ] Add more messages
+[X] Add more messages
 [ ] Make kill/save commands configurable
 [x] Make channels configurable
 [ ] Fix plural
@@ -36,13 +36,19 @@ KILL_MISSES = (
     'WHOOSH! You missed the duck completely!',
     'Your gun jammed!',
     'Better luck next time.',
-    'WTF!? Who are you, Dick Cheney?'
+    'WTF!? Who are you, Dick Cheney?',
+    'You aimed... at the sky. The duck is unimpressed.',
+    'The duck called in air support. You missed in the chaos.',
+    'You fired, but only confetti came out. Party time for the duck!'
 )
 SAVE_MISSES = (
     "The duck didn't want to be friends, maybe next time.",
     "Well this is awkward, the duck needs to think about it.",
     "The duck said no, maybe bribe it with some pizza? Ducks love pizza don't they?",
-    "Who knew ducks could be so picky?"
+    "Who knew ducks could be so picky?",
+    "You offered friendship, but the duck prefers solitude.",
+    "The duck is on a strict 'no new friends' diet.",
+    "The duck is busy updating its social media. Try again later."
 )
 COOLDOWN_AMOUNT = 7.0
 COOLDOWN_MESSAGE = f'You can try again in {COOLDOWN_AMOUNT} seconds.'
@@ -106,7 +112,7 @@ async def ducks(bot, message, command, other=None):
 
         # Check time (anti-bot) and random chance of missing
         elapsed = current_time - Ducks[channel]
-        if elapsed < 1.0 or random.random() > 0.85:
+        if elapsed < 1.0 or random.random() > 0.75:
             # Give them a timeout.
             Cooldowns[channel][nick] = current_time + COOLDOWN_AMOUNT
             return message.with_body(' '.join([
